@@ -1,0 +1,2 @@
+# Preserve the author's downloaded license byte-for-byte, including its whitespace.
+assets/sprout_lands/LICENSE.txt -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol

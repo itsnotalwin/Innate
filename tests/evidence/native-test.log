@@ -1,0 +1,35 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+PASS one native controllable player initialized
+PASS player and nature share Y sorting
+PASS native saved 64x48 ground cells loaded
+PASS cardinal speed: 72 px/s for 30 physics ticks
+PASS diagonal speed equals cardinal speed
+PASS walking animation up
+PASS idle preserves facing up
+PASS walking animation down
+PASS idle preserves facing down
+PASS walking animation left
+PASS idle preserves facing left
+PASS walking animation right
+PASS idle preserves facing right
+PASS tree trunk blocks feet, not whole canopy
+PASS pond prevents walking across open water
+PASS cottage footprint blocks entry
+PASS garden fence blocks feet
+PASS world boundary 0
+PASS world boundary 1
+PASS world boundary 2
+PASS world boundary 3
+PASS camera stays inside map at (520.0, 384.0)
+PASS camera stays inside map at (520.0, 4.0)
+PASS camera stays inside map at (520.0, 764.0)
+PASS camera stays inside map at (4.0, 400.0)
+PASS camera stays inside map at (1020.0, 400.0)
+PASS native touch uses same walking controller
+PASS second finger release does not stop active finger
+PASS release outside joystick stops movement
+PASS touch cancellation clears movement
+PASS focus loss clears touch
+PASS resize release clears touch
+RESULT 32/32 passed

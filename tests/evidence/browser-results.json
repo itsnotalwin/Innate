@@ -1,0 +1,96 @@
+{
+  "checks": [
+    {
+      "check": "Godot initializes and renders its canvas",
+      "passed": true
+    },
+    {
+      "check": "canvas has keyboard focus",
+      "passed": true
+    },
+    {
+      "check": "arrow-key walking changes rendered world",
+      "passed": true
+    },
+    {
+      "check": "WASD walking and camera follow work in Web export",
+      "passed": true
+    },
+    {
+      "check": "simultaneous diagonal keyboard input moves player",
+      "passed": true
+    },
+    {
+      "check": "keyboard release returns to stable idle",
+      "passed": true
+    },
+    {
+      "check": "movement keys do not scroll page",
+      "passed": true
+    },
+    {
+      "check": "browser touch drag moves player diagonally",
+      "passed": true
+    },
+    {
+      "check": "browser touch release stops movement",
+      "passed": true
+    },
+    {
+      "check": "browser touch cancellation stops movement",
+      "passed": true
+    },
+    {
+      "check": "resize during held touch leaves no stuck movement",
+      "passed": true
+    },
+    {
+      "check": "no browser console errors or uncaught exceptions",
+      "passed": true
+    }
+  ],
+  "failures": [],
+  "console": [
+    {
+      "type": "log",
+      "text": "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org"
+    },
+    {
+      "type": "log",
+      "text": "OpenGL API OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium)) - Compatibility - Using Device: WebKit - WebKit WebGL"
+    },
+    {
+      "type": "log",
+      "text": "Build configuration: Emscripten 4.0.20, single-threaded, no GDExtension support."
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x3e04058fd400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x3e04058fd400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x3e04058fd400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x3e04058fd400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+    },
+    {
+      "type": "log",
+      "text": "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org"
+    },
+    {
+      "type": "log",
+      "text": "OpenGL API OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium)) - Compatibility - Using Device: WebKit - WebKit WebGL"
+    },
+    {
+      "type": "log",
+      "text": "Build configuration: Emscripten 4.0.20, single-threaded, no GDExtension support."
+    }
+  ],
+  "real_device_tested": false
+}
