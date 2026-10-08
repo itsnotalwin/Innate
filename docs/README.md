@@ -62,3 +62,18 @@ The browser script uses `/usr/bin/chromium`; adjust that path for another instal
 - `docs/`: credits, licenses, instructions, and build report.
 
 To restore artwork, download the free Basic Pack directly from Cup Nooble and run `python tools/import_assets.py "path/to/Sprout Lands - Sprites - Basic pack.zip"`. The importer only extracts sheets used in this game. It does not download premium assets or replace the world.
+
+## Deploying from GitHub Pages
+
+The repository's `docs/` folder contains the tested HTML, JavaScript, WASM, PCK, splash image, and audio worklets, plus `.nojekyll`. These are real Godot export files. `docs/.gdignore` prevents Godot from importing deployment artifacts back into the game.
+
+Open GitHub **Settings → Pages → Build and deployment**:
+
+1. Source: **Deploy from a branch**.
+2. Branch: **codex/innate-milestone-01**.
+3. Folder: **/docs**.
+4. Click **Save** and wait for the Pages deployment to finish.
+
+The expected URL is `https://itsnotalwin.github.io/Innate/`; use the URL shown in Settings after deployment. The connected GitHub integration lacks Pages-management access (HTTP 403), so this setting must be enabled in GitHub. Private-repository Pages requires a supporting GitHub plan. No repository visibility change is made automatically.
+
+The export helper mirrors future exports into `docs/`. Commit and push the generated `docs/index*` files to update the deployed game. All runtime paths are relative and work under the `/Innate/` project prefix.

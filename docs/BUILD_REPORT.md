@@ -72,3 +72,9 @@ All screenshots are captured from the running genuine Web export. No promotional
 No actual phone, iOS Safari, Firefox, or local Windows editor was tested. Browser touch is emulated. Pixel art is nearest-filtered; fractional mobile scale may produce uneven pixel widths, while the default 3× desktop scale is exact. Portrait is intentionally letterboxed and recommends landscape. Device FPS and a 60fps performance target were not measured or claimed. Water is static. The cottage has no interior. There are no save systems or additional maps.
 
 Before defining Milestone 02, play this build on the intended phone and Windows installation and review walking speed, camera framing, and world composition with Paige. No additional systems have been implemented.
+
+## GitHub Pages delivery correction
+
+The original delivery excluded generated Web artifacts from Git. At the user's request, the complete tested Web export is now also tracked in `docs/`, the folder GitHub Pages supports for branch deployments. `.nojekyll` is included and `docs/.gdignore` prevents re-import. The export helper keeps `docs/` synchronized with `build/web/`.
+
+The task branch is prepared for pushing to the connected repository. The connected integration returns HTTP 403 (`Resource not accessible by integration`) for the Pages API, so automatic activation is blocked by its GitHub permissions. Enable **Deploy from a branch → codex/innate-milestone-01 → /docs** in GitHub Settings. No Pages deployment success is claimed until enabled and verified. The user's latest instruction authorizes Pages publishing and supersedes the original no-public-deployment restriction; repository visibility remains private.

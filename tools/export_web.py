@@ -14,4 +14,7 @@ if (cloud/'data/godot/export_templates/4.6.3.stable').is_dir():
 (ROOT/'build/web').mkdir(parents=True,exist_ok=True)
 for command in [['--version'],['--headless','--editor','--import','--quit'],['--headless','--export-release','Web','build/web/index.html']]:
  subprocess.run([a.godot,'--path',str(ROOT),*command],cwd=ROOT,env=env,check=True)
-print('Serve build/web over HTTP; open index.html through the server, not file://.')
+for file in (ROOT/'build/web').iterdir():
+ if file.is_file() and file.name != '.gdignore':shutil.copy2(file,ROOT/'docs'/file.name)
+(ROOT/'docs/.nojekyll').touch()
+print('Web build ready in build/web and docs/. GitHub Pages: deploy task branch /docs.')
