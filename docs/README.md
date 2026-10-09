@@ -71,9 +71,11 @@ Open GitHub **Settings → Pages → Build and deployment**:
 
 1. Source: **Deploy from a branch**.
 2. Branch: **codex/innate-milestone-01**.
-3. Folder: **/docs**.
+3. Folder: **/ (root)** or **/docs**.
 4. Click **Save** and wait for the Pages deployment to finish.
 
 The expected URL is `https://itsnotalwin.github.io/Innate/`; use the URL shown in Settings after deployment. The connected GitHub integration lacks Pages-management access (HTTP 403), so this setting must be enabled in GitHub. Private-repository Pages requires a supporting GitHub plan. No repository visibility change is made automatically.
 
-The export helper mirrors future exports into `docs/`. Commit and push the generated `docs/index*` files to update the deployed game. All runtime paths are relative and work under the `/Innate/` project prefix.
+The export helper mirrors future exports into `docs/`. Commit and push the generated root `index.html` and `docs/index*` files to update the deployed game. All runtime paths are relative and work under the `/Innate/` project prefix.
+
+Root-folder Pages hosting is supported through the root Godot export HTML shell with `<base href="./docs/">`. It runs the same genuine game, loading its JS, WASM, PCK, splash, and worklets from `docs/`. No redirect or substitute game is used.

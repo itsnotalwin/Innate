@@ -65,19 +65,19 @@
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x3e04058fd400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+      "text": "[.WebGL-0x330c04129a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x3e04058fd400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+      "text": "[.WebGL-0x330c04129a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x3e04058fd400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+      "text": "[.WebGL-0x330c04129a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x3e04058fd400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+      "text": "[.WebGL-0x330c04129a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
     },
     {
       "type": "log",
@@ -92,5 +92,6 @@
       "text": "Build configuration: Emscripten 4.0.20, single-threaded, no GDExtension support."
     }
   ],
-  "real_device_tested": false
+  "real_device_tested": false,
+  "url": "http://127.0.0.1:8002/Innate/"
 }

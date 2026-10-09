@@ -73,7 +73,7 @@ async def main():
   errors=[entry for entry in messages if entry['type'] in ['error','pageerror']]
   check(not errors,'no browser console errors or uncaught exceptions')
   await browser.close()
- report={'checks':checks,'failures':failures,'console':messages,'real_device_tested':False}
+ report={'url':URL,'checks':checks,'failures':failures,'console':messages,'real_device_tested':False}
  (OUT/'browser-results.json').write_text(json.dumps(report,indent=2)+'\n')
  print(json.dumps({'passed':len(checks)-len(failures),'total':len(checks),'failures':failures},indent=2))
  if failures:raise SystemExit(1)

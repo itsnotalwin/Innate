@@ -78,3 +78,11 @@ Before defining Milestone 02, play this build on the intended phone and Windows 
 The original delivery excluded generated Web artifacts from Git. At the user's request, the complete tested Web export is now also tracked in `docs/`, the folder GitHub Pages supports for branch deployments. `.nojekyll` is included and `docs/.gdignore` prevents re-import. The export helper keeps `docs/` synchronized with `build/web/`.
 
 The task branch is prepared for pushing to the connected repository. The connected integration returns HTTP 403 (`Resource not accessible by integration`) for the Pages API, so automatic activation is blocked by its GitHub permissions. Enable **Deploy from a branch → codex/innate-milestone-01 → /docs** in GitHub Settings. No Pages deployment success is claimed until enabled and verified. The user's latest instruction authorizes Pages publishing and supersedes the original no-public-deployment restriction; repository visibility remains private.
+
+### Root-folder Pages support
+
+Pages was enabled successfully by the user on `codex/innate-milestone-01` with source `/`. The integration can read that configuration but receives HTTP 403 when updating it. A root `index.html` now uses the genuine Godot shell with a relative `docs/` base URL, allowing the existing root-folder configuration to serve the game. Root `.nojekyll` disables Jekyll processing, and the export helper maintains both supported entry locations.
+
+The repository is now public, as verified after the user enabled Pages. This does not change the Basic Pack terms: the included license explicitly permits open-source game projects, and the source retains the required credits and complete artwork license.
+
+The root entry was verified at `http://127.0.0.1:8002/Innate/`: all 12 browser checks passed, including emulated mobile touch, cancellation, resize, and no console errors.

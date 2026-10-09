@@ -17,4 +17,7 @@ for command in [['--version'],['--headless','--editor','--import','--quit'],['--
 for file in (ROOT/'build/web').iterdir():
  if file.is_file() and file.name != '.gdignore':shutil.copy2(file,ROOT/'docs'/file.name)
 (ROOT/'docs/.nojekyll').touch()
-print('Web build ready in build/web and docs/. GitHub Pages: deploy task branch /docs.')
+(ROOT/'.nojekyll').touch()
+html=(ROOT/'docs/index.html').read_text()
+(ROOT/'index.html').write_text(html.replace('<head>', '<head>\n\t\t<base href="./docs/">', 1))
+print('Web build ready. GitHub Pages supports task branch / (root) or /docs.')
