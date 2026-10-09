@@ -1,0 +1,73 @@
+{
+  "method": "Single 4-second moving samples, fresh Chromium processes, local HTTP, software WebGL. Not real-device measurements.",
+  "results": [
+    {
+      "build": "baseline 455b9f5",
+      "viewport": [
+        390,
+        844
+      ],
+      "device_pixel_ratio": 3,
+      "render_buffer": [
+        1170,
+        2532
+      ],
+      "local_ready_ms": 1595,
+      "mean_frame_ms": 74.21,
+      "p95_frame_ms": 100,
+      "frames_over_33ms": 53,
+      "samples": 53
+    },
+    {
+      "build": "baseline 455b9f5",
+      "viewport": [
+        1152,
+        648
+      ],
+      "device_pixel_ratio": 1,
+      "render_buffer": [
+        1152,
+        648
+      ],
+      "local_ready_ms": 1591,
+      "mean_frame_ms": 38.09,
+      "p95_frame_ms": 66.7,
+      "frames_over_33ms": 40,
+      "samples": 105
+    },
+    {
+      "build": "portrait update",
+      "viewport": [
+        390,
+        844
+      ],
+      "device_pixel_ratio": 3,
+      "render_buffer": [
+        333,
+        720
+      ],
+      "local_ready_ms": 1371,
+      "mean_frame_ms": 30.43,
+      "p95_frame_ms": 50.1,
+      "frames_over_33ms": 34,
+      "samples": 132
+    },
+    {
+      "build": "portrait update",
+      "viewport": [
+        1152,
+        648
+      ],
+      "device_pixel_ratio": 1,
+      "render_buffer": [
+        720,
+        405
+      ],
+      "local_ready_ms": 1462,
+      "mean_frame_ms": 38.3,
+      "p95_frame_ms": 66.7,
+      "frames_over_33ms": 42,
+      "samples": 104
+    }
+  ]
+}

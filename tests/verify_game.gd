@@ -27,6 +27,7 @@ func release() -> void:
 func move_from(start: Vector2, actions: Array[String], count: int) -> Vector2:
 	release()
 	player.position = start
+	player.reset_physics_interpolation()
 	player.velocity = Vector2.ZERO
 	await frames(2)
 	for action in actions: Input.action_press(action)
@@ -74,7 +75,8 @@ func verify() -> void:
 		camera.reset_smoothing()
 		await frames(2)
 		var center:=camera.get_screen_center_position()
-		check(center.x>=191.9 and center.x<=832.1 and center.y>=107.9 and center.y<=660.1,"camera stays inside map at "+str(position))
+		var half_view := Vector2(root.content_scale_size) / 2.0
+		check(center.x>=half_view.x-0.1 and center.x<=1024.1-half_view.x and center.y>=half_view.y-0.1 and center.y<=768.1-half_view.y,"camera stays inside map at "+str(position))
 	var joystick: Control=main.get_node("Interface/MobileControls")
 	joystick.visible=true
 	player.position=start
@@ -104,8 +106,36 @@ func verify() -> void:
 	joystick._notification(Control.NOTIFICATION_APPLICATION_FOCUS_OUT)
 	check(player.touch_direction==Vector2.ZERO,"focus loss clears touch")
 	joystick._input(touch)
-	joystick._release()
+	joystick.release_touch()
 	check(player.touch_direction==Vector2.ZERO,"resize release clears touch")
+	release()
+	player.position = Vector2(384,464)
+	player.reset_physics_interpolation()
+	await frames(2)
+	camera.reset_smoothing()
+	await frames(2)
+	var previous_center := camera.get_screen_center_position()
+	var largest_step := 0.0
+	var fractional_steps := 0
+	Input.action_press("move_right")
+	for i in range(30):
+		await frames(1)
+		var center := camera.get_screen_center_position()
+		largest_step = maxf(largest_step,center.distance_to(previous_center))
+		if absf(center.x-roundf(center.x)) > 0.01: fractional_steps += 1
+		previous_center = center
+	release()
+	check(largest_step < 2.0,"camera follows without large per-tick jumps")
+	check(fractional_steps > 15,"camera preserves subpixel positions instead of whole-pixel snapping")
+	check(main.get_node("Interface").get_child_count()==1,"gameplay interface contains only touch controls")
+	root.size = Vector2i(390,844)
+	main._apply_layout()
+	await frames(2)
+	check(root.content_scale_size.x < root.content_scale_size.y,"phone layout fills a portrait screen")
+	root.size = Vector2i(3840,720)
+	main._apply_layout()
+	await frames(2)
+	check(root.content_scale_size.x <= 1024 and root.content_scale_size.y <= 768,"ultrawide layout never reveals outside the world")
 	var report={"checks":checks,"failures":failures,"godot":Engine.get_version_info().string}
 	var file:=FileAccess.open("res://tests/evidence/native-results.json",FileAccess.WRITE)
 	file.store_string(JSON.stringify(report,"\t")+"\n")

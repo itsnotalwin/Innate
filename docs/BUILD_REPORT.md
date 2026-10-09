@@ -1,5 +1,7 @@
 # INNATE — Milestone 01 build report
 
+**Current mobile update:** see [PORTRAIT_UPDATE.md](PORTRAIT_UPDATE.md) for portrait layout, loading/presentation changes, camera fixes, current tests, and measured performance. Earlier landscape details below describe the initial milestone.
+
 **GitHub Pages is live:** https://itsnotalwin.github.io/Innate/. The public game was verified in Chromium: actual Godot rendering, keyboard movement, no console errors, and no failed resource responses.
 
 **Status: Complete for the requested exploration prototype.** Built and verified on 9 October 2026 (Africa/Johannesburg). Phone hardware, Safari, Firefox, Windows execution, and device FPS remain unverified. No Milestone 02 features were implemented.

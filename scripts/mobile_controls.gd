@@ -8,7 +8,6 @@ var direction := Vector2.ZERO
 
 func _ready() -> void:
 	visible = DisplayServer.is_touchscreen_available() or OS.has_feature("mobile")
-	get_viewport().size_changed.connect(_release)
 
 func _input(event: InputEvent) -> void:
 	if not visible:
@@ -20,7 +19,7 @@ func _input(event: InputEvent) -> void:
 			_update_direction(local)
 			get_viewport().set_input_as_handled()
 		elif event.index == finger and (not event.pressed or event.canceled):
-			_release()
+			release_touch()
 	elif event is InputEventScreenDrag and event.index == finger:
 		_update_direction(get_global_transform_with_canvas().affine_inverse() * event.position)
 		get_viewport().set_input_as_handled()
@@ -32,7 +31,7 @@ func _update_direction(local: Vector2) -> void:
 	direction_changed.emit(direction)
 	queue_redraw()
 
-func _release() -> void:
+func release_touch() -> void:
 	finger = -1
 	direction = Vector2.ZERO
 	direction_changed.emit(direction)
@@ -40,7 +39,7 @@ func _release() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_APPLICATION_PAUSED:
-		_release()
+		release_touch()
 
 func _draw() -> void:
 	draw_circle(CENTER, 29, Color(0.2, 0.3, 0.25, 0.28))

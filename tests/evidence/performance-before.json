@@ -1,0 +1,26 @@
+[
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "cold_load_ms": 1649,
+    "mean_frame_ms": 30.88,
+    "p95_frame_ms": 50.1,
+    "frames_over_33ms": 35,
+    "samples": 129,
+    "renderer": "Chromium software WebGL; not phone hardware"
+  },
+  {
+    "viewport": {
+      "width": 1152,
+      "height": 648
+    },
+    "cold_load_ms": 1569,
+    "mean_frame_ms": 39.21,
+    "p95_frame_ms": 66.7,
+    "frames_over_33ms": 41,
+    "samples": 102,
+    "renderer": "Chromium software WebGL; not phone hardware"
+  }
+]

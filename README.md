@@ -4,9 +4,9 @@
 
 A peaceful little pixel-art world for Paige. Milestone 01 contains one outdoor map, one animated character, and keyboard/touch walking.
 
-Open `project.godot` in **Godot 4.6.3 Standard** and press **F6 on main.tscn or F5**. Move with **WASD**, **arrow keys**, or the mobile joystick.
+Open `project.godot` in **Godot 4.6.3 Standard** and press **F6 on main.tscn or F5**. The game fills portrait phone screens. Move with **WASD**, **arrow keys**, or the mobile joystick. Gameplay has no text overlays; the custom INNATE loading screen carries the artwork credit.
 
-See [play/build instructions](docs/README.md), [asset credits and licensing](docs/ASSET_CREDITS.md), and [verified build report](docs/BUILD_REPORT.md).
+See the [portrait update and measured limits](docs/PORTRAIT_UPDATE.md), [play/build instructions](docs/README.md), [asset credits and licensing](docs/ASSET_CREDITS.md), and [verified build report](docs/BUILD_REPORT.md).
 
 Sprout Lands — Assets by Cup Nooble. This is a non-commercial project. The selected artwork retains its separate [Basic Pack license](assets/sprout_lands/LICENSE.txt). Do not redistribute it as an asset pack, use it commercially, for NFTs, or for AI training.
 
@@ -16,4 +16,4 @@ The `docs/` directory includes the genuine exported Godot browser game and every
 
 Pages is enabled on the task branch at **/ (root)**. The root Godot entry page resolves runtime assets from `docs/`. The connected integration cannot change Pages settings (GitHub returns HTTP 403). For a private repository, Pages availability depends on your GitHub plan; keep this repository private unless you explicitly choose otherwise.
 
-To update the published build, run `python tools/export_web.py`, commit the updated root `index.html` and `docs/index*` files, and push the selected Pages branch. The exporter keeps the local `build/web/` and repository `docs/` builds in sync.
+To update the published build, run `python tools/export_web.py`, run `python tools/check_web_build.py`, then commit the updated root `index.html`, `docs/` build files, and manifest, and push the selected Pages branch. The exporter keeps the local `build/web/` and repository `docs/` builds in sync.

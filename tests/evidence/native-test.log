@@ -32,4 +32,9 @@ PASS release outside joystick stops movement
 PASS touch cancellation clears movement
 PASS focus loss clears touch
 PASS resize release clears touch
-RESULT 32/32 passed
+PASS camera follows without large per-tick jumps
+PASS camera preserves subpixel positions instead of whole-pixel snapping
+PASS gameplay interface contains only touch controls
+PASS phone layout fills a portrait screen
+PASS ultrawide layout never reveals outside the world
+RESULT 37/37 passed

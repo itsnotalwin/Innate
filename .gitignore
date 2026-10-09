@@ -3,3 +3,5 @@ build/web/*
 !build/web/.gdignore
 *.tmp
 __pycache__/
+
+build/performance-baseline/
