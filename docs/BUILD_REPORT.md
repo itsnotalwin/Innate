@@ -1,5 +1,7 @@
 # INNATE — Milestone 01 build report
 
+**GitHub Pages is live:** https://itsnotalwin.github.io/Innate/. The public game was verified in Chromium: actual Godot rendering, keyboard movement, no console errors, and no failed resource responses.
+
 **Status: Complete for the requested exploration prototype.** Built and verified on 9 October 2026 (Africa/Johannesburg). Phone hardware, Safari, Firefox, Windows execution, and device FPS remain unverified. No Milestone 02 features were implemented.
 
 ## Engine and environment
@@ -86,3 +88,7 @@ Pages was enabled successfully by the user on `codex/innate-milestone-01` with s
 The repository is now public, as verified after the user enabled Pages. This does not change the Basic Pack terms: the included license explicitly permits open-source game projects, and the source retains the required credits and complete artwork license.
 
 The root entry was verified at `http://127.0.0.1:8002/Innate/`: all 12 browser checks passed, including emulated mobile touch, cancellation, resize, and no console errors.
+
+### Public deployment verification
+
+GitHub Pages run `37908992745` completed successfully for commit `7aecf54`, serving branch `codex/innate-milestone-01` from `/`. Native Chromium loaded the public HTTPS URL through the configured cloud proxy, trusting the already-installed cloud CA public keys. The game rendered, keyboard movement changed the scene, and all resources (including audio worklets) loaded with no browser console errors or failed HTTP responses. Results and an actual live-game screenshot are saved in `tests/evidence/live-pages-results.json` and `live-pages.png`. Previous local desktop/mobile tests remain 12/12 passing.

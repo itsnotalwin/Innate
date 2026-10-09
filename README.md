@@ -1,5 +1,7 @@
 # INNATE
 
+**[Play INNATE in your browser](https://itsnotalwin.github.io/Innate/)**
+
 A peaceful little pixel-art world for Paige. Milestone 01 contains one outdoor map, one animated character, and keyboard/touch walking.
 
 Open `project.godot` in **Godot 4.6.3 Standard** and press **F6 on main.tscn or F5**. Move with **WASD**, **arrow keys**, or the mobile joystick.
