@@ -2,6 +2,15 @@
   "transport": "Native Chromium HTTPS through configured proxy, trusting the installed cloud CA public keys",
   "url": "https://itsnotalwin.github.io/Innate/",
   "rendered": true,
+  "portrait_viewport": [
+    390,
+    844
+  ],
+  "render_buffer": [
+    333,
+    720
+  ],
+  "touch_movement": true,
   "keyboard_movement": true,
   "console_errors": [],
   "failed_responses": []

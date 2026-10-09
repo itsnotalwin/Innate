@@ -1,5 +1,7 @@
 # Portrait mobile update
 
+**Live and verified:** https://itsnotalwin.github.io/Innate/. GitHub Pages deployment `37948711072` succeeded for `13be4d6`. Public Chromium verification at 390×844 confirmed a 333×720 render buffer, touch and keyboard movement, no console errors, and no failed resources. See `tests/evidence/live-pages-results.json` and `live-pages.png`. This is browser emulation, not a physical-phone test.
+
 INNATE now fills a portrait phone screen, has a custom loading screen, and keeps gameplay free of text overlays. The existing map, walking speed, and collision footprints are unchanged.
 
 ## Changes
