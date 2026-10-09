@@ -1,228 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<base href="./docs/">
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-		<link rel="icon" href="data:,">
-		<title>INNATE</title>
-		<style>
-html, body, #canvas {
-	margin: 0;
-	padding: 0;
-	border: 0;
-}
+<head>
+<base href="./docs/">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#f5f2e0">
+<link rel="icon" href="data:,">
+<title>INNATE</title>
+<style>
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; background: #f5f2e0; }
+body { touch-action: none; font-family: ui-rounded, system-ui, sans-serif; color: #405e46; }
+#canvas { image-rendering: pixelated; display: block; width: 100%; height: 100%; outline: none; }
+#status { position: fixed; inset: 0; display: grid; place-items: center; background: #f5f2e0; z-index: 2; }
+.loading { width: min(65vw, 240px); text-align: center; }
+.character { width: 48px; height: 48px; margin: 28px auto; background: url('loader-character.png') 0 0 / 192px 192px; image-rendering: pixelated; transform: scale(2); }
+h1 { font-size: 22px; font-weight: 500; letter-spacing: .32em; margin: 24px 0; padding-left: .32em; }
+progress { display: block; width: 100%; height: 4px; border: 0; border-radius: 4px; overflow: hidden; background: #e0e3c9; accent-color: #809965; }
+progress::-webkit-progress-bar { background: #e0e3c9; }
+progress::-webkit-progress-value { background: #809965; }
+progress::-moz-progress-bar { background: #809965; }
+.credit { position: absolute; bottom: max(22px, env(safe-area-inset-bottom)); left: 16px; right: 16px; text-align: center; font-size: 11px; color: #697860; }
+.credit a { color: inherit; text-decoration: none; }
+#notice { font-size: 14px; line-height: 1.5; }
+#retry { margin: 16px auto; padding: 10px 22px; border: 1px solid #809965; border-radius: 20px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+#safe-area { position: fixed; visibility: hidden; pointer-events: none; padding-left: env(safe-area-inset-left); padding-bottom: env(safe-area-inset-bottom); }
+</style>
 
-body {
-	color: white;
-	background-color: #28382c;
-	overflow: hidden;
-	touch-action: none;
-}
-
-#canvas {
-	image-rendering: pixelated;
-	display: block;
-}
-
-#canvas:focus {
-	outline: none;
-}
-
-#status, #status-splash, #status-progress {
-	position: absolute;
-	left: 0;
-	right: 0;
-}
-
-#status, #status-splash {
-	top: 0;
-	bottom: 0;
-}
-
-#status {
-	background-color: #242424;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	visibility: hidden;
-}
-
-#status-splash {
-	max-height: 100%;
-	max-width: 100%;
-	margin: auto;
-}
-
-#status-splash.show-image--false {
-	display: none;
-}
-
-#status-splash.fullsize--true {
-	height: 100%;
-	width: 100%;
-	object-fit: contain;
-}
-
-#status-splash.use-filter--false {
-	image-rendering: pixelated;
-}
-
-#status-progress, #status-notice {
-	display: none;
-}
-
-#status-progress {
-	bottom: 10%;
-	width: 50%;
-	margin: 0 auto;
-}
-
-#status-notice {
-	background-color: #5b3943;
-	border-radius: 0.5rem;
-	border: 1px solid #9b3943;
-	color: #e0e0e0;
-	font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
-	line-height: 1.3;
-	margin: 0 2rem;
-	overflow: hidden;
-	padding: 1rem;
-	text-align: center;
-	z-index: 1;
-}
-		</style>
-
-	</head>
-	<body>
-		<canvas id="canvas">
-			Your browser does not support the canvas tag.
-		</canvas>
-
-		<noscript>
-			Your browser does not support JavaScript.
-		</noscript>
-
-		<div id="status">
-			<img id="status-splash" class="show-image--true fullsize--true use-filter--true" src="index.png" alt="">
-			<progress id="status-progress"></progress>
-			<div id="status-notice"></div>
-		</div>
-
-		<script src="index.js"></script>
-		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":191488,"index.wasm":37700666},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
-const GODOT_THREADS_ENABLED = false;
-const engine = new Engine(GODOT_CONFIG);
-
-(function () {
-	const statusOverlay = document.getElementById('status');
-	const statusProgress = document.getElementById('status-progress');
-	const statusNotice = document.getElementById('status-notice');
-
-	let initializing = true;
-	let statusMode = '';
-
-	function setStatusMode(mode) {
-		if (statusMode === mode || !initializing) {
-			return;
-		}
-		if (mode === 'hidden') {
-			statusOverlay.remove();
-			initializing = false;
-			return;
-		}
-		statusOverlay.style.visibility = 'visible';
-		statusProgress.style.display = mode === 'progress' ? 'block' : 'none';
-		statusNotice.style.display = mode === 'notice' ? 'block' : 'none';
-		statusMode = mode;
-	}
-
-	function setStatusNotice(text) {
-		while (statusNotice.lastChild) {
-			statusNotice.removeChild(statusNotice.lastChild);
-		}
-		const lines = text.split('\n');
-		lines.forEach((line) => {
-			statusNotice.appendChild(document.createTextNode(line));
-			statusNotice.appendChild(document.createElement('br'));
-		});
-	}
-
-	function displayFailureNotice(err) {
-		console.error(err);
-		if (err instanceof Error) {
-			setStatusNotice(err.message);
-		} else if (typeof err === 'string') {
-			setStatusNotice(err);
-		} else {
-			setStatusNotice('An unknown error occurred.');
-		}
-		setStatusMode('notice');
-		initializing = false;
-	}
-
-	const missing = Engine.getMissingFeatures({
-		threads: GODOT_THREADS_ENABLED,
-	});
-
-	if (missing.length !== 0) {
-		if (GODOT_CONFIG['serviceWorker'] && GODOT_CONFIG['ensureCrossOriginIsolationHeaders'] && 'serviceWorker' in navigator) {
-			let serviceWorkerRegistrationPromise;
-			try {
-				serviceWorkerRegistrationPromise = navigator.serviceWorker.getRegistration();
-			} catch (err) {
-				serviceWorkerRegistrationPromise = Promise.reject(new Error('Service worker registration failed.'));
-			}
-			// There's a chance that installing the service worker would fix the issue
-			Promise.race([
-				serviceWorkerRegistrationPromise.then((registration) => {
-					if (registration != null) {
-						return Promise.reject(new Error('Service worker already exists.'));
-					}
-					return registration;
-				}).then(() => engine.installServiceWorker()),
-				// For some reason, `getRegistration()` can stall
-				new Promise((resolve) => {
-					setTimeout(() => resolve(), 2000);
-				}),
-			]).then(() => {
-				// Reload if there was no error.
-				window.location.reload();
-			}).catch((err) => {
-				console.error('Error while registering service worker:', err);
-			});
-		} else {
-			// Display the message as usual
-			const missingMsg = 'Error\nThe following features required to run Godot projects on the Web are missing:\n';
-			displayFailureNotice(missingMsg + missing.join('\n'));
-		}
-	} else {
-		setStatusMode('progress');
-		engine.startGame({
-			'onProgress': function (current, total) {
-				if (current > 0 && total > 0) {
-					statusProgress.value = current;
-					statusProgress.max = total;
-				} else {
-					statusProgress.removeAttribute('value');
-					statusProgress.removeAttribute('max');
-				}
-			},
-		}).then(() => {
-			setStatusMode('hidden');
-		}, displayFailureNotice);
-	}
-}());
-		</script>
-	<script>
-// Browser shell only: keep focused movement keys from scrolling the page.
+</head>
+<body>
+<canvas id="canvas" tabindex="0" aria-label="INNATE exploration game"></canvas>
+<div id="safe-area" aria-hidden="true"></div>
+<div id="status" role="status" aria-label="Loading INNATE">
+  <div class="loading">
+    <div class="character" aria-hidden="true"></div>
+    <h1>INNATE</h1>
+    <progress id="progress" aria-label="Download progress"></progress>
+    <p id="notice" hidden></p>
+    <button id="retry" hidden onclick="location.reload()">Try again</button>
+  </div>
+  <div class="credit"><a href="https://cupnooble.itch.io/sprout-lands-asset-pack" target="_blank" rel="noopener">Sprout Lands — Assets by Cup Nooble</a></div>
+</div>
+<noscript>Enable JavaScript to play INNATE.</noscript>
+<script>
+'use strict';
 const canvas = document.getElementById('canvas');
-canvas.addEventListener('keydown', (event) => {
- if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD'].includes(event.code)) event.preventDefault();
+// Bound fill-rate independently of CSS screen size and device pixel ratio.
+// The 16px source artwork stays nearest-filtered; the page still fills the screen.
+const MAX_RENDER_EDGE = 720;
+let renderScale = 1;
+function resizeCanvas() {
+  renderScale = Math.min(1, MAX_RENDER_EDGE / Math.max(innerWidth, innerHeight));
+  canvas.width = Math.max(1, Math.round(innerWidth * renderScale));
+  canvas.height = Math.max(1, Math.round(innerHeight * renderScale));
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+window.innateSafeArea = () => {
+  const style = getComputedStyle(document.getElementById('safe-area'));
+  return [(parseFloat(style.paddingLeft) || 0) * renderScale, (parseFloat(style.paddingBottom) || 0) * renderScale];
+};
+window.innateReady = () => {
+  document.getElementById('status')?.remove();
+  performance.mark('innate-ready');
+  canvas.focus({preventScroll: true});
+};
+canvas.addEventListener('keydown', event => {
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(event.code)) event.preventDefault();
 });
-canvas.addEventListener('pointerdown', () => canvas.focus());
+canvas.addEventListener('pointerdown', () => canvas.focus({preventScroll: true}));
+function showFailure(error) {
+  console.error(error);
+  const notice = document.getElementById('notice');
+  if (!notice) return;
+  document.getElementById('progress').hidden = true;
+  notice.textContent = 'The world could not load. Check your connection and try again. A browser with WebGL 2 is required.';
+  notice.hidden = false;
+  document.getElementById('retry').hidden = false;
+}
+</script>
+<script src="index.js" onerror="showFailure('Game runtime download failed')"></script>
+<script>
+if (typeof Engine !== 'undefined') {
+  const config = {"args":[],"canvasResizePolicy":0,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.wasm":37700666,"game-b5b7d3a070f2af0c.pck":191264},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"mainPack":"game-b5b7d3a070f2af0c.pck"};
+  const missing = Engine.getMissingFeatures({threads: false});
+  if (missing.length) {
+    showFailure(missing.join(', '));
+  } else {
+    const engine = new Engine(config);
+    engine.startGame({onProgress(current, total) {
+      const progress = document.getElementById('progress');
+      if (progress && total > 0) { progress.max = total; progress.value = current; }
+    }}).catch(showFailure);
+  }
+}
 </script>
 </body>
 </html>
