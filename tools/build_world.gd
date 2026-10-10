@@ -41,6 +41,17 @@ func rectangle(parent: Node, size: Vector2, offset: Vector2 = Vector2.ZERO) -> v
 	shape.size = size
 	add_shape(parent, shape, offset)
 
+func paint_path(points: Array) -> void:
+	for i in range(points.size()-1):
+		var start := Vector2(points[i][0],points[i][1])
+		var end := Vector2(points[i+1][0],points[i+1][1])
+		var steps := maxi(1, int(start.distance_to(end)*3))
+		for step in range(steps+1):
+			var p := start.lerp(end, float(step)/steps)
+			for dy in range(-1,2):
+				for dx in range(-1,2):
+					route[Vector2i(roundi(p.x)+dx,roundi(p.y)+dy)] = true
+
 func object_at(node_name: String, cell: Vector2, region: Rect2, solid_size := Vector2.ZERO) -> Node2D:
 	var object := Node2D.new()
 	object.position = cell * 16.0 + Vector2(8, 8)
@@ -82,30 +93,27 @@ func build() -> void:
 			for x in range(-1,2):
 				shore_water.set_cell(cell+Vector2i(x,y), 2, Vector2i(0,0))
 	var land: Array[Vector2i] = []
-	for y in range(48):
-		for x in range(64):
+	var world_width: int = layout.size[0]
+	var world_height: int = layout.size[1]
+	for y in range(world_height):
+		for x in range(world_width):
 			var cell := Vector2i(x,y)
 			if not pond.has(cell): land.append(cell)
 	ground.set_cells_terrain_connect(land, 0, 0)
-	var points: Array = layout.path
-	for i in range(points.size()-1):
-		var start := Vector2(points[i][0],points[i][1])
-		var end := Vector2(points[i+1][0],points[i+1][1])
-		for step in range(int(start.distance_to(end)*3)+1):
-			var p := start.lerp(end, float(step)/maxf(1.0,int(start.distance_to(end)*3)))
-			for dy in range(-1,2):
-				for dx in range(-1,2):
-					route[Vector2i(roundi(p.x)+dx,roundi(p.y)+dy)] = true
+	paint_path(layout.path)
+	for branch in layout.path_branches:
+		paint_path(branch)
 	# An apron joins the cottage door to the main path.
-	for y in range(28,33):
-		for x in range(13,19): route[Vector2i(x,y)] = true
+	var cottage: Array = layout.cottage
+	for y in range(cottage[1]+1,cottage[1]+6):
+		for x in range(cottage[0]-2,cottage[0]+4): route[Vector2i(x,y)] = true
 	var path_cells: Array[Vector2i] = []
 	for cell in route:
 		if not pond.has(cell): path_cells.append(cell)
 	paths.set_cells_terrain_connect(path_cells, 0, 1)
 	# Ground variation follows fixed meadow patches rather than random objects.
-	for y in range(2,46):
-		for x in range(2,62):
+	for y in range(2,world_height-2):
+		for x in range(2,world_width-2):
 			var cell := Vector2i(x,y)
 			if pond.has(cell) or route.has(cell): continue
 			var hash_value := absi(x*73856093 ^ y*19349663)
@@ -131,12 +139,12 @@ func build() -> void:
 		var p: Array = layout.trees[i]
 		tree(Vector2(p[0],p[1]),p[2],"Tree_%02d" % i)
 	# Curated boundary belts: staggered spacing with clear gaps inside the world.
-	for x in range(1,64,2):
+	for x in range(1,world_width-1,2):
 		tree(Vector2(x,1+(x%3)),x%3,"NorthTree_%02d"%x)
-		tree(Vector2(x,46-(x%2)),(x+1)%3,"SouthTree_%02d"%x)
-	for y in range(5,45,3):
+		tree(Vector2(x,world_height-2-(x%2)),(x+1)%3,"SouthTree_%02d"%x)
+	for y in range(5,world_height-3,3):
 		tree(Vector2(1+(y%2),y),y%3,"WestTree_%02d"%y)
-		tree(Vector2(61+(y%2),y),(y+1)%3,"EastTree_%02d"%y)
+		tree(Vector2(world_width-3+(y%2),y),(y+1)%3,"EastTree_%02d"%y)
 	for i in range(layout.bushes.size()):
 		var p: Array = layout.bushes[i]
 		object_at("Bush_%02d"%i,Vector2(p[0],p[1]),Rect2(0 if i%3==0 else 16,48,16,16))
@@ -163,7 +171,8 @@ func build() -> void:
 	build_fence()
 	var boundaries := Node2D.new()
 	own(boundaries,world,"WorldBoundaries")
-	for data in [[Vector2(1024,16),Vector2(512,-8)],[Vector2(1024,16),Vector2(512,776)],[Vector2(16,768),Vector2(-8,384)],[Vector2(16,768),Vector2(1032,384)]]:
+	var world_pixels := Vector2(world_width,world_height)*16.0
+	for data in [[Vector2(world_pixels.x,16),Vector2(world_pixels.x/2,-8)],[Vector2(world_pixels.x,16),Vector2(world_pixels.x/2,world_pixels.y+8)],[Vector2(16,world_pixels.y),Vector2(-8,world_pixels.y/2)],[Vector2(16,world_pixels.y),Vector2(world_pixels.x+8,world_pixels.y/2)]]:
 		var boundary := Node2D.new()
 		own(boundary,boundaries,"Boundary%d"%boundaries.get_child_count())
 		rectangle(boundary,data[0],data[1])
@@ -175,12 +184,13 @@ func build() -> void:
 	var result := scene.pack(world)
 	assert(result==OK)
 	assert(ResourceSaver.save(scene,"res://scenes/world.tscn")==OK)
-	print("Saved editable 64x48 world; ",nature.get_child_count()," sorted objects.")
+	print("Saved editable ",world_width,"x",world_height," world; ",nature.get_child_count()," sorted objects.")
 	quit()
 
 func build_cottage() -> void:
 	var cottage := Node2D.new()
-	cottage.position = Vector2(15*16+8,27*16+8)
+	var cottage_cell: Array = layout.cottage
+	cottage.position = Vector2(cottage_cell[0]*16+8,cottage_cell[1]*16+8)
 	own(cottage,nature,"Cottage")
 	var walls := layer("Walls",cottage)
 	for x in range(-2,3):
@@ -197,15 +207,18 @@ func build_cottage() -> void:
 			roof.set_cell(Vector2i(x,y),5,Vector2i(4 if x==-2 else (6 if x==2 else 5),0 if y==-5 else (1 if y==-4 else 4)))
 	rectangle(cottage,Vector2(76,42),Vector2(8,-9))
 	var step := layer("Doorstep")
-	step.set_cell(Vector2i(15,28),5,Vector2i(0,4))
+	step.set_cell(Vector2i(cottage_cell[0],cottage_cell[1]+1),5,Vector2i(0,4))
 
 func build_fence() -> void:
 	# Garden has an open north entrance and generous walking space around it.
-	for x in range(13,24):
-		fence_piece(Vector2i(x,40),Vector2i(1 if x==13 else (3 if x==23 else 2),3))
-	for y in range(35,40):
-		fence_piece(Vector2i(13,y),Vector2i(0,1))
-		fence_piece(Vector2i(23,y),Vector2i(0,1))
+	var garden: Array = layout.garden
+	var west: int = garden[0]-1
+	var east: int = garden[2]+1
+	for x in range(west,east+1):
+		fence_piece(Vector2i(x,garden[3]+1),Vector2i(1 if x==west else (3 if x==east else 2),3))
+	for y in range(garden[1],garden[3]+1):
+		fence_piece(Vector2i(west,y),Vector2i(0,1))
+		fence_piece(Vector2i(east,y),Vector2i(0,1))
 
 func fence_piece(cell: Vector2i, atlas: Vector2i) -> void:
 	var post := Node2D.new()

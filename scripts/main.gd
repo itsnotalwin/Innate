@@ -2,7 +2,7 @@ extends Node2D
 ## Adapt the native canvas to portrait phones and wider displays without bars.
 const PORTRAIT_SIZE := Vector2i(216, 384)
 const LANDSCAPE_SIZE := Vector2i(384, 216)
-const WORLD_SIZE := Vector2(1024, 768)
+const WORLD_SIZE := Vector2(1536, 1152)
 var _web_resize_callback: JavaScriptObject
 var _resize_pending := false
 

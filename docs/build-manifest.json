@@ -1,6 +1,6 @@
 {
   "godot": "4.6.3.stable.official.7d41c59c4",
-  "main_pack": "game-b5b7d3a070f2af0c.pck",
+  "main_pack": "game-506229021cd161a5.pck",
   "sources": {
     "assets/sprout_lands/LICENSE.txt": "f41c94ec4e417de51cf25cb7b01f44c52c8c16ee4cb223db2de37f3dd0316dff",
     "assets/sprout_lands/character.png": "f45a7c06bd6df451832b4ab793c0a204e2832335037636decc6966bbf9b69b76",
@@ -24,9 +24,9 @@
     "resources/tilesets/sprout_lands.tres": "0384c43a32085ee32386385d16aab207124ef10339ccb0434fb84246524736a1",
     "scenes/main.tscn": "8b49c1a76219f7ced8e6c782f46bc8faef36107d424a5f1b28f095234dd6e277",
     "scenes/mobile_controls.tscn": "d7c62465e45cff5f821216dbe59058553e43f652f16f31a05c4cdeb9568ec8b5",
-    "scenes/player.tscn": "97b3f7a0c90ed1001532330b5e9571c5f25cfc586a9d8877c8286422d487858a",
-    "scenes/world.tscn": "3d62382b917d51c1e767b37cc7587a144788f55ad64f15d81407145f49093af1",
-    "scripts/main.gd": "1f795ec20a0e4c380c871b603be633d10150fbb2dde77ac15364d0ebafef124c",
+    "scenes/player.tscn": "dfa8af16934039974a16d1bba104d17288cb05708820e53ad6d54975b4c2fe67",
+    "scenes/world.tscn": "ba513a195bf4a26b9b076263a01da503dbb2dea15c6a1a4a4748b357f65c40b6",
+    "scripts/main.gd": "bb306067bb1f0f9345cf2120867e0fe4de10f0bfda1b6a5d8627bf29e73cda35",
     "scripts/main.gd.uid": "356d594d69a0e0fe96e188e19e56bc4d3987227a63e2b328132a0f1209775512",
     "scripts/mobile_controls.gd": "40ef3fbe8cb6b41fd2af3e47bf4954335bf89c98fa6ce624df900e40c42b3816",
     "scripts/mobile_controls.gd.uid": "f3b25e3efcf75db5e16578d25c6dbccccc77f42d0f466c4d8ae640c740e2cb70",
@@ -51,18 +51,18 @@
       "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
       "bytes": 2973
     },
-    "game-b5b7d3a070f2af0c.pck": {
-      "sha256": "b5b7d3a070f2af0c7b7fb3bf2983a659e0b18746b6c400f1190b8e242fc11a44",
-      "bytes": 191264
+    "game-506229021cd161a5.pck": {
+      "sha256": "506229021cd161a538ccb10cc858f9b340def5b7e6d3674a9d096e02830370e8",
+      "bytes": 283216
     },
     "loader-character.png": {
       "sha256": "f45a7c06bd6df451832b4ab793c0a204e2832335037636decc6966bbf9b69b76",
       "bytes": 2091
     },
     "index.html": {
-      "sha256": "43088525e87d3d890564ba55946f67c66ca5eb1ca911a5c9fe17b897335e4f8a",
+      "sha256": "8909547835c44093503fa9ef047bff4d0120963fa849f6d8b9ac4552b5969f32",
       "bytes": 5263
     }
   },
-  "root_html_sha256": "0cba73d19fa900dcfedb6792cdc8cc99894bd3cb365a0969c036d86bc2ae1c7f"
+  "root_html_sha256": "fa6c1e7423e53458b9a49533122b42eefda7a830b1e73e2227dd4b9865dfa65e"
 }
