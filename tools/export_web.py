@@ -65,12 +65,21 @@ def main():
     manifest_path = PAGES / 'build-manifest.json'
     if manifest_path.exists():
         previous = json.loads(manifest_path.read_text())
+    # Also retain the pack referenced by the committed Pages build. Repeated local
+    # exports can otherwise replace the manifest's previous pack before deployment.
+    deployed_pack = None
+    try:
+        deployed_manifest = subprocess.check_output(
+            ['git', 'show', 'HEAD:docs/build-manifest.json'], cwd=ROOT, text=True)
+        deployed_pack = json.loads(deployed_manifest).get('main_pack')
+    except (subprocess.CalledProcessError, json.JSONDecodeError):
+        pass
     files = (*RUNTIME, pack_name, 'loader-character.png', 'index.html')
     for name in files:
         shutil.copy2(BUILD / name, PAGES / name)
     # Retain the previous pack so a briefly cached HTML page still starts correctly.
     for old in PAGES.glob('game-*.pck'):
-        if old.name not in (pack_name, previous.get('main_pack')):
+        if old.name not in (pack_name, previous.get('main_pack'), deployed_pack):
             old.unlink()
     (PAGES / '.nojekyll').touch()
     (ROOT / '.nojekyll').touch()

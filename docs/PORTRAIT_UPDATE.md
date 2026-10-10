@@ -2,20 +2,20 @@
 
 **Live and verified:** https://itsnotalwin.github.io/Innate/. GitHub Pages deployment `37948711072` succeeded for `13be4d6`. Public Chromium verification at 390×844 confirmed a 333×720 render buffer, touch and keyboard movement, no console errors, and no failed resources. See `tests/evidence/live-pages-results.json` and `live-pages.png`. This is browser emulation, not a physical-phone test.
 
-INNATE now fills a portrait phone screen, has a custom loading screen, and keeps gameplay free of text overlays. The existing map, walking speed, and collision footprints are unchanged.
+INNATE fills a portrait phone screen and has a custom loading screen. The map was later expanded to 96×72 tiles, and a compact top-right countdown to local midnight on May 26, 2027 was added. Camera zoom and walking speed are unchanged.
 
 ## Changes
 
 - Default logical view: 216×384 portrait, expanded to fit the available aspect ratio. Desktop/landscape uses a 384×216 basis. Extremely wide layouts stay within map bounds.
-- Gameplay contains only the native touch joystick on touch devices. Title, dedication, credit overlay, and rotation message were removed. Required Cup Nooble attribution is on the custom loading screen and in the documentation.
+- Gameplay contains the native touch joystick on touch devices and a compact top-right date countdown. Title, dedication, credit overlay, and rotation message were removed. Required Cup Nooble attribution is on the custom loading screen and in the documentation.
 - The Godot logo splash is disabled. The INNATE loader uses the existing character art, a real download progress bar, and a retry action for a failed load. It clears after the first rendered game frame.
 - Camera follow runs on physics ticks with physics interpolation enabled. Whole-game-pixel snapping is disabled, and canvas-items rendering retains nearest filtering for the original artwork. Native tests verify small camera steps and fractional camera positions.
-- A 720px maximum render edge limits GPU fill work independently of screen pixel density. CSS still fills the screen. The effective render size is 333×720 on a 390×844 phone, so there are no portrait letterbox bars. Safe-area padding protects the joystick from phone home indicators.
+- A 720px maximum render edge limits GPU fill work independently of screen pixel density. CSS still fills the screen. The effective render size is 333×720 on a 390×844 phone, so there are no portrait letterbox bars. Safe-area padding protects the joystick and countdown from phone insets.
 - Resize/focus handling releases touch input. Resize work is coalesced, and layout sizing is bounded to the map.
 
 ## Verification
 
-Final checks: **37/37 native integration checks** and **18/18 browser checks**. These cover the existing movement, animation, obstacle and boundary behavior plus portrait layout, ultrawide bounds, camera steps, touch cancellation, held-touch resizing, high-density render limits, custom loading, and download-error retry behavior.
+Final checks: **41/41 native integration checks** and **18/18 browser checks**. These cover movement, animation, obstacles and expanded map bounds; countdown content and layout; portrait layout, ultrawide bounds, camera steps, touch cancellation, held-touch resizing, high-density render limits, custom loading, and download-error retry behavior.
 
 Screenshots in `tests/evidence/` are captured from the actual updated game. `mobile-portrait.png` shows the full portrait layout; `loading-screen.png` shows the replacement loader. No physical phone, Safari, or Windows execution has been tested in this cloud environment.
 

@@ -2,7 +2,7 @@
 """Test actual Godot Web export over HTTP in desktop and touch-emulated Chromium."""
 import asyncio,json,os
 from pathlib import Path
-from PIL import Image, ImageChops
+from PIL import Image, ImageChops, ImageDraw
 from playwright.async_api import async_playwright
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'tests/evidence'
@@ -12,8 +12,13 @@ async def main():
  def check(ok,label):
   checks.append({'check':label,'passed':bool(ok)})
   if not ok:failures.append(label)
- def changed(a,b):
-  return ImageChops.difference(Image.open(a).convert('RGB'),Image.open(b).convert('RGB')).getbbox() is not None
+ def changed(a,b,ignore_countdown=False):
+  first=Image.open(a).convert('RGB');second=Image.open(b).convert('RGB')
+  if ignore_countdown:
+   width,height=first.size
+   rect=(int(width*.36),0,width-1,int(height*.30))
+   ImageDraw.Draw(first).rectangle(rect,fill=(0,0,0));ImageDraw.Draw(second).rectangle(rect,fill=(0,0,0))
+  return ImageChops.difference(first,second).getbbox() is not None
  async with async_playwright() as p:
   browser=await p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox','--enable-unsafe-swiftshader'])
   async def open_game(context):
@@ -39,7 +44,7 @@ async def main():
   await page.screenshot(path=str(OUT/'desktop-diagonal.png'))
   check(changed(OUT/'desktop-pond.png',OUT/'desktop-diagonal.png'),'simultaneous diagonal keyboard input moves player')
   await page.screenshot(path='/tmp/innate-idle-1.png');await page.wait_for_timeout(350);await page.screenshot(path='/tmp/innate-idle-2.png')
-  check(not changed('/tmp/innate-idle-1.png','/tmp/innate-idle-2.png'),'keyboard release returns to stable idle')
+  check(not changed('/tmp/innate-idle-1.png','/tmp/innate-idle-2.png',ignore_countdown=True),'keyboard release returns to stable idle')
   check(await page.evaluate('scrollX === 0 && scrollY === 0'),'movement keys do not scroll page')
   mobile=await browser.new_context(viewport={'width':390,'height':844},has_touch=True,is_mobile=True,device_scale_factor=1)
   m=await open_game(mobile)
@@ -61,19 +66,19 @@ async def main():
   await m.screenshot(path=str(OUT/'mobile-after-touch.png'))
   check(changed(OUT/'mobile-portrait.png',OUT/'mobile-after-touch.png'),'browser touch drag moves player diagonally')
   await m.screenshot(path='/tmp/innate-touch-idle-1.png');await m.wait_for_timeout(350);await m.screenshot(path='/tmp/innate-touch-idle-2.png')
-  check(not changed('/tmp/innate-touch-idle-1.png','/tmp/innate-touch-idle-2.png'),'browser touch release stops movement')
+  check(not changed('/tmp/innate-touch-idle-1.png','/tmp/innate-touch-idle-2.png',ignore_countdown=True),'browser touch release stops movement')
   await cdp.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':x+38,'y':y,'id':0}]})
   await m.wait_for_timeout(250)
   await cdp.send('Input.dispatchTouchEvent',{'type':'touchCancel','touchPoints':[]})
   await m.wait_for_timeout(1300)
   await m.screenshot(path='/tmp/innate-cancel-1.png');await m.wait_for_timeout(350);await m.screenshot(path='/tmp/innate-cancel-2.png')
-  check(not changed('/tmp/innate-cancel-1.png','/tmp/innate-cancel-2.png'),'browser touch cancellation stops movement')
+  check(not changed('/tmp/innate-cancel-1.png','/tmp/innate-cancel-2.png',ignore_countdown=True),'browser touch cancellation stops movement')
   await cdp.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':x+38,'y':y,'id':0}]})
   await m.set_viewport_size({'width':844,'height':390})
   await m.wait_for_timeout(1300)
   await m.screenshot(path=str(OUT/'mobile-landscape.png'))
   await m.screenshot(path='/tmp/innate-resize-1.png');await m.wait_for_timeout(350);await m.screenshot(path='/tmp/innate-resize-2.png')
-  check(not changed('/tmp/innate-resize-1.png','/tmp/innate-resize-2.png'),'resize during held touch leaves no stuck movement')
+  check(not changed('/tmp/innate-resize-1.png','/tmp/innate-resize-2.png',ignore_countdown=True),'resize during held touch leaves no stuck movement')
   await cdp.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]})
   retina=await browser.new_context(viewport={'width':390,'height':844},has_touch=True,is_mobile=True,device_scale_factor=3)
   retina_page=await open_game(retina)

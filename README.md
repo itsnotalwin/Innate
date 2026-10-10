@@ -4,7 +4,7 @@
 
 A peaceful little pixel-art world for Paige. Milestone 01 contains one outdoor map, one animated character, and keyboard/touch walking.
 
-Open `project.godot` in **Godot 4.6.3 Standard** and press **F6 on main.tscn or F5**. The game fills portrait phone screens. Move with **WASD**, **arrow keys**, or the mobile joystick. Gameplay has no text overlays; the custom INNATE loading screen carries the artwork credit.
+Open `project.godot` in **Godot 4.6.3 Standard** and press **F6 on main.tscn or F5**. The 96×72-tile map is designed for portrait phones. Move with **WASD**, **arrow keys**, or the mobile joystick. A compact top-right countdown shows the time until local midnight on May 26, 2027; camera zoom stays unchanged.
 
 See the [portrait update and measured limits](docs/PORTRAIT_UPDATE.md), [play/build instructions](docs/README.md), [asset credits and licensing](docs/ASSET_CREDITS.md), and [verified build report](docs/BUILD_REPORT.md).
 

@@ -58,7 +58,8 @@ resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 window.innateSafeArea = () => {
   const style = getComputedStyle(document.getElementById('safe-area'));
-  return [(parseFloat(style.paddingLeft) || 0) * renderScale, (parseFloat(style.paddingBottom) || 0) * renderScale];
+  return [(parseFloat(style.paddingLeft) || 0) * renderScale, (parseFloat(style.paddingBottom) || 0) * renderScale,
+    (parseFloat(style.paddingTop) || 0) * renderScale, (parseFloat(style.paddingRight) || 0) * renderScale];
 };
 window.innateReady = () => {
   document.getElementById('status')?.remove();

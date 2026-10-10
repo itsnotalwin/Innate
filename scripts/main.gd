@@ -8,6 +8,7 @@ var _resize_pending := false
 
 @onready var player: CharacterBody2D = $World/Nature/Player
 @onready var joystick: Control = $Interface/MobileControls
+@onready var countdown: Control = $Interface/Countdown
 
 func _ready() -> void:
 	joystick.direction_changed.connect(_set_touch_direction)
@@ -53,6 +54,10 @@ func _apply_layout() -> void:
 		var safe_area: Array = JSON.parse_string(str(JavaScriptBridge.eval("JSON.stringify(window.innateSafeArea())")))
 		joystick.position = Vector2(14 + float(safe_area[0]) / scale_factor,
 			logical_size.y - 78 - float(safe_area[1]) / scale_factor)
+		countdown.position = Vector2(logical_size.x - countdown.size.x - 14 - float(safe_area[3]) / scale_factor,
+			14 + float(safe_area[2]) / scale_factor)
+	else:
+		countdown.position = Vector2(logical_size.x - countdown.size.x - 14, 14)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and is_node_ready():
