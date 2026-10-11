@@ -44,12 +44,12 @@ func verify() -> void:
 	player = main.get_node("World/Nature/Player")
 	check(player is CharacterBody2D,"one native controllable player initialized")
 	check(main.get_node("World/Nature").y_sort_enabled,"player and nature share Y sorting")
-	check(main.get_node("World/Ground").get_used_cells().size()>6500,"native saved expanded 96x72 ground cells loaded")
+	check(main.get_node("World/Ground").get_used_cells().size()>13000,"native saved expanded 128x104 ground cells loaded")
 	var countdown: Control=main.get_node("Interface/Countdown")
 	check(countdown.get_node("CountdownPanel/CountdownMargins/CountdownContent/DateLabel").text=="MAY 26, 2027","countdown shows the requested target date")
 	check(countdown.get_node("CountdownPanel/CountdownMargins/CountdownContent/TimerLabel").text.length()==13 and countdown.target_unix>Time.get_unix_time_from_system(),"countdown is live, nonnegative, and counts to a future instant")
 	check(countdown.position.x>=0 and countdown.position.y==14,"countdown sits inside the top-right screen corner")
-	var start := Vector2(640,656)
+	var start := Vector2(920,888)
 	var right := await move_from(start,["move_right"],30)
 	check(absf(right.x-start.x-36)<1.3,"cardinal speed: 72 px/s for 30 physics ticks")
 	var diagonal := await move_from(start,["move_right","move_down"],30)
@@ -62,25 +62,26 @@ func verify() -> void:
 		release()
 		await frames(2)
 		check(player.get_node("Sprite").animation=="idle_"+data[1],"idle preserves facing "+data[1])
-	var tree := await move_from(Vector2(776,638),["move_down"],60)
-	check(tree.y<657 and tree.y>652,"tree trunk blocks feet, not whole canopy")
-	var pond := await move_from(Vector2(1148,552),["move_left"],60)
-	check(pond.x>1123 and pond.x<1126,"pond prevents walking across open water")
-	var house := await move_from(Vector2(512,672),["move_up"],60)
-	check(house.y>647 and house.y<650,"cottage footprint blocks entry")
-	var fence := await move_from(Vector2(520,872),["move_up"],60)
-	check(fence.y>850 and fence.y<853,"garden fence blocks feet")
-	for data in [[Vector2(768,20),"move_up",0],[Vector2(768,1132),"move_down",1],[Vector2(20,576),"move_left",2],[Vector2(1516,576),"move_right",3]]:
+	var tree_position: Vector2 = main.get_node("World/Nature/OrchardTree_10").position
+	var tree := await move_from(tree_position+Vector2(0,-20),["move_down"],60)
+	check(tree.y<tree_position.y-4 and tree.y>tree_position.y-12,"tree trunk blocks feet, not whole canopy")
+	var pond := await move_from(Vector2(1484,488),["move_left"],60)
+	check(pond.x>1459 and pond.x<1462,"pond prevents walking across open water")
+	var house := await move_from(Vector2(912,848),["move_up"],60)
+	check(house.y>823 and house.y<826,"cottage footprint blocks entry")
+	var fence := await move_from(Vector2(920,1048),["move_up"],60)
+	check(fence.y>1026 and fence.y<1029,"garden fence blocks feet")
+	for data in [[Vector2(1024,20),"move_up",0],[Vector2(1024,1644),"move_down",1],[Vector2(20,832),"move_left",2],[Vector2(2028,832),"move_right",3]]:
 		var end := await move_from(data[0],[data[1]],60)
-		check(end.x>=3.9 and end.x<=1532.1 and end.y>=3.9 and end.y<=1148.1,"world boundary "+str(data[2]))
+		check(end.x>=3.9 and end.x<=2044.1 and end.y>=3.9 and end.y<=1660.1,"world boundary "+str(data[2]))
 	var camera: Camera2D=player.get_node("Camera")
-	for position in [Vector2(768,576),Vector2(768,4),Vector2(768,1148),Vector2(4,576),Vector2(1532,576)]:
+	for position in [Vector2(1024,832),Vector2(1024,4),Vector2(1024,1660),Vector2(4,832),Vector2(2044,832)]:
 		player.position=position
 		camera.reset_smoothing()
 		await frames(2)
 		var center:=camera.get_screen_center_position()
 		var half_view := Vector2(root.content_scale_size) / 2.0
-		check(center.x>=half_view.x-0.1 and center.x<=1536.1-half_view.x and center.y>=half_view.y-0.1 and center.y<=1152.1-half_view.y,"camera stays inside map at "+str(position))
+		check(center.x>=half_view.x-0.1 and center.x<=2048.1-half_view.x and center.y>=half_view.y-0.1 and center.y<=1664.1-half_view.y,"camera stays inside map at "+str(position))
 	var joystick: Control=main.get_node("Interface/MobileControls")
 	joystick.visible=true
 	player.position=start
@@ -120,7 +121,7 @@ func verify() -> void:
 	joystick.release_touch()
 	check(player.touch_direction==Vector2.ZERO,"resize release clears touch")
 	release()
-	player.position = Vector2(640,656)
+	player.position = Vector2(920,888)
 	player.reset_physics_interpolation()
 	await frames(2)
 	camera.reset_smoothing()
@@ -147,7 +148,7 @@ func verify() -> void:
 	root.size = Vector2i(3840,720)
 	main._apply_layout()
 	await frames(2)
-	check(root.content_scale_size.x <= 1536 and root.content_scale_size.y <= 1152,"ultrawide layout never reveals outside the world")
+	check(root.content_scale_size.x <= 2048 and root.content_scale_size.y <= 1664,"ultrawide layout never reveals outside the world")
 	var report={"checks":checks,"failures":failures,"godot":Engine.get_version_info().string}
 	var file:=FileAccess.open("res://tests/evidence/native-results.json",FileAccess.WRITE)
 	file.store_string(JSON.stringify(report,"\t")+"\n")

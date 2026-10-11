@@ -100,6 +100,7 @@ func object_at(node_name: String, cell: Vector2, region: Rect2, solid_size := Ve
 	return object_from(node_name, cell, "nature.png", region, solid_size)
 
 func tree(cell: Vector2, kind: int, node_name: String) -> void:
+	if route.has(Vector2i(cell)): return
 	var asset: Dictionary = TREE_ASSETS[posmod(kind, TREE_ASSETS.size())]
 	object_from(node_name, cell, String(asset["texture"]), asset["region"], Vector2(7, 7))
 
@@ -164,7 +165,7 @@ func build() -> void:
 	# A light footpath circles the flower clearing and rejoins the south trail.
 	paint_path(layout.meadow_trail,0,true)
 	# A narrow footpath links the cottage apron to the garden gate.
-	paint_path(layout.garden_access,0)
+	paint_path(layout.garden_access,0,true)
 	# A footpath follows the west bank into the creekside rest clearing.
 	paint_path(layout.creek_trail,0)
 	# A slim loop makes the pond garden a destination from the main road.
@@ -203,7 +204,7 @@ func build() -> void:
 	paths.set_cells_terrain_connect(garden_cells,0,1)
 	var plants := layer("GardenFlowers")
 	# Two compact crop beds flank the garden's clear center path.
-	for y in [48,50]:
+	for y in [int(garden[1])+1,int(garden[1])+3]:
 		for x in range(garden[0]+1,garden[0]+4):
 			plants.set_cell(Vector2i(x,y),4,Vector2i(3 if (x+y)%2==0 else 4,1))
 		for x in range(garden[0]+5,garden[2]):
@@ -239,6 +240,7 @@ func build() -> void:
 		object_from("Bush_%02d"%i,Vector2(p[0],p[1]),String(asset["texture"]),asset["region"])
 	for i in range(layout.rocks.size()):
 		var p: Array = layout.rocks[i]
+		if route.has(Vector2i(p[0],p[1])): continue
 		if pond_garden_contains(Vector2(p[0],p[1])) or orchard_contains(Vector2(p[0],p[1])): continue
 		object_at("Rock_%02d"%i,Vector2(p[0],p[1]),Rect2(80,64,16,16),Vector2(11,7))
 	for i in range(layout.flower_patches.size()):
@@ -257,9 +259,11 @@ func build() -> void:
 		mushroom(Vector2(p[0],p[1]),p[2],float(p[3]),p[4],"Mushroom_%02d"%i)
 	for i in range(layout.logs.size()):
 		var p: Array = layout.logs[i]
+		if route.has(Vector2i(p[0],p[1])): continue
 		object_at("Log_%02d"%i,Vector2(p[0],p[1]),Rect2(0,64,32,16),Vector2(22,7))
 	for i in range(layout.stumps.size()):
 		var p: Array = layout.stumps[i]
+		if route.has(Vector2i(p[0],p[1])): continue
 		object_at("Stump_%02d"%i,Vector2(p[0],p[1]),Rect2(64,32,16,16),Vector2(9,6))
 	for i in range(layout.creek_reeds.size()):
 		var p: Array = layout.creek_reeds[i]
@@ -307,8 +311,8 @@ func build_orchard_grove() -> void:
 		var entry: Array = layout.orchard_trees[i]
 		object_from("OrchardTree_%02d"%i,Vector2(entry[0],entry[1]),"res://assets/sprout_lands/orchard_trees.png",Rect2(int(entry[2])*32,0,32,32),Vector2(7,7))
 	# The blanket is the quiet focal point under the central shade tree.
-	object_from("PicnicBlanket",Vector2(47.0,14.6),"res://assets/sprout_lands/picnic_grove.png",Rect2(0,0,48,32))
-	object_from("HarvestCrate",Vector2(50.1,14.7),"res://assets/sprout_lands/picnic_grove.png",Rect2(48,0,16,16),Vector2(8,6))
+	object_from("PicnicBlanket",Vector2(67.0,15.6),"res://assets/sprout_lands/picnic_grove.png",Rect2(0,0,48,32))
+	object_from("HarvestCrate",Vector2(70.1,15.7),"res://assets/sprout_lands/picnic_grove.png",Rect2(48,0,16,16),Vector2(8,6))
 	for i in range(layout.orchard_fruit.size()):
 		var entry: Array = layout.orchard_fruit[i]
 		object_from("FallenFruit_%02d"%i,Vector2(entry[0],entry[1]),"res://assets/sprout_lands/picnic_grove.png",Rect2(64+int(entry[2])*16,0,16,16))
@@ -358,8 +362,8 @@ func build_pond_garden_accents() -> void:
 		var entry: Array = layout.pond_dragonflies[i]
 		pond_dragonfly(Vector2(entry[0],entry[1]),int(entry[2]),i)
 	# A natural log and flat stone make the east bank a quiet viewing spot.
-	object_at("PondGardenBench",Vector2(74.0,34.8),Rect2(0,64,32,16),Vector2(22,7))
-	object_at("PondGardenSeat",Vector2(71.0,36.8),Rect2(80,64,16,16),Vector2(11,7))
+	object_at("PondGardenBench",Vector2(95.0,30.8),Rect2(0,64,32,16),Vector2(22,7))
+	object_at("PondGardenSeat",Vector2(92.0,32.8),Rect2(80,64,16,16),Vector2(11,7))
 
 func build_meadow_blooms() -> void:
 	# Low, coordinated flower clumps build a carpet without adding runtime objects.
@@ -397,15 +401,15 @@ func build_meadow_blooms() -> void:
 func build_meadow_accents() -> void:
 	# A few higher blooms break up the low carpets; all use the same 16px palette.
 	var accents := [
-		[Vector2(7.4,55.6),0], [Vector2(9.2,57.5),0],
-		[Vector2(10.5,55.3),1], [Vector2(6.5,57.0),0],
-		[Vector2(16.3,54.8),1], [Vector2(18.5,55.5),1],
-		[Vector2(19.4,58.6),2], [Vector2(21.7,60.6),2],
-		[Vector2(23.8,58.2),2], [Vector2(6.4,62.5),3],
-		[Vector2(8.7,64.4),3], [Vector2(5.8,64.1),3],
-		[Vector2(14.3,64.2),0], [Vector2(17.6,63.8),1],
-		[Vector2(16.3,66.1),0], [Vector2(20.6,65.4),1],
-		[Vector2(22.6,66.0),2], [Vector2(14.0,58.0),1],
+		[Vector2(14.4,82.6),0], [Vector2(16.2,84.5),0],
+		[Vector2(17.5,82.3),1], [Vector2(13.5,84.0),0],
+		[Vector2(23.3,81.8),1], [Vector2(25.5,82.5),1],
+		[Vector2(26.4,85.6),2], [Vector2(28.7,87.6),2],
+		[Vector2(30.8,85.2),2], [Vector2(13.4,89.5),3],
+		[Vector2(15.7,91.4),3], [Vector2(12.8,91.1),3],
+		[Vector2(21.3,91.2),0], [Vector2(24.6,90.8),1],
+		[Vector2(23.3,93.1),0], [Vector2(27.6,92.4),1],
+		[Vector2(29.6,93.0),2], [Vector2(21.0,85.0),1],
 	]
 	for i in range(accents.size()):
 		var entry: Array = accents[i]
@@ -414,7 +418,7 @@ func build_meadow_accents() -> void:
 		var region := Rect2(int(entry[1])*16,48,16,16)
 		var object := object_from("MeadowAccent_%02d"%i,cell,"res://assets/wildflowers/meadow/flowers.png",region)
 		object.get_node("Artwork").texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	object_at("MeadowRestStone",Vector2(14.0,61.8),Rect2(80,64,16,16))
+	object_at("MeadowRestStone",Vector2(21.0,88.8),Rect2(80,64,16,16))
 
 func build_cottage() -> void:
 	var cottage := Node2D.new()
