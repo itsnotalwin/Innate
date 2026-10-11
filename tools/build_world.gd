@@ -103,6 +103,8 @@ func build() -> void:
 	paint_path(layout.path)
 	for branch in layout.path_branches:
 		paint_path(branch)
+	# A light footpath circles the flower clearing and rejoins the south trail.
+	paint_path(layout.meadow_trail,0)
 	# A narrow footpath links the cottage apron to the garden gate.
 	paint_path(layout.garden_access,0)
 	# An apron joins the cottage door to the main path.
@@ -158,11 +160,12 @@ func build() -> void:
 		object_at("Rock_%02d"%i,Vector2(p[0],p[1]),Rect2(80,64,16,16),Vector2(11,7))
 	for i in range(layout.flower_patches.size()):
 		var p: Array = layout.flower_patches[i]
+		var flower_type := clampi(int(p[2]),0,8)
 		var offset_list := [Vector2.ZERO,Vector2(1,0),Vector2(0,1),Vector2(2,1),Vector2(-1,2)]
 		for j in range(offset_list.size()):
 			var cell: Vector2 = Vector2(p[0],p[1])+offset_list[j]
 			if not pond.has(Vector2i(cell)) and not route.has(Vector2i(cell)):
-				object_at("Flower_%02d_%d"%[i,j],cell,Rect2(p[2]*16,48,16,16))
+				object_at("Flower_%02d_%d"%[i,j],cell,Rect2(flower_type*16,48,16,16))
 	for i in range(layout.mushrooms.size()):
 		var p: Array = layout.mushrooms[i]
 		object_at("Mushroom_%02d"%i,Vector2(p[0],p[1]),Rect2((5+i%3)*16,0,16,16))
