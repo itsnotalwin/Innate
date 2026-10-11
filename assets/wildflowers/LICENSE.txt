@@ -1,0 +1,30 @@
+Wildflower assets used in INNATE
+
+Both creators publish the following packs under Creative Commons Zero v1.0
+Universal (CC0-1.0). This applies only to the assets in this directory;
+Sprout Lands artwork retains Cup Nooble's separate license.
+
+BTL games — Pixel art fauna asset pack
+Source: https://btl-games.itch.io/pixel-art-fauna-asset-pack
+Official download: flowers.zip, itch.io upload ID 3216074
+Contains 100 original 16x16 flora sprites, packed unchanged into btl/flowers.png.
+
+karsiori — FREE Pixel Art Flower Pack
+Source: https://karsiori.itch.io/free-pixel-art-flower-pack
+Official download: Pixel Art Flower Pack.zip, itch.io upload ID 9464396
+Contains 13 flower designs with color variants. All loose flower sprites are
+packed unchanged into karsiori/flowers.png; pots and bushes are not included.
+
+Licenses checked on the creators' official pages on 11 October 2026.
+CC0 deed: https://creativecommons.org/publicdomain/zero/1.0/
+CC0 legal text: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+The catalog records the original source PNG hashes, sizes, and atlas positions.
+Atlas packing preserves all source pixels. Some accent sprites are rendered at
+half scale with nearest filtering to fit the existing game's pixel scale.
+Credits are appreciated by the artists and are retained in docs/ASSET_CREDITS.md.
+
+The meadow/ directory contains INNATE's AI-assisted adaptations of the flower
+designs, rendered with a shared palette to fit the game. This is a separate
+edited atlas; it does not replace the original CC0 pack sheets. Its source
+master and offline conversion process are described in meadow/STYLE.md.

@@ -48,8 +48,24 @@ The official landing page also has older, more generally worded no-redistributio
 | plants.png | Objects/Basic Plants.png | 96×32 | Decorative plants |
 | character.png | Characters/Basic Charakter Spritesheet.png | 192×192 | One playable character; 48×48 frames |
 | creek_reeds.png | Original INNATE pixel art | 16×24 | Small creek-edge reeds drawn to match the Basic Pack palette and pixel scale |
+| pond_life.png | Original INNATE pixel art | 64×48 | Three tiny four-frame dragonflies drawn in the existing soft foliage palette |
 
 The eight selected Basic Pack sheets, selected Free Gift foliage sheets, and wood/mushroom item sheet are kept as complete, unmodified source atlases, apart from normalized local filenames. They are available in the editor TileSet palette; trees are also placed as whole sprites so their crowns and trunks stay together. The outlined item sprites remain available in the palette but are not used as environmental mushrooms. The mushroom-color sheet is derived from the Basic Pack atlas by recoloring cap pixels only. The project preserves nearest filtering. Character rows are down, up, right, left. Columns 0–1 are available idle frames, columns 2–3 are walking; this game uses a stationary column-0 idle and both walk frames. It does not use the separate action sheet.
+
+## Wildflower packs
+
+Two free CC0 flower packs were acquired through their official itch.io download flows on 11 October 2026 and retained as source references and editable palette assets:
+
+| Creator and official source | Imported artwork | Use |
+| --- | --- | --- |
+| [BTL games — Pixel art fauna asset pack](https://btl-games.itch.io/pixel-art-fauna-asset-pack) | 100 original 16×16 flora sprites; upload ID 3216074 | Small orange, gold, pink, blue, violet, and white flowers in loose meadow drifts. Fruit trees and other non-flower sprites are available in the palette but are not placed in the meadow. |
+| [karsiori — FREE Pixel Art Flower Pack](https://karsiori.itch.io/free-pixel-art-flower-pack) | 13 flower designs in their available color variants; upload ID 9464396 | Daisy clumps, bell-shaped blooms, orange and yellow flowers, and taller violet accents. Pots and bushes are excluded. |
+
+Both creators list Creative Commons Zero v1.0 Universal on their official pages, allowing use, modification, and redistribution. Their credits and source links are retained in `assets/wildflowers/LICENSE.txt`. The atlas packing script preserves the original pixels; `assets/wildflowers/catalog.json` records original PNG hashes, dimensions, and positions. These assets have their own CC0 terms and do not change the license of Cup Nooble's artwork.
+
+Both original sheets are in the editable native TileSet, using source 17 for the 16px flora and source 18 for the larger flower designs. The meadow now uses a separate 16-sprite adaptation in source 19: rounded daisy, clump, blossom, and bellflower forms in apricot, cream, pink, and blue. AI-assisted image editing simplified the flower shapes; the offline converter uses a shared 17-color palette and native 16px cells. The edited master and conversion workflow are retained in `art/meadow_flowers_master.png`, `tools/prepare_meadow.gd`, and `assets/wildflowers/meadow/STYLE.md`. The original CC0 sheets remain unchanged.
+
+Position and flip alternatives scatter the low flowers within their cells. Larger accents share the same native scale and Y sorting. Flower carpets exclude paths and open water, and a small grassy center remains open. The meadow loop has continuous corners, and the southern tree border is spaced more loosely around this clearing. The cottage's existing garden retains its crop beds.
 
 ## Visual references
 
@@ -66,3 +82,5 @@ Copyright (c) 2024-present Marek Belski. The MIT notice is retained in `docs/MAA
 Godot Engine: Juan Linietsky, Ariel Manzur, and contributors, MIT; https://godotengine.org/license/. Its MIT notice is included in `docs/GODOT_LICENSE.txt`. Runtime uses built-in Godot nodes and its generated Web runtime. The HTML shell derives from the matching Godot Web template. Python, Pillow, Playwright, and Chromium are development/testing tools, not shipped game dependencies.
 
 The portrait update also uses the same Basic Pack character sheet on its loading screen (`docs/loader-character.png`). The required Cup Nooble credit is displayed on that screen and preserved here. Gameplay retains only the requested countdown and mobile touch control; the attribution remains on the loader and in this document.
+
+The pond garden uses the included water-plant sheets for lily pads, flowering lilies, and shoreline reeds. Three original animated dragonflies add subtle motion above the water. A narrow walking loop reaches a log viewpoint on the east bank while leaving the pond collision and main movement routes intact.
