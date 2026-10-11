@@ -109,6 +109,8 @@ func build() -> void:
 	paint_path(layout.garden_access,0)
 	# A footpath follows the west bank into the creekside rest clearing.
 	paint_path(layout.creek_trail,0)
+	# A subtle spur opens a side clearing in the mushroom grove.
+	paint_path(layout.mushroom_trail,0)
 	# An apron joins the cottage door to the main path.
 	var cottage: Array = layout.cottage
 	for y in range(cottage[1]+1,cottage[1]+6):
@@ -171,6 +173,21 @@ func build() -> void:
 	for i in range(layout.mushrooms.size()):
 		var p: Array = layout.mushrooms[i]
 		object_at("Mushroom_%02d"%i,Vector2(p[0],p[1]),Rect2((5+i%3)*16,0,16,16))
+	var grove_texture: Texture2D = load("res://assets/sprout_lands/grove_mushrooms.png")
+	for i in range(layout.grove_mushrooms.size()):
+		var p: Array = layout.grove_mushrooms[i]
+		var scale_factor := float(p[3])
+		var fungus := Node2D.new()
+		fungus.position = Vector2(p[0]*16+8,p[1]*16+8)
+		own(fungus,nature,"GroveMushroom_%02d"%i)
+		var sprite := Sprite2D.new()
+		sprite.texture = grove_texture
+		sprite.region_enabled = true
+		sprite.region_rect = Rect2(int(p[2])*16,0,16,16)
+		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		sprite.scale = Vector2.ONE*scale_factor
+		sprite.position.y = -8.0*(scale_factor-1.0)
+		own(sprite,fungus,"Artwork")
 	for i in range(layout.logs.size()):
 		var p: Array = layout.logs[i]
 		object_at("Log_%02d"%i,Vector2(p[0],p[1]),Rect2(0,64,32,16),Vector2(22,7))
