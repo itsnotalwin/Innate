@@ -169,6 +169,8 @@ func build() -> void:
 	paint_path(layout.creek_trail,0)
 	# A slim loop makes the pond garden a destination from the main road.
 	paint_path(layout.pond_garden_trail,0,true)
+	# A soft loop turns the northern fruit grove into a walkable destination.
+	paint_path(layout.orchard_trail,0,true)
 	# A subtle spur opens a side clearing in the mushroom grove.
 	paint_path(layout.mushroom_trail,0)
 	# An apron joins the cottage door to the main path.
@@ -184,7 +186,7 @@ func build() -> void:
 		for x in range(2,world_width-2):
 			var cell := Vector2i(x,y)
 			if pond.has(cell) or route.has(cell): continue
-			if meadow_contains(Vector2(cell)): continue
+			if meadow_contains(Vector2(cell)) or orchard_contains(Vector2(cell)): continue
 			var hash_value := absi(x*73856093 ^ y*19349663)
 			if hash_value % 13 == 0:
 				details.set_cell(cell,0,Vector2i(hash_value%3,5+(hash_value%2)))
@@ -209,9 +211,10 @@ func build() -> void:
 	nature = Node2D.new()
 	nature.y_sort_enabled = true
 	own(nature,world,"Nature")
+	build_orchard_grove()
 	for i in range(layout.trees.size()):
 		var p: Array = layout.trees[i]
-		if pond_garden_contains(Vector2(p[0],p[1])): continue
+		if pond_garden_contains(Vector2(p[0],p[1])) or orchard_contains(Vector2(p[0],p[1])): continue
 		tree(Vector2(p[0],p[1]),p[2],"Tree_%02d" % i)
 	for i in range(layout.grove_trees.size()):
 		var p: Array = layout.grove_trees[i]
@@ -231,17 +234,18 @@ func build() -> void:
 		tree(east_cell,edge_tree_kind(east_cell),"EastTree_%02d"%y)
 	for i in range(layout.bushes.size()):
 		var p: Array = layout.bushes[i]
-		if pond_garden_contains(Vector2(p[0],p[1])): continue
+		if pond_garden_contains(Vector2(p[0],p[1])) or orchard_contains(Vector2(p[0],p[1])): continue
 		var asset: Dictionary = BUSH_ASSETS[posmod(i*5+p[0]+p[1], BUSH_ASSETS.size())]
 		object_from("Bush_%02d"%i,Vector2(p[0],p[1]),String(asset["texture"]),asset["region"])
 	for i in range(layout.rocks.size()):
 		var p: Array = layout.rocks[i]
-		if pond_garden_contains(Vector2(p[0],p[1])): continue
+		if pond_garden_contains(Vector2(p[0],p[1])) or orchard_contains(Vector2(p[0],p[1])): continue
 		object_at("Rock_%02d"%i,Vector2(p[0],p[1]),Rect2(80,64,16,16),Vector2(11,7))
 	for i in range(layout.flower_patches.size()):
 		var p: Array = layout.flower_patches[i]
 		if meadow_contains(Vector2(p[0],p[1])): continue
 		if pond_garden_contains(Vector2(p[0],p[1])): continue
+		if orchard_contains(Vector2(p[0],p[1])): continue
 		var flower_type := clampi(int(p[2]),0,8)
 		var offset_list := [Vector2.ZERO,Vector2(1,0),Vector2(0,1),Vector2(2,1),Vector2(-1,2)]
 		for j in range(offset_list.size()):
@@ -293,6 +297,25 @@ func meadow_contains(cell: Vector2) -> bool:
 func pond_garden_contains(cell: Vector2) -> bool:
 	var bounds: Array = layout.pond_garden_clear
 	return cell.x >= bounds[0] and cell.x < bounds[2] and cell.y >= bounds[1] and cell.y < bounds[3]
+
+func orchard_contains(cell: Vector2) -> bool:
+	var bounds: Array = layout.orchard_bounds
+	return cell.x >= bounds[0] and cell.x < bounds[2] and cell.y >= bounds[1] and cell.y < bounds[3]
+
+func build_orchard_grove() -> void:
+	for i in range(layout.orchard_trees.size()):
+		var entry: Array = layout.orchard_trees[i]
+		object_from("OrchardTree_%02d"%i,Vector2(entry[0],entry[1]),"res://assets/sprout_lands/orchard_trees.png",Rect2(int(entry[2])*32,0,32,32),Vector2(7,7))
+	# The blanket is the quiet focal point under the central shade tree.
+	object_from("PicnicBlanket",Vector2(47.0,14.6),"res://assets/sprout_lands/picnic_grove.png",Rect2(0,0,48,32))
+	object_from("HarvestCrate",Vector2(50.1,14.7),"res://assets/sprout_lands/picnic_grove.png",Rect2(48,0,16,16),Vector2(8,6))
+	for i in range(layout.orchard_fruit.size()):
+		var entry: Array = layout.orchard_fruit[i]
+		object_from("FallenFruit_%02d"%i,Vector2(entry[0],entry[1]),"res://assets/sprout_lands/picnic_grove.png",Rect2(64+int(entry[2])*16,0,16,16))
+	for i in range(layout.orchard_flowers.size()):
+		var entry: Array = layout.orchard_flowers[i]
+		var object := object_from("OrchardFlower_%02d"%i,Vector2(entry[0],entry[1]),"res://assets/wildflowers/meadow/flowers.png",Rect2(int(entry[2])*16,48,16,16))
+		object.get_node("Artwork").texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 func build_pond_water_garden() -> void:
 	var plants := layer("PondGardenPlants")

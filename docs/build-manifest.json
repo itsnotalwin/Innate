@@ -1,6 +1,6 @@
 {
   "godot": "4.6.3.stable.official.7d41c59c4",
-  "main_pack": "game-5b2df51361681615.pck",
+  "main_pack": "game-1872c0e2aa6ac647.pck",
   "sources": {
     "assets/sprout_lands/FREE_GIFT_LICENSE.txt": "09fc51330037dac5149db63ab9e43acb019e70bbee6d2267b5e577b36ad978df",
     "assets/sprout_lands/LICENSE.txt": "f41c94ec4e417de51cf25cb7b01f44c52c8c16ee4cb223db2de37f3dd0316dff",
@@ -38,6 +38,10 @@
     "assets/sprout_lands/mushroom_variants.png.import": "dc85e5fe540cb42b1ee0a518a8f87fbf52dfd38ea99861abac8d9f565d658ca9",
     "assets/sprout_lands/nature.png": "22938e24b511139f5552795429250fbdbbaeb6f5e849cab91bc83ac0a1f12586",
     "assets/sprout_lands/nature.png.import": "3f0fb01487f9921e498eeea596a26cbe2a053d623c8bb2d02597ffa8590c26b8",
+    "assets/sprout_lands/orchard_trees.png": "41fdb979903dccb692eb3133e95d057ecb5c3bc751cda11eb580b5b146721137",
+    "assets/sprout_lands/orchard_trees.png.import": "04700ac01ced76ee395100149d32d1113ebc0081e4126ece4a3b56412f394b22",
+    "assets/sprout_lands/picnic_grove.png": "4679e49749720572f98d1dd004b25ec1dac13fa468b795c0bcab9f2caffb207e",
+    "assets/sprout_lands/picnic_grove.png.import": "ba5f6a1ad91571a9ff0c5887260951538dc4b367ea3a065e3a1b2a60aa7eceb1",
     "assets/sprout_lands/pine_biome.png": "d4eb3bcde8f927a79421d0d4c246ec40b0f3c772cdb1a7650f3889e71444fca7",
     "assets/sprout_lands/pine_biome.png.import": "991ebb317f0c126f780279f75da3aefdd718614d6813f1437be85ee957b3332d",
     "assets/sprout_lands/plants.png": "8d4d01cddfe409afc92800c8c6ce7bf8b10b3ed82e3ebe76f841931f773806fc",
@@ -62,7 +66,7 @@
     "scenes/main.tscn": "cc7bb9c8e2600b6090f081236b9fd84e0b3d4044bb186a24a93f4542f59bb835",
     "scenes/mobile_controls.tscn": "449b82e95c358bb276dbee9e44a4898622315776a37b4b438c0573bc03fab24f",
     "scenes/player.tscn": "dfa8af16934039974a16d1bba104d17288cb05708820e53ad6d54975b4c2fe67",
-    "scenes/world.tscn": "38bdaa77d6032f53bca7a22fd26ea05008dee00a01796717e087d3e5553dfeb3",
+    "scenes/world.tscn": "98972997132300975ecd1bdb0b36b0a30500c26eb76f8bfa3cba84d9b359e9ff",
     "scripts/countdown.gd": "8f54842e2a2a1a1582d65f1c85d3d9ce9289cbd544f168870304110bd23adbef",
     "scripts/countdown.gd.uid": "0c0f2a032ff44ec0c68ec9374fdd94f13b2516e7d6d3cd3950f36384c2d586f8",
     "scripts/main.gd": "78bf94fd5fa91e7333d384569555598c1e96973eb47005ce8b170266bf74b388",
@@ -90,18 +94,18 @@
       "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
       "bytes": 2973
     },
-    "game-5b2df51361681615.pck": {
-      "sha256": "5b2df513616816159e1d10c864c4b3b855e6bb689263d70bb825b15e2747d00e",
-      "bytes": 504904
+    "game-1872c0e2aa6ac647.pck": {
+      "sha256": "1872c0e2aa6ac647e5fc2338cb482ba72352324d0dbbcf60a00bfc6431fdd0d3",
+      "bytes": 507680
     },
     "loader-character.png": {
       "sha256": "f45a7c06bd6df451832b4ab793c0a204e2832335037636decc6966bbf9b69b76",
       "bytes": 2091
     },
     "index.html": {
-      "sha256": "75a450a7b17cc8ae501964c09be5dd223a4b85934b50d77d9b11ff1034f89481",
+      "sha256": "71829e576a5d82dada0484001ee5167528f613441791ee0da4917c6392691967",
       "bytes": 5371
     }
   },
-  "root_html_sha256": "1b33e386daf8a67b1b9275e1ffc25b44157eb56984f9a3ef4058beb4dd151dc9"
+  "root_html_sha256": "659edce3829bc962fe931cf7c27e504600e3769e9c901a258f4692a927f6aeb8"
 }
