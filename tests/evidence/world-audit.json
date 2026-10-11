@@ -4,17 +4,17 @@
 		"Meadow": 2,
 		"Mushroom": 6,
 		"Orchard": 4,
-		"Pond": 3
+		"Pond": 4
 	},
 	"approach_plant_tiles": {
-		"Creek": 24,
+		"Creek": 17,
 		"Meadow": 26,
 		"Mushroom": 1,
 		"Orchard": 30,
-		"Pond": 9
+		"Pond": 13
 	},
 	"connected_path_cells": 1176,
 	"failures": [],
-	"nature_objects": 509,
+	"nature_objects": 510,
 	"path_cells": 1176
 }

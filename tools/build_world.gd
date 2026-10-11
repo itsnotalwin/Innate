@@ -437,7 +437,10 @@ func build_destination_approach(design: Dictionary) -> void:
 					tree_positions.append(Vector2(cell))
 					continue
 			var destination_density := 0.46 if String(design.name) == "Meadow" else 0.34
-			if rng.randf() > lerpf(0.04,destination_density,richness): continue
+			# Gentle roadside clusters begin early, with quiet gaps between them.
+			var pocket := sin(float(x) * 0.47 + float(y) * 0.31) > -0.15
+			var early_density := 0.22 if pocket else 0.07
+			if rng.randf() > lerpf(early_density,destination_density,richness): continue
 			if rng.randf() > richness:
 				plants.set_cell(cell,0,Vector2i(rng.randi_range(0,2),5))
 			elif String(design.name) == "Mushroom":
