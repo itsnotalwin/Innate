@@ -7,10 +7,10 @@ INNATE fills a portrait phone screen and has a custom loading screen. The map wa
 ## Changes
 
 - Default logical view: 216×384 portrait, expanded to fit the available aspect ratio. Desktop/landscape uses a 384×216 basis. Extremely wide layouts stay within map bounds.
-- Gameplay contains the native touch joystick on touch devices and a compact top-right date countdown. Title, dedication, credit overlay, and rotation message were removed. Required Cup Nooble attribution is on the custom loading screen and in the documentation.
+- Gameplay uses an invisible full-screen drag control on touch devices and a compact top-right date countdown. Title, dedication, credit overlay, and rotation message were removed. Required Cup Nooble attribution is on the custom loading screen and in the documentation.
 - The Godot logo splash is disabled. The INNATE loader uses the existing character art, a real download progress bar, and a retry action for a failed load. It clears after the first rendered game frame.
 - Camera follow runs on physics ticks with physics interpolation enabled. Whole-game-pixel snapping is disabled, and canvas-items rendering retains nearest filtering for the original artwork. Native tests verify small camera steps and fractional camera positions.
-- A 720px maximum render edge limits GPU fill work independently of screen pixel density. CSS still fills the screen. The effective render size is 333×720 on a 390×844 phone, so there are no portrait letterbox bars. Safe-area padding protects the joystick and countdown from phone insets.
+- A 720px maximum render edge limits GPU fill work independently of screen pixel density. CSS still fills the screen. The effective render size is 333×720 on a 390×844 phone, so there are no portrait letterbox bars. Safe-area padding protects the countdown from phone insets; touch input works anywhere on the screen.
 - Resize/focus handling releases touch input. Resize work is coalesced, and layout sizing is bounded to the map.
 
 ## Verification
@@ -46,4 +46,4 @@ The repository's existing GitHub Pages root-folder configuration is retained. Th
 
 ## Next validation
 
-Open the live game on the intended phone and check camera motion, perceived sharpness, joystick comfort, startup time, and switching away/back to the browser. Report the phone model and browser with any remaining issue so profiling can target that device.
+Open the live game on the intended phone and check camera motion, perceived sharpness, drag-control comfort, startup time, and switching away/back to the browser. Report the phone model and browser with any remaining issue so profiling can target that device.

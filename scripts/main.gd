@@ -49,11 +49,9 @@ func _apply_layout() -> void:
 		window.content_scale_size = logical_size
 	var camera: Camera2D = player.get_node("Camera")
 	camera.reset_smoothing()
-	# CSS safe-area values keep the joystick above phone home indicators/notches.
+	# CSS safe-area values keep the countdown clear of phone notches.
 	if OS.has_feature("web"):
 		var safe_area: Array = JSON.parse_string(str(JavaScriptBridge.eval("JSON.stringify(window.innateSafeArea())")))
-		joystick.position = Vector2(14 + float(safe_area[0]) / scale_factor,
-			logical_size.y - 78 - float(safe_area[1]) / scale_factor)
 		countdown.position = Vector2(logical_size.x - countdown.size.x - 14 - float(safe_area[3]) / scale_factor,
 			14 + float(safe_area[2]) / scale_factor)
 	else:

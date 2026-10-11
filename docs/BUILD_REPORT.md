@@ -36,7 +36,7 @@ Maaack integration inspection covered its documentation, base atlas/terrain reso
 - Circle collider of radius 4 near the feet. Trees have 7×7 trunk footprints, while their canopies overlap the player by Y sorting. Large rocks, stumps, logs, cottage, garden fences, water, and perimeter boundaries are solid. Small plants and flowers are walkable.
 - Camera2D follows with smoothing, map limits, nearest filtering, and pixel transform snapping. Camera limits were verified at the center and all four edges.
 - Native Godot Input Map supports physical WASD and arrow keys. Browser shell prevents focused gameplay keys from scrolling.
-- Native Control joystick tracks one finger, supports diagonals, shares the player controller, and releases outside its bounds, on cancellation, loss of focus, and resizing. Hidden on non-touch desktop.
+- An invisible full-screen touch surface tracks one finger from any starting point, supports diagonal drags, shares the player controller, and releases on touch end, cancellation, focus loss, and resizing. Disabled on non-touch desktop.
 - Fixed widescreen presentation avoids aspect distortion. Portrait has letterboxing and a native rotation label. Web resize events are bridged only for clearing touch and updating that label; all gameplay remains Godot-native.
 
 ## Web export
@@ -51,7 +51,7 @@ Served with Python HTTP on `127.0.0.1:8000`, tested with headless Chromium and s
 
 Final native editor import and Web export completed with **no script/resource errors**. The saved main scene also loads headlessly. Early sandboxed editor attempts produced editor TCP-listener errors; the final checks used the supported local-network permission and those errors did not recur. Temporary failures were corrected before delivery.
 
-**32/32 native integration checks passed** in `tests/verify_game.gd`. Checks exercise the actual saved scene and physics: player initialization; map cells/Y sorting; 72px/s cardinal speed; equal diagonal speed; four directional walk/idle behaviors; tree, water, cottage, and fence blocking; all world bounds; five camera positions; native touch walking; unrelated-finger release; release outside joystick; cancellation; focus loss; resize clearing.
+**32/32 native integration checks passed** in `tests/verify_game.gd`. Checks exercise the actual saved scene and physics: player initialization; map cells/Y sorting; 72px/s cardinal speed; equal diagonal speed; four directional walk/idle behaviors; tree, water, cottage, and fence blocking; all world bounds; five camera positions; native touch walking; unrelated-finger release; release at any position; cancellation; focus loss; resize clearing.
 
 **12/12 Chromium browser checks passed** in `tests/verify_browser.py`: initialization/rendered canvas; focus; arrow keys; WASD/camera movement; diagonal keys; stable keyboard idle; no scrolling; emulated diagonal touch drag; touch release; touch cancellation; resize during held touch; no console errors/uncaught exceptions.
 
@@ -66,7 +66,7 @@ Visual review of actual browser screenshots found and corrected dirt transitions
 - `tests/evidence/desktop-pond.png`: pond shore and connecting paths, 1152×648.
 - `tests/evidence/desktop-diagonal.png`: nearby location after diagonal movement.
 - `tests/evidence/mobile-landscape.png`: 844×390 touch-emulated landscape.
-- `tests/evidence/mobile-after-touch.png`: scene after joystick walking.
+- `tests/evidence/mobile-after-touch.png`: scene after touch-drag walking.
 - `tests/evidence/mobile-portrait.png`: 390×844 letterboxed portrait with rotation hint.
 
 All screenshots are captured from the running genuine Web export. No promotional screenshots are presented as implementation evidence.

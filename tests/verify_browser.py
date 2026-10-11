@@ -55,9 +55,9 @@ async def main():
   check(top_colors>10 and bottom_colors>10,'portrait world fills top and bottom without letterboxing')
   check(await m.locator('#status, #status-splash').count()==0,'loading screen disappears completely during gameplay')
   cdp=await mobile.new_cdp_session(m)
-  # Portrait fills the phone; controls anchor to the bottom-left logical canvas.
+  # Start a drag away from the screen corners; touch control covers the full canvas.
   scale=390/216
-  x=46*scale;y=844-46*scale
+  x=300;y=430
   await cdp.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':x,'y':y,'id':0}]})
   await cdp.send('Input.dispatchTouchEvent',{'type':'touchMove','touchPoints':[{'x':x+40,'y':y-28,'id':0}]})
   await m.wait_for_timeout(900)

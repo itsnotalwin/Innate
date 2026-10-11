@@ -86,27 +86,34 @@ func verify() -> void:
 	player.position=start
 	var touch:=InputEventScreenTouch.new()
 	touch.index=0;touch.pressed=true
-	touch.position=joystick.global_position+Vector2(56,32)
+	touch.position=joystick.global_position+joystick.size*0.75
 	joystick._input(touch)
+	var drag:=InputEventScreenDrag.new()
+	drag.index=0;drag.position=touch.position+Vector2(60,0)
+	joystick._input(drag)
 	await frames(30)
-	check(player.position.x>start.x+34,"native touch uses same walking controller")
+	check(player.position.x>start.x+34,"native drag from anywhere uses the walking controller")
 	var unrelated:=InputEventScreenTouch.new()
 	unrelated.index=1;unrelated.pressed=false;unrelated.position=Vector2.ZERO
 	joystick._input(unrelated)
 	check(joystick.finger==0,"second finger release does not stop active finger")
-	touch.pressed=false;touch.position=Vector2(300,10)
+	touch.pressed=false;touch.position=Vector2(10,10)
 	joystick._input(touch)
 	await frames(2)
 	var stopped:=player.position
 	await frames(10)
-	check(player.position.is_equal_approx(stopped),"release outside joystick stops movement")
-	touch.pressed=true;touch.position=joystick.global_position+Vector2(56,32)
+	check(player.position.is_equal_approx(stopped),"release anywhere stops movement")
+	touch.pressed=true;touch.position=joystick.global_position+joystick.size*0.25
 	joystick._input(touch)
+	drag.position=touch.position+Vector2(60,0)
+	joystick._input(drag)
 	touch.canceled=true;touch.pressed=false
 	joystick._input(touch)
 	check(player.touch_direction==Vector2.ZERO and joystick.finger==-1,"touch cancellation clears movement")
 	touch.canceled=false;touch.pressed=true
 	joystick._input(touch)
+	drag.position=touch.position+Vector2(60,0)
+	joystick._input(drag)
 	joystick._notification(Control.NOTIFICATION_APPLICATION_FOCUS_OUT)
 	check(player.touch_direction==Vector2.ZERO,"focus loss clears touch")
 	joystick._input(touch)
