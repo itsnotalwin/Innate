@@ -107,6 +107,8 @@ func build() -> void:
 	paint_path(layout.meadow_trail,0)
 	# A narrow footpath links the cottage apron to the garden gate.
 	paint_path(layout.garden_access,0)
+	# A footpath follows the west bank into the creekside rest clearing.
+	paint_path(layout.creek_trail,0)
 	# An apron joins the cottage door to the main path.
 	var cottage: Array = layout.cottage
 	for y in range(cottage[1]+1,cottage[1]+6):
@@ -175,6 +177,13 @@ func build() -> void:
 	for i in range(layout.stumps.size()):
 		var p: Array = layout.stumps[i]
 		object_at("Stump_%02d"%i,Vector2(p[0],p[1]),Rect2(64,32,16,16),Vector2(9,6))
+	for i in range(layout.creek_reeds.size()):
+		var p: Array = layout.creek_reeds[i]
+		var reeds := Sprite2D.new()
+		reeds.texture = load("res://assets/sprout_lands/creek_reeds.png")
+		reeds.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		reeds.position = Vector2(p[0]*16+8,p[1]*16+4)
+		own(reeds,nature,"CreekReeds_%02d"%i)
 	build_cottage()
 	build_fence()
 	var boundaries := Node2D.new()

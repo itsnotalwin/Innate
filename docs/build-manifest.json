@@ -1,10 +1,12 @@
 {
   "godot": "4.6.3.stable.official.7d41c59c4",
-  "main_pack": "game-54804a62ac4bef38.pck",
+  "main_pack": "game-2dcee6df10c919c6.pck",
   "sources": {
     "assets/sprout_lands/LICENSE.txt": "f41c94ec4e417de51cf25cb7b01f44c52c8c16ee4cb223db2de37f3dd0316dff",
     "assets/sprout_lands/character.png": "f45a7c06bd6df451832b4ab793c0a204e2832335037636decc6966bbf9b69b76",
     "assets/sprout_lands/character.png.import": "57a232aa83be6e70817b9bf6e79f1607246158dbbe7ec38e0b3ba839f52b0f05",
+    "assets/sprout_lands/creek_reeds.png": "61f1f54c8a663426cd1236dc57888918f6ff0b125e82ef7dd56bac6e8f653998",
+    "assets/sprout_lands/creek_reeds.png.import": "eec98018d59af5a2a780937fc57a79c14d3a1d62e433170203fb42e2a766cd36",
     "assets/sprout_lands/dirt.png": "4ac254268b4d2176a19340bd561f8a5cbb544ad13953ba2cd877812840266b52",
     "assets/sprout_lands/dirt.png.import": "53b1eb997adff7584c3decf0906a05f2e32d1904343282bf481e6e9473d7711c",
     "assets/sprout_lands/fences.png": "211ecb752d2bc8cc434662440d6cd864d58d8ce4720063964cac27e59559c52b",
@@ -26,7 +28,7 @@
     "scenes/main.tscn": "cc7bb9c8e2600b6090f081236b9fd84e0b3d4044bb186a24a93f4542f59bb835",
     "scenes/mobile_controls.tscn": "449b82e95c358bb276dbee9e44a4898622315776a37b4b438c0573bc03fab24f",
     "scenes/player.tscn": "dfa8af16934039974a16d1bba104d17288cb05708820e53ad6d54975b4c2fe67",
-    "scenes/world.tscn": "a15847754c36195d682ddeaec2b16ad53931be82446d3499e8f72e35446a59ce",
+    "scenes/world.tscn": "6f0a43bb74c1ef65078f1259e74e0472292675c0310590e34757361467fd509f",
     "scripts/countdown.gd": "8f54842e2a2a1a1582d65f1c85d3d9ce9289cbd544f168870304110bd23adbef",
     "scripts/countdown.gd.uid": "0c0f2a032ff44ec0c68ec9374fdd94f13b2516e7d6d3cd3950f36384c2d586f8",
     "scripts/main.gd": "78bf94fd5fa91e7333d384569555598c1e96973eb47005ce8b170266bf74b388",
@@ -54,18 +56,18 @@
       "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
       "bytes": 2973
     },
-    "game-54804a62ac4bef38.pck": {
-      "sha256": "54804a62ac4bef38b064c3b6ccae9591ada7a418753328ba74c870598537e0dd",
-      "bytes": 291344
+    "game-2dcee6df10c919c6.pck": {
+      "sha256": "2dcee6df10c919c6caa5bee36415c50a3bd79d54298b5d264a23498f30f9f4ec",
+      "bytes": 293284
     },
     "loader-character.png": {
       "sha256": "f45a7c06bd6df451832b4ab793c0a204e2832335037636decc6966bbf9b69b76",
       "bytes": 2091
     },
     "index.html": {
-      "sha256": "ab76a875b858c7e51cc6a7937efbd90d364bc4fddbe54178ce54c70344162d85",
+      "sha256": "eb6b2e9c2782e7797608945331ab6226dc40597c7a44d16a7c8f926723a3e9f2",
       "bytes": 5371
     }
   },
-  "root_html_sha256": "d6c38ba7d5f4e6eab6396a395dd853a592a3e5bc74e6269fee52bf7de1a8c0fe"
+  "root_html_sha256": "efba883aefff96f02c819133671599fcdbfa796566c8c1b20e044a958e1422c6"
 }
