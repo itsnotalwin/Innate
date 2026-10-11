@@ -235,6 +235,7 @@ func build() -> void:
 		tree(east_cell,edge_tree_kind(east_cell),"EastTree_%02d"%y)
 	for i in range(layout.bushes.size()):
 		var p: Array = layout.bushes[i]
+		if route.has(Vector2i(p[0],p[1])): continue
 		if pond_garden_contains(Vector2(p[0],p[1])) or orchard_contains(Vector2(p[0],p[1])): continue
 		var asset: Dictionary = BUSH_ASSETS[posmod(i*5+p[0]+p[1], BUSH_ASSETS.size())]
 		object_from("Bush_%02d"%i,Vector2(p[0],p[1]),String(asset["texture"]),asset["region"])
@@ -256,6 +257,7 @@ func build() -> void:
 				object_at("Flower_%02d_%d"%[i,j],cell,Rect2(flower_type*16,48,16,16))
 	for i in range(layout.mushrooms.size()):
 		var p: Array = layout.mushrooms[i]
+		if route.has(Vector2i(p[0],p[1])): continue
 		mushroom(Vector2(p[0],p[1]),p[2],float(p[3]),p[4],"Mushroom_%02d"%i)
 	for i in range(layout.logs.size()):
 		var p: Array = layout.logs[i]
@@ -275,6 +277,7 @@ func build() -> void:
 	build_meadow_accents()
 	build_pond_garden_accents()
 	build_orchard_approach()
+	build_destination_approaches()
 	build_cottage()
 	build_fence()
 	var boundaries := Node2D.new()
@@ -365,9 +368,102 @@ func build_orchard_approach() -> void:
 				else:
 					blooms.set_cell(cell,0,Vector2i(rng.randi_range(0,2),5))
 
+func build_destination_approaches() -> void:
+	# Independent seeds keep one destination's edits from reshuffling another.
+	for design in [
+		{"name":"Mushroom", "branch":4, "seed":3101},
+		{"name":"Meadow", "branch":3, "seed":3102},
+		{"name":"Pond", "branch":1, "seed":3103},
+		{"name":"Creek", "branch":2, "seed":3104},
+	]:
+		build_destination_approach(design)
+
+func build_destination_approach(design: Dictionary) -> void:
+	var points: Array[Vector2] = []
+	var minimum := Vector2(INF,INF)
+	var maximum := Vector2(-INF,-INF)
+	for entry in layout.path_branches[int(design.branch)]:
+		var point := Vector2(entry[0],entry[1])
+		if not points.is_empty() and point == points.back(): continue
+		points.append(point)
+		minimum = minimum.min(point)
+		maximum = maximum.max(point)
+	var length := 0.0
+	for i in range(points.size()-1): length += points[i].distance_to(points[i+1])
+	var rng := RandomNumberGenerator.new()
+	rng.seed = int(design.seed)
+	var plants := layer(String(design.name)+"ApproachPlants")
+	plants.collision_enabled = false
+	var tree_positions: Array[Vector2] = []
+	var accent_positions: Array[Vector2] = []
+	for y in range(maxi(4,int(minimum.y)-6),mini(int(layout.size[1])-4,int(maximum.y)+7)):
+		for x in range(maxi(4,int(minimum.x)-6),mini(int(layout.size[0])-4,int(maximum.x)+7)):
+			var cell := Vector2i(x,y)
+			if pond.has(cell) or meadow_contains(Vector2(cell)) or orchard_contains(Vector2(cell)) or pond_garden_contains(Vector2(cell)): continue
+			# Protect the complete road network, including nearby junctions.
+			var road_clear := true
+			for dy in range(-1,2):
+				for dx in range(-1,2):
+					if route.has(cell+Vector2i(dx,dy)): road_clear = false
+			if not road_clear: continue
+			var distance := INF
+			var progress := 0.0
+			var walked := 0.0
+			for i in range(points.size()-1):
+				var segment := points[i+1]-points[i]
+				var t := clampf((Vector2(cell)-points[i]).dot(segment)/segment.length_squared(),0.0,1.0)
+				var separation := Vector2(cell).distance_to(points[i]+segment*t)
+				if separation < distance:
+					distance = separation
+					progress = (walked+segment.length()*t)/length
+				walked += segment.length()
+			if distance < 2.5 or distance > 6.0: continue
+			var richness := smoothstep(0.0,1.0,progress)
+			var occupied := false
+			var pixel_position := Vector2(cell)*16.0+Vector2(8,8)
+			for existing in nature.get_children():
+				if existing.position.distance_to(pixel_position) < 30.0:
+					occupied = true
+					break
+			if occupied: continue
+			# Space canopies generously, with richer destination trees near arrival.
+			if distance > 4.0 and rng.randf() < lerpf(0.015,0.065,richness):
+				var clear := true
+				for other in tree_positions:
+					if other.distance_to(Vector2(cell)) < 5.0: clear = false
+				if clear:
+					var kind := 1
+					if rng.randf() < richness:
+						kind = {"Mushroom":3,"Meadow":9,"Pond":6,"Creek":11}[String(design.name)]
+					tree(Vector2(cell),kind,"%sApproachTree_%d_%d"%[design.name,x,y])
+					tree_positions.append(Vector2(cell))
+					continue
+			var destination_density := 0.46 if String(design.name) == "Meadow" else 0.34
+			if rng.randf() > lerpf(0.04,destination_density,richness): continue
+			if rng.randf() > richness:
+				plants.set_cell(cell,0,Vector2i(rng.randi_range(0,2),5))
+			elif String(design.name) == "Mushroom":
+				var clear := true
+				for other in accent_positions:
+					if other.distance_to(Vector2(cell)) < 2.0: clear = false
+				if clear:
+					mushroom(Vector2(cell),rng.randi_range(0,2),1.0,[0,3,4][rng.randi_range(0,2)],"ApproachMushroom_%d_%d"%[x,y])
+					accent_positions.append(Vector2(cell))
+			elif String(design.name) in ["Pond","Creek"] and rng.randf() < 0.5:
+				var clear := true
+				for other in accent_positions:
+					if other.distance_to(Vector2(cell)) < 3.0: clear = false
+				if clear:
+					object_from("%sApproachReeds_%d_%d"%[design.name,x,y],Vector2(cell),"foliage/birch_water_plants.png",Rect2(16,0,16,16))
+					accent_positions.append(Vector2(cell))
+			else:
+				var color := rng.randi_range(0,3) if String(design.name) == "Meadow" else rng.randi_range(2,3)
+				plants.set_cell(cell,19,Vector2i(color,rng.randi_range(0,1)),rng.randi_range(1,8))
+
 func build_orchard_grove() -> void:
 	for i in range(layout.orchard_trees.size()):
 		var entry: Array = layout.orchard_trees[i]
+		if route.has(Vector2i(entry[0],entry[1])): continue
 		object_from("OrchardTree_%02d"%i,Vector2(entry[0],entry[1]),"res://assets/sprout_lands/orchard_trees.png",Rect2(int(entry[2])*32,0,32,32),Vector2(7,7))
 	# The blanket is the quiet focal point under the central shade tree.
 	object_from("PicnicBlanket",Vector2(67.0,15.6),"res://assets/sprout_lands/picnic_grove.png",Rect2(0,0,48,32))
@@ -422,7 +518,7 @@ func build_pond_garden_accents() -> void:
 		pond_dragonfly(Vector2(entry[0],entry[1]),int(entry[2]),i)
 	# A natural log and flat stone make the east bank a quiet viewing spot.
 	object_at("PondGardenBench",Vector2(95.0,30.8),Rect2(0,64,32,16),Vector2(22,7))
-	object_at("PondGardenSeat",Vector2(92.0,32.8),Rect2(80,64,16,16),Vector2(11,7))
+	object_at("PondGardenSeat",Vector2(96.0,33.8),Rect2(80,64,16,16),Vector2(11,7))
 
 func build_meadow_blooms() -> void:
 	# Low, coordinated flower clumps build a carpet without adding runtime objects.
