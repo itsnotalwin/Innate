@@ -254,7 +254,8 @@ func build() -> void:
 		for j in range(offset_list.size()):
 			var cell: Vector2 = Vector2(p[0],p[1])+offset_list[j]
 			if not pond.has(Vector2i(cell)) and not route.has(Vector2i(cell)):
-				object_at("Flower_%02d_%d"%[i,j],cell,Rect2(flower_type*16,48,16,16))
+				# Use world flowers, rather than fruit/UI icons from the nature sheet.
+				object_from("Flower_%02d_%d"%[i,j],cell,"res://assets/wildflowers/meadow/flowers.png",Rect2((flower_type%4)*16,(0 if flower_type<4 else 1)*16,16,16))
 	for i in range(layout.mushrooms.size()):
 		var p: Array = layout.mushrooms[i]
 		if route.has(Vector2i(p[0],p[1])): continue
@@ -269,11 +270,8 @@ func build() -> void:
 		object_at("Stump_%02d"%i,Vector2(p[0],p[1]),Rect2(64,32,16,16),Vector2(9,6))
 	for i in range(layout.creek_reeds.size()):
 		var p: Array = layout.creek_reeds[i]
-		var reeds := Sprite2D.new()
-		reeds.texture = load("res://assets/sprout_lands/creek_reeds.png")
-		reeds.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		reeds.position = Vector2(p[0]*16+8,p[1]*16+4)
-		own(reeds,nature,"CreekReeds_%02d"%i)
+		var atlas := "foliage/birch_water_plants.png" if i%2 == 0 else "foliage/pine_water_plants.png"
+		object_from("CreekReeds_%02d"%i,Vector2(p[0],p[1]),atlas,Rect2(16,(i%2)*16,16,16))
 	build_meadow_accents()
 	build_pond_garden_accents()
 	build_orchard_approach()
@@ -454,7 +452,8 @@ func build_destination_approach(design: Dictionary) -> void:
 				for other in accent_positions:
 					if other.distance_to(Vector2(cell)) < 3.0: clear = false
 				if clear:
-					object_from("%sApproachReeds_%d_%d"%[design.name,x,y],Vector2(cell),"foliage/birch_water_plants.png",Rect2(16,0,16,16))
+					var atlas := "foliage/pine_water_plants.png" if String(design.name) == "Creek" and rng.randf() < 0.5 else "foliage/birch_water_plants.png"
+					object_from("%sApproachReeds_%d_%d"%[design.name,x,y],Vector2(cell),atlas,Rect2(16,rng.randi_range(0,1)*16,16,16))
 					accent_positions.append(Vector2(cell))
 			else:
 				var color := rng.randi_range(0,3) if String(design.name) == "Meadow" else rng.randi_range(2,3)

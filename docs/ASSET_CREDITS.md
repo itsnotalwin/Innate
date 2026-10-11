@@ -1,5 +1,7 @@
 # Asset credits and licensing
 
+The picnic blanket, basket, crate, and fallen fruit were refined with AI-assisted image editing during the asset style pass. The source master is `art/picnic_props_master.png`; `tools/prepare_picnic.gd` converts it into native pixel cells using the original nature sheet's opaque colors. These are project-specific additions, not an expansion for standalone redistribution. Original source packs and their terms remain unchanged.
+
 **Sprout Lands — Assets by Cup Nooble**
 
 Official source: https://cupnooble.itch.io/sprout-lands-asset-pack
