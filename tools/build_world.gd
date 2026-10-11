@@ -135,6 +135,9 @@ func build() -> void:
 	world.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	root.add_child(world)
 	water = layer("Water")
+	var water_material := ShaderMaterial.new()
+	water_material.shader = load("res://shaders/water.gdshader")
+	water.material = water_material
 	ground = layer("Ground")
 	paths = layer("Paths")
 	details = layer("GroundDetails")
@@ -147,6 +150,7 @@ func build() -> void:
 	var shore_water := layer("ShoreUnderlay")
 	world.move_child(shore_water, 0)
 	shore_water.collision_enabled = false
+	shore_water.material = water_material
 	for cell in pond:
 		for y in range(-1,2):
 			for x in range(-1,2):
@@ -276,6 +280,7 @@ func build() -> void:
 	build_pond_garden_accents()
 	build_orchard_approach()
 	build_destination_approaches()
+	build_roadside_discoveries()
 	build_cottage()
 	build_fence()
 	var boundaries := Node2D.new()
@@ -295,6 +300,36 @@ func build() -> void:
 	assert(ResourceSaver.save(scene,"res://scenes/world.tscn")==OK)
 	print("Saved editable ",world_width,"x",world_height," world; ",nature.get_child_count()," sorted objects.")
 	quit()
+
+func build_roadside_discoveries() -> void:
+	# Small authored compositions, not uniform scatter. Alternate trail sides.
+	var pockets := layer("RoadsideDiscoveryFlowers")
+	pockets.collision_enabled = false
+	var stops := [Vector2i(56,36), Vector2i(76,43), Vector2i(83,66), Vector2i(37,76), Vector2i(29,43), Vector2i(46,68)]
+	for i in range(stops.size()):
+		var center: Vector2i = stops[i]
+		for offset in [Vector2i(-1,0),Vector2i(0,-1),Vector2i(1,1),Vector2i(-2,1),Vector2i(0,2),Vector2i(2,0)]:
+			var cell: Vector2i = center + offset
+			if not discovery_cell_clear(cell): continue
+			pockets.set_cell(cell,19,Vector2i(i % 4, (i / 2) % 2))
+		if not discovery_cell_clear(center): continue
+		var clear := true
+		for existing in nature.get_children():
+			if existing.position.distance_to(Vector2(center)*16.0+Vector2(8,8)) < 26.0: clear = false
+		if not clear: continue
+		if i == 4:
+			mushroom(Vector2(center),1,1.3,3,"TrailDiscoveryMushroom")
+		elif i % 2 == 0:
+			object_at("TrailDiscoveryRock_%d"%i,Vector2(center),Rect2(80,64,16,16),Vector2(11,7))
+		else:
+			object_at("TrailDiscoveryLog_%d"%i,Vector2(center),Rect2(0,64,32,16),Vector2(22,7))
+
+func discovery_cell_clear(cell: Vector2i) -> bool:
+	if pond.has(cell): return false
+	for y in range(-1,2):
+		for x in range(-1,2):
+			if route.has(cell+Vector2i(x,y)): return false
+	return true
 
 func meadow_contains(cell: Vector2) -> bool:
 	var bounds: Array = layout.meadow_design.bounds

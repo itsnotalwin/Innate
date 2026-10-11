@@ -27,5 +27,5 @@ func _draw() -> void:
 			var polygon := PackedVector2Array()
 			for i in range(20):
 				var angle := TAU * i / 20.0
-				polygon.append(object.position + Vector2(10, 7) + Vector2(cos(angle) * (radius + shell * 2), sin(angle) * (radius * 0.46 + shell)))
-			draw_colored_polygon(polygon, Color(0.20, 0.29, 0.32, 0.035))
+				polygon.append(object.position + Vector2(13, 9) + Vector2(cos(angle) * (radius + shell * 2), sin(angle) * (radius * 0.46 + shell)))
+			draw_colored_polygon(polygon, Color(0.15, 0.23, 0.31, 0.065))

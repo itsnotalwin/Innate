@@ -12,11 +12,11 @@
         333,
         720
       ],
-      "local_ready_ms": 1690,
-      "mean_frame_ms": 34.64,
-      "p95_frame_ms": 66.6,
-      "frames_over_33ms": 40,
-      "samples": 115
+      "local_ready_ms": 1806,
+      "mean_frame_ms": 70.17,
+      "p95_frame_ms": 83.4,
+      "frames_over_33ms": 57,
+      "samples": 57
     },
     {
       "build": "portrait update",
@@ -29,11 +29,11 @@
         720,
         405
       ],
-      "local_ready_ms": 1610,
-      "mean_frame_ms": 29.41,
-      "p95_frame_ms": 50.1,
-      "frames_over_33ms": 33,
-      "samples": 136
+      "local_ready_ms": 1895,
+      "mean_frame_ms": 70.24,
+      "p95_frame_ms": 100,
+      "frames_over_33ms": 55,
+      "samples": 56
     }
   ]
 }

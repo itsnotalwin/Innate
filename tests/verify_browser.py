@@ -18,7 +18,10 @@ async def main():
    width,height=first.size
    rect=(int(width*.36),0,width-1,int(height*.30))
    ImageDraw.Draw(first).rectangle(rect,fill=(0,0,0));ImageDraw.Draw(second).rectangle(rect,fill=(0,0,0))
-  return ImageChops.difference(first,second).getbbox() is not None
+  difference=ImageChops.difference(first,second)
+  # Gentle water animation is allowed while idle; camera/player movement is not.
+  if ignore_countdown:difference=difference.point(lambda value:255 if value>12 else 0)
+  return difference.getbbox() is not None
  async with async_playwright() as p:
   browser=await p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox','--enable-unsafe-swiftshader'])
   async def open_game(context):
