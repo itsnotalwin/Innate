@@ -274,6 +274,7 @@ func build() -> void:
 		own(reeds,nature,"CreekReeds_%02d"%i)
 	build_meadow_accents()
 	build_pond_garden_accents()
+	build_orchard_approach()
 	build_cottage()
 	build_fence()
 	var boundaries := Node2D.new()
@@ -305,6 +306,64 @@ func pond_garden_contains(cell: Vector2) -> bool:
 func orchard_contains(cell: Vector2) -> bool:
 	var bounds: Array = layout.orchard_bounds
 	return cell.x >= bounds[0] and cell.x < bounds[2] and cell.y >= bounds[1] and cell.y < bounds[3]
+
+func build_orchard_approach() -> void:
+	# Bake a seeded gradient along the walking route; no runtime generation cost.
+	var points: Array[Vector2] = [Vector2(55,47),Vector2(60,43)]
+	for entry in layout.path_branches[0]:
+		var point := Vector2(entry[0],entry[1])
+		if point != points.back(): points.append(point)
+	var total_length := 0.0
+	for i in range(points.size()-1):
+		total_length += points[i].distance_to(points[i+1])
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 20270526
+	var blooms := layer("OrchardApproachBlooms")
+	blooms.collision_enabled = false
+	var placed_trees: Array[Vector2] = []
+	for y in range(23,49):
+		for x in range(49,71):
+			var cell := Vector2i(x,y)
+			if route.has(cell) or pond.has(cell) or orchard_contains(Vector2(cell)): continue
+			var distance := INF
+			var progress := 0.0
+			var walked := 0.0
+			for i in range(points.size()-1):
+				var start := points[i]
+				var segment := points[i+1]-start
+				var t := clampf((Vector2(cell)-start).dot(segment)/segment.length_squared(),0.0,1.0)
+				var separation := Vector2(cell).distance_to(start+segment*t)
+				if separation < distance:
+					distance = separation
+					progress = (walked+segment.length()*t)/total_length
+				walked += segment.length()
+			if distance < 2.5 or distance > 6.0: continue
+			# Smoothly blend normal roadside grass into the destination's palette.
+			var richness := smoothstep(0.0,1.0,progress)
+			var pixel_position := Vector2(cell)*16.0+Vector2(8,8)
+			var occupied := false
+			for existing in nature.get_children():
+				if existing.position.distance_to(pixel_position) < 36.0:
+					occupied = true
+					break
+			if occupied: continue
+			if distance > 3.5 and rng.randf() < lerpf(0.025,0.10,richness):
+				var clear := true
+				for other in placed_trees:
+					if other.distance_to(Vector2(cell)) < 4.0: clear = false
+				if clear:
+					var name := "ApproachTree_%d_%d"%[x,y]
+					if rng.randf() < richness*0.85:
+						object_from(name,Vector2(cell),"orchard_trees.png",Rect2(rng.randi_range(0,3)*32,0,32,32),Vector2(7,7))
+					else:
+						tree(Vector2(cell),[1,4,6][rng.randi_range(0,2)],name)
+					placed_trees.append(Vector2(cell))
+					continue
+			if rng.randf() < lerpf(0.05,0.38,richness):
+				if rng.randf() < richness:
+					blooms.set_cell(cell,19,Vector2i(rng.randi_range(0,3),rng.randi_range(0,1)),rng.randi_range(1,8))
+				else:
+					blooms.set_cell(cell,0,Vector2i(rng.randi_range(0,2),5))
 
 func build_orchard_grove() -> void:
 	for i in range(layout.orchard_trees.size()):
