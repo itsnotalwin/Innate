@@ -1,6 +1,6 @@
 {
   "godot": "4.6.3.stable.official.7d41c59c4",
-  "main_pack": "game-ad21588c433ea1f6.pck",
+  "main_pack": "game-0573e8576223eca7.pck",
   "sources": {
     "assets/sprout_lands/FREE_GIFT_LICENSE.txt": "09fc51330037dac5149db63ab9e43acb019e70bbee6d2267b5e577b36ad978df",
     "assets/sprout_lands/LICENSE.txt": "f41c94ec4e417de51cf25cb7b01f44c52c8c16ee4cb223db2de37f3dd0316dff",
@@ -12,10 +12,30 @@
     "assets/sprout_lands/dirt.png.import": "53b1eb997adff7584c3decf0906a05f2e32d1904343282bf481e6e9473d7711c",
     "assets/sprout_lands/fences.png": "211ecb752d2bc8cc434662440d6cd864d58d8ce4720063964cac27e59559c52b",
     "assets/sprout_lands/fences.png.import": "9703f9b5317b1afc451d66ae1a7d63486e66e1ca25cf7e7a7585ee53b603cd0f",
+    "assets/sprout_lands/foliage/birch_biome.png": "d17827f6e5ae03f93b6cc83642575072d3d160f591ad951ae06e8c3ba081466e",
+    "assets/sprout_lands/foliage/birch_biome.png.import": "1838a9a9d38977666186f16ae5f1f164aae46d2df4ed8ad17b763d79b3fb20b4",
+    "assets/sprout_lands/foliage/birch_water_plants.png": "78599c7e34668cef607162dab39673a1d765e6c350dc8afc40a976e12f0d1b46",
+    "assets/sprout_lands/foliage/birch_water_plants.png.import": "cc4f1519560e441394eb2586c73c79d45e0439bc9a5e5f9e24aac13724f67420",
+    "assets/sprout_lands/foliage/cherry_blossom_biome.png": "5c7fc604fc027682cbad5d1657a6be4cfc5bf6924b09fa01a06d12a8783d0498",
+    "assets/sprout_lands/foliage/cherry_blossom_biome.png.import": "e792704d09fb363ca34d7487be1a3cba0aa2c6b472e52a1b5d586690aac1110a",
+    "assets/sprout_lands/foliage/cherry_water_plants.png": "d3fb5ca82df04f7b36d6a9d0b0ff08153fa2153b021b628c02c15f3855b43aec",
+    "assets/sprout_lands/foliage/cherry_water_plants.png.import": "fb4ff24b630e5267cd744a9af112640e5d7c48700deb990c87b943fc8b66982f",
+    "assets/sprout_lands/foliage/farming_plants_v2.png": "ed9b7819d3854e7a3accc7ac32c3fb195b6ebb63657308059efee94f6176d538",
+    "assets/sprout_lands/foliage/farming_plants_v2.png.import": "309f913819bbf7255898cd48b6978490a9712b0633ba8c80f922511dc99e3d3e",
+    "assets/sprout_lands/foliage/farming_plants_v2_watered.png": "c943c18e2654421e2e03032984ed1f75d1302acc1e76072b5ed248fcd5a7f03f",
+    "assets/sprout_lands/foliage/farming_plants_v2_watered.png.import": "5b470e185db3c6c82246e0beca0fa37f3ed84e192e7a72f4e510da96e7be7c01",
+    "assets/sprout_lands/foliage/pine_water_plants.png": "c0e8cd511168d7351d4b98bc45f7d1ff550bc905df7c067e012e8adf4b85d003",
+    "assets/sprout_lands/foliage/pine_water_plants.png.import": "24f245e54ca5aa0c4a908d50376f99f25664ea0fb5977c735050f2fef68eee78",
+    "assets/sprout_lands/foliage/trees_stumps_bushes_v2.png": "e46202b96e7df7f3421ac64d451a157efbbb4d5350db60d90486b401c3a82d15",
+    "assets/sprout_lands/foliage/trees_stumps_bushes_v2.png.import": "754aebe054a55b8a28c01663e39e9e668327b906e1f5c7f63947897f21c9c101",
     "assets/sprout_lands/grass.png": "97eedc32f4c33005ab2abb26a034ce1b32428da321e3052082c87d320c0e1cbe",
     "assets/sprout_lands/grass.png.import": "b22c9b9f74de7f31cb07b0a68856d723457b339f6a19e4df19560520a17ba7aa",
     "assets/sprout_lands/house.png": "d146e9a5d2cc2a6c78bfa9a96f68f43eaa71a3081bac927b908f3e1c33ad9d0f",
     "assets/sprout_lands/house.png.import": "b9d0d830926d4140f54bafa729d7c92096b7521a069b88c6d16995baded2c602",
+    "assets/sprout_lands/items/wood_and_mushroom_items.png": "b45dfcf7a478e1dddf8b666c94d16ae5de6971df941f4c6c29ce9c12482b8c53",
+    "assets/sprout_lands/items/wood_and_mushroom_items.png.import": "5f56e1556478cd7803a1ee4e41266b8c5997279062e83b4e8c50f29c50111522",
+    "assets/sprout_lands/mushroom_variants.png": "da085d73b9932d788cae9a6d382388c998c722f7e1aa44a5e2a62b4b53bb01ec",
+    "assets/sprout_lands/mushroom_variants.png.import": "dc85e5fe540cb42b1ee0a518a8f87fbf52dfd38ea99861abac8d9f565d658ca9",
     "assets/sprout_lands/nature.png": "22938e24b511139f5552795429250fbdbbaeb6f5e849cab91bc83ac0a1f12586",
     "assets/sprout_lands/nature.png.import": "3f0fb01487f9921e498eeea596a26cbe2a053d623c8bb2d02597ffa8590c26b8",
     "assets/sprout_lands/pine_biome.png": "d4eb3bcde8f927a79421d0d4c246ec40b0f3c772cdb1a7650f3889e71444fca7",
@@ -26,12 +46,12 @@
     "assets/sprout_lands/water.png.import": "610e36c77ff9220cc62ed765354e72cadddaef47dc3880cdbacb9f2e5e40b8ff",
     "export_presets.cfg": "07dc40c2a62ed3bf38d2c05a149f38be56f6ec26ec5584d2ec080de631f1c976",
     "project.godot": "ca8695362babfb7a12eedcd66c1b085dc51e87375716639b9ab3b314e479c1c5",
-    "resources/tilesets/sprout_lands.tres": "0384c43a32085ee32386385d16aab207124ef10339ccb0434fb84246524736a1",
+    "resources/tilesets/sprout_lands.tres": "559c2e85fe8fa114b6b0c4d9f616113b81ff226e1ee1a7ed33f27738923edd86",
     "scenes/countdown.tscn": "8801afcd880c2d65de78950d95d972a36a3b4446223ba909f89f83705ab6201e",
     "scenes/main.tscn": "cc7bb9c8e2600b6090f081236b9fd84e0b3d4044bb186a24a93f4542f59bb835",
     "scenes/mobile_controls.tscn": "449b82e95c358bb276dbee9e44a4898622315776a37b4b438c0573bc03fab24f",
     "scenes/player.tscn": "dfa8af16934039974a16d1bba104d17288cb05708820e53ad6d54975b4c2fe67",
-    "scenes/world.tscn": "4c86a17cea503f60b4763c166602dee34af0f8bef86fd4c88502f5f49f601f58",
+    "scenes/world.tscn": "116b6ad4b01760972d9a39a42514acfd690c93f4ddb45085d4f368b9adffc681",
     "scripts/countdown.gd": "8f54842e2a2a1a1582d65f1c85d3d9ce9289cbd544f168870304110bd23adbef",
     "scripts/countdown.gd.uid": "0c0f2a032ff44ec0c68ec9374fdd94f13b2516e7d6d3cd3950f36384c2d586f8",
     "scripts/main.gd": "78bf94fd5fa91e7333d384569555598c1e96973eb47005ce8b170266bf74b388",
@@ -59,18 +79,18 @@
       "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
       "bytes": 2973
     },
-    "game-ad21588c433ea1f6.pck": {
-      "sha256": "ad21588c433ea1f6112c5900b03549dd386fa5e62d493360b6aa490fcd6b413d",
-      "bytes": 300756
+    "game-0573e8576223eca7.pck": {
+      "sha256": "0573e8576223eca79e4a5ea362a1e17424096a2f047ca571d9382172d32ce086",
+      "bytes": 364072
     },
     "loader-character.png": {
       "sha256": "f45a7c06bd6df451832b4ab793c0a204e2832335037636decc6966bbf9b69b76",
       "bytes": 2091
     },
     "index.html": {
-      "sha256": "db5291e5012d54b6f1323832d81416f0711640d03de23f1fd343f160b282b6e7",
+      "sha256": "d689e00e0b3661993a668e43463b154410b7bae505b6bcec04498f14ec3e270b",
       "bytes": 5371
     }
   },
-  "root_html_sha256": "f7b0e377e14b0f8dfbf298a263072c37e8b2902db3313b0060b8a3f4b079fce7"
+  "root_html_sha256": "98fd4ee07c8e428a92c7b90183c50cb17a4a960c9ae5c6c297384fa58807bca6"
 }

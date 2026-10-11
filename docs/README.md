@@ -13,7 +13,7 @@ Older Godot versions are not verified. Godot 4.3 supports TileMapLayer, but use 
 
 ## Editing
 
-Open `scenes/world.tscn`. Terrain, paths, water, ground details, and garden plants are native editable **TileMapLayer** nodes using `resources/tilesets/sprout_lands.tres`. The `Nature` parent sorts the player, trees, bushes, rocks, cottage, and fence segments by their foot Y coordinates. Objects have explicit editable positions and small physical footprints. Change walking speed on the player instance or in `scenes/player.tscn`.
+Open `scenes/world.tscn`. Terrain, paths, water, ground details, and garden plants are native editable **TileMapLayer** nodes using `resources/tilesets/sprout_lands.tres`. The TileSet palette contains the Basic Pack sheets and all selected foliage sheets from the Free Gift pack. The `Nature` parent sorts the player, trees, bushes, rocks, cottage, and fence segments by their foot Y coordinates. Objects have explicit editable positions and small physical footprints. Change walking speed on the player instance or in `scenes/player.tscn`.
 
 The scene is saved; nothing generates the map at runtime. `tools/world_layout.json` preserves curated placements and routes. `tools/build_world.gd` is an optional offline scene generator and **overwrites world.tscn**, so save editor changes before regenerating it. `tools/prepare_tiles.py` rebuilds atlas definitions and needs Pillow. `tools/dirt_terrain.json` contains the compatible MIT-licensed dirt terrain configuration adapted from Maaack.
 
@@ -54,14 +54,14 @@ The browser script uses `/usr/bin/chromium`; adjust that path for another instal
 
 - `scenes/`: main, world, player, mobile controls.
 - `scripts/`: shared player movement, joystick, UI resize/orientation handling.
-- `assets/sprout_lands/`: eight selected Basic Pack sheets, a matching pine-biome sheet from Cup Nooble’s free gift pack, the small original creek reed sprite, and both licenses.
+- `assets/sprout_lands/`: eight Basic Pack sheets, selected foliage and wood/mushroom item sheets from Cup Nooble’s free Sorry Pack, the original-pixel mushroom color variations, a small original creek reed sprite, and both licenses. Winter, dungeon, ocean, village, and furniture assets are excluded from this foliage update.
 - `resources/tilesets/`: native atlases and terrain/collision definitions.
 - `tools/`: optional offline generation, local ZIP import, export helper, browser shell.
 - `build/web/`: genuine generated Godot HTML/JS/WASM/PCK output.
 - `tests/evidence/`: actual running-game screenshots and verification results.
 - `docs/`: credits, licenses, instructions, and build report.
 
-To restore the base artwork, download the free Basic Pack directly from Cup Nooble and run `python tools/import_assets.py "path/to/Sprout Lands - Sprites - Basic pack.zip"`. The supplementary pine sheet and its license are from Cup Nooble’s free Sorry Pack; `creek_reeds.png` is original INNATE artwork. The importer does not download premium assets or replace the world.
+To restore the source artwork, download the free Basic Pack and free Sorry Pack directly from Cup Nooble and run `python tools/import_assets.py "path/to/Sprout Lands - Sprites - Basic pack.zip" --gift-pack "path/to/Sprout Sorry pack.zip"`. Both are free downloads; the helper reads their artwork and license files and imports only the Basic Pack sheets and selected Sorry Pack foliage/item sheets. `creek_reeds.png` is original INNATE artwork. The importer does not download premium assets or replace the world.
 
 ## Deploying from GitHub Pages
 

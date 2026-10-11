@@ -11,6 +11,27 @@ var pond := {}
 var route := {}
 var layout: Dictionary
 
+const TREE_ASSETS := [
+	{"texture": "nature.png", "region": Rect2(0, 0, 16, 32)},
+	{"texture": "nature.png", "region": Rect2(16, 0, 32, 32)},
+	{"texture": "nature.png", "region": Rect2(48, 0, 32, 32)},
+	{"texture": "foliage/trees_stumps_bushes_v2.png", "region": Rect2(96, 0, 48, 48)},
+	{"texture": "foliage/trees_stumps_bushes_v2.png", "region": Rect2(64, 16, 32, 32)},
+	{"texture": "foliage/trees_stumps_bushes_v2.png", "region": Rect2(0, 80, 32, 32)},
+	{"texture": "foliage/birch_biome.png", "region": Rect2(112, 0, 48, 48)},
+	{"texture": "foliage/birch_biome.png", "region": Rect2(64, 16, 16, 32)},
+	{"texture": "foliage/cherry_blossom_biome.png", "region": Rect2(112, 0, 48, 48)},
+	{"texture": "foliage/cherry_blossom_biome.png", "region": Rect2(80, 16, 32, 32)},
+	{"texture": "pine_biome.png", "region": Rect2(112, 0, 48, 48)},
+	{"texture": "pine_biome.png", "region": Rect2(80, 16, 32, 32)},
+	{"texture": "foliage/trees_stumps_bushes_v2.png", "region": Rect2(32, 80, 32, 32)},
+]
+
+const BUSH_ASSETS := [
+	{"texture": "nature.png", "region": Rect2(0, 48, 16, 16)},
+	{"texture": "nature.png", "region": Rect2(16, 48, 16, 16)},
+]
+
 func _initialize() -> void:
 	call_deferred("build")
 
@@ -52,12 +73,12 @@ func paint_path(points: Array, radius := 1) -> void:
 				for dx in range(-radius,radius+1):
 					route[Vector2i(roundi(p.x)+dx,roundi(p.y)+dy)] = true
 
-func object_at(node_name: String, cell: Vector2, region: Rect2, solid_size := Vector2.ZERO) -> Node2D:
+func object_from(node_name: String, cell: Vector2, texture_path: String, region: Rect2, solid_size := Vector2.ZERO) -> Node2D:
 	var object := Node2D.new()
 	object.position = cell * 16.0 + Vector2(8, 8)
 	own(object, nature, node_name)
 	var sprite := Sprite2D.new()
-	sprite.texture = load("res://assets/sprout_lands/nature.png")
+	sprite.texture = load("res://assets/sprout_lands/" + texture_path)
 	sprite.region_enabled = true
 	sprite.region_rect = region
 	sprite.position.y = -region.size.y / 2.0 + 4.0
@@ -66,35 +87,36 @@ func object_at(node_name: String, cell: Vector2, region: Rect2, solid_size := Ve
 		rectangle(object, solid_size)
 	return object
 
-func tree(cell: Vector2, kind: int, node_name: String) -> void:
-	var regions := [Rect2(0,0,16,32),Rect2(16,0,32,32),Rect2(48,0,32,32)]
-	object_at(node_name, cell, regions[kind], Vector2(7,7))
+func object_at(node_name: String, cell: Vector2, region: Rect2, solid_size := Vector2.ZERO) -> Node2D:
+	return object_from(node_name, cell, "nature.png", region, solid_size)
 
-func pine_tree(cell: Vector2, node_name: String) -> void:
-	var object := Node2D.new()
-	object.position = cell * 16.0 + Vector2(8,8)
-	own(object,nature,node_name)
-	var sprite := Sprite2D.new()
-	sprite.texture = load("res://assets/sprout_lands/pine_biome.png")
-	sprite.region_enabled = true
-	sprite.region_rect = Rect2(112,0,48,48)
-	sprite.position.y = -20.0
-	own(sprite,object,"Artwork")
-	rectangle(object,Vector2(7,7))
+func tree(cell: Vector2, kind: int, node_name: String) -> void:
+	var asset: Dictionary = TREE_ASSETS[posmod(kind, TREE_ASSETS.size())]
+	object_from(node_name, cell, String(asset["texture"]), asset["region"], Vector2(7, 7))
+
+func edge_tree_kind(cell: Vector2i) -> int:
+	var selector := absi(cell.x * 17 + cell.y * 31)
+	if cell.x >= 68 and cell.y <= 43:
+		return [10, 11, 10, 6][selector % 4]
+	if cell.x >= 32 and cell.x <= 60 and cell.y <= 23:
+		return [8, 9, 6, 3][selector % 4]
+	if cell.y >= 54:
+		return [3, 4, 5, 12][selector % 4]
+	if cell.y <= 22:
+		return [3, 6, 7, 1][selector % 4]
+	return [0, 1, 2, 3, 4, 6][selector % 6]
 
 func mushroom(cell: Vector2, variant: int, scale_factor: float, tint: int, node_name: String) -> void:
 	var object := Node2D.new()
 	object.position = cell * 16.0 + Vector2(8,8)
 	own(object,nature,node_name)
 	var sprite := Sprite2D.new()
-	sprite.texture = load("res://assets/sprout_lands/nature.png")
-	sprite.region_rect = Rect2((5+variant)*16,0,16,16)
+	sprite.texture = load("res://assets/sprout_lands/mushroom_variants.png")
 	sprite.region_enabled = true
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	sprite.scale = Vector2.ONE*scale_factor
 	sprite.position.y = 4.0 - 8.0*scale_factor
-	var tints := [Color.WHITE,Color(1.10,1.04,0.84),Color(0.90,1.04,1.15),Color(1.12,0.92,1.04)]
-	sprite.modulate = tints[clampi(tint,0,tints.size()-1)]
+	sprite.region_rect = Rect2((variant%3)*16,clampi(tint,0,5)*16,16,16)
 	own(sprite,object,"Artwork")
 
 func build() -> void:
@@ -176,19 +198,24 @@ func build() -> void:
 	for i in range(layout.trees.size()):
 		var p: Array = layout.trees[i]
 		tree(Vector2(p[0],p[1]),p[2],"Tree_%02d" % i)
-	for i in range(layout.grove_pines.size()):
-		var p: Array = layout.grove_pines[i]
-		pine_tree(Vector2(p[0],p[1]),"GrovePine_%02d"%i)
+	for i in range(layout.grove_trees.size()):
+		var p: Array = layout.grove_trees[i]
+		tree(Vector2(p[0],p[1]),p[2],"GroveTree_%02d"%i)
 	# Curated boundary belts: staggered spacing with clear gaps inside the world.
 	for x in range(1,world_width-1,2):
-		tree(Vector2(x,1+(x%3)),x%3,"NorthTree_%02d"%x)
-		tree(Vector2(x,world_height-2-(x%2)),(x+1)%3,"SouthTree_%02d"%x)
+		var north_cell := Vector2i(x,1+(x%3))
+		var south_cell := Vector2i(x,world_height-2-(x%2))
+		tree(north_cell,edge_tree_kind(north_cell),"NorthTree_%02d"%x)
+		tree(south_cell,edge_tree_kind(south_cell),"SouthTree_%02d"%x)
 	for y in range(5,world_height-3,3):
-		tree(Vector2(1+(y%2),y),y%3,"WestTree_%02d"%y)
-		tree(Vector2(world_width-3+(y%2),y),(y+1)%3,"EastTree_%02d"%y)
+		var west_cell := Vector2i(1+(y%2),y)
+		var east_cell := Vector2i(world_width-3+(y%2),y)
+		tree(west_cell,edge_tree_kind(west_cell),"WestTree_%02d"%y)
+		tree(east_cell,edge_tree_kind(east_cell),"EastTree_%02d"%y)
 	for i in range(layout.bushes.size()):
 		var p: Array = layout.bushes[i]
-		object_at("Bush_%02d"%i,Vector2(p[0],p[1]),Rect2(0 if i%3==0 else 16,48,16,16))
+		var asset: Dictionary = BUSH_ASSETS[posmod(i*5+p[0]+p[1], BUSH_ASSETS.size())]
+		object_from("Bush_%02d"%i,Vector2(p[0],p[1]),String(asset["texture"]),asset["region"])
 	for i in range(layout.rocks.size()):
 		var p: Array = layout.rocks[i]
 		object_at("Rock_%02d"%i,Vector2(p[0],p[1]),Rect2(80,64,16,16),Vector2(11,7))

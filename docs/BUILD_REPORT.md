@@ -2,6 +2,8 @@
 
 **Current mobile update:** see [PORTRAIT_UPDATE.md](PORTRAIT_UPDATE.md) for portrait layout, loading/presentation changes, camera fixes, current tests, and measured performance. Earlier landscape details below describe the initial milestone.
 
+**Latest foliage update (11 October 2026):** the current 96×72 world uses the complete selected Basic Pack and Free Gift foliage/item atlases in its editor TileSet palette. The map now mixes the original leafy trees with Cup Nooble’s birch, blossom, pine, and fruiting trees. Six mushroom cap colorways are derived from the original sprites, and the live Pages build is kept in sync from the task branch.
+
 **GitHub Pages is live:** https://itsnotalwin.github.io/Innate/. The public game was verified in Chromium: actual Godot rendering, keyboard movement, no console errors, and no failed resource responses.
 
 **Status: Complete for the requested exploration prototype.** Built and verified on 9 October 2026 (Africa/Johannesburg). Phone hardware, Safari, Firefox, Windows execution, and device FPS remain unverified. No Milestone 02 features were implemented.
@@ -15,17 +17,17 @@
 - Matching templates: `/workspace/.godot/data/godot/export_templates/4.6.3.stable/`; used `web_nothreads_release.zip`.
 - Standard engine, GDScript, Compatibility renderer. Godot, templates, Chromium, Python, Playwright, and Pillow were already installed; none were reinstalled.
 - Runtime/network configuration inspected through the cloud-environment runtime skill. Networked commands used the supported permission mechanism and inherited proxy; no restrictions or authentication were bypassed.
-- Connected `itsnotalwin/Innate` repository verified private with GitHub API. Remote contained no commit/branch refs, so there was no base branch for a pull request. Delivery includes a reviewable local task-branch commit and ZIP. No default-branch merge, public deployment, or public release.
+- At initial audit, the connected `itsnotalwin/Innate` repository was private and contained no commit/branch refs. The user later enabled Pages and made the repo public; the deployment and current visibility are documented in the sections below.
 
 ## World
 
-64×48 tiles at the native **16×16** scale: **1024×768** world pixels. Viewport: **384×216**, default desktop window **1152×648** (3× nearest scaling).
+Current world: **96×72 tiles** at the native **16×16** scale (**1536×1152** world pixels). Viewport adapts to portrait/landscape; earlier 64×48 measurements below describe the initial milestone.
 
 One original curated layout connects a grassy starting clearing, winding dirt loop, wooded mushroom clearing, pond overlook, decorative garden, and cottage. Trees form staggered perimeter belts and deliberate internal clusters. Small flowers, shrubs, mushrooms, grass texture, rocks, stumps, and fallen logs provide landmarks and variation. The world contains 289 Y-sorted nodes including exactly one player. Soil and plants are scenery only.
 
 The saved `scenes/world.tscn` contains editable native TileMapLayer nodes and positioned native objects; the game does not generate the world at runtime. TileSet terrains remain paintable in the editor. Optional construction sources are in `tools/`.
 
-Official free Basic Pack artwork was downloaded successfully through itch.io. Eight original sheets are integrated; the included updated license explicitly allows distributing games and open-source projects with credits and licensing terms. The full license is preserved. No premium assets or other art styles are used. See `ASSET_CREDITS.md` and `ASSET_SHA256.json`.
+Official free Basic Pack artwork and selected Free Gift foliage/item sheets were downloaded through itch.io. Their included license permits distributing games and open-source projects with credits and licensing terms. Both full licenses are preserved. No premium assets or unrelated art styles are used. See `ASSET_CREDITS.md` and `ASSET_SHA256.json`.
 
 Maaack integration inspection covered its documentation, base atlas/terrain resource, examples, MIT code notice, and separate art restrictions. Its old grass atlas differs from the current download. INNATE uses new grass atlas configuration and compatible adapted dirt peering rules; no plugin or example map is installed. Inspected upstream revision: `47ddc077797d504b77ca96d602428e2ba3ba21f5`.
 
@@ -43,7 +45,7 @@ Maaack integration inspection covered its documentation, base atlas/terrain reso
 
 **Generated and launched successfully:** `build/web/index.html`, `index.js`, `index.wasm`, `index.pck`, `index.png`, `index.audio.worklet.js`, and `index.audio.position.worklet.js`.
 
-Genuine Godot 4.6.3 single-threaded Emscripten/WebGL 2 export. No replacement JavaScript game engine, placeholder HTML, GDExtension, thread dependency, or public deployment. Export artifacts are excluded from Git and Godot import; the delivery ZIP includes all generated files.
+Genuine Godot 4.6.3 single-threaded Emscripten/WebGL 2 export. No replacement JavaScript game engine, placeholder HTML, GDExtension, or thread dependency. The generated game files are tracked in `docs/` for GitHub Pages; the WASM runtime remains unchanged.
 
 Served with Python HTTP on `127.0.0.1:8000`, tested with headless Chromium and software WebGL. The compressed delivery is not a promise of game startup size or bandwidth performance; the uncompressed WASM runtime is approximately 36 MiB.
 

@@ -10,5 +10,15 @@
   "water.png": "02ce64243bb17f62fff0bd44abf661ab5efb8dd6a85fd7e304e73e2fd3188f95",
   "FREE_GIFT_LICENSE.txt": "09fc51330037dac5149db63ab9e43acb019e70bbee6d2267b5e577b36ad978df",
   "pine_biome.png": "d4eb3bcde8f927a79421d0d4c246ec40b0f3c772cdb1a7650f3889e71444fca7",
-  "creek_reeds.png": "61f1f54c8a663426cd1236dc57888918f6ff0b125e82ef7dd56bac6e8f653998"
+  "creek_reeds.png": "61f1f54c8a663426cd1236dc57888918f6ff0b125e82ef7dd56bac6e8f653998",
+  "foliage/birch_biome.png": "d17827f6e5ae03f93b6cc83642575072d3d160f591ad951ae06e8c3ba081466e",
+  "foliage/birch_water_plants.png": "78599c7e34668cef607162dab39673a1d765e6c350dc8afc40a976e12f0d1b46",
+  "foliage/cherry_blossom_biome.png": "5c7fc604fc027682cbad5d1657a6be4cfc5bf6924b09fa01a06d12a8783d0498",
+  "foliage/cherry_water_plants.png": "d3fb5ca82df04f7b36d6a9d0b0ff08153fa2153b021b628c02c15f3855b43aec",
+  "foliage/farming_plants_v2.png": "ed9b7819d3854e7a3accc7ac32c3fb195b6ebb63657308059efee94f6176d538",
+  "foliage/pine_water_plants.png": "c0e8cd511168d7351d4b98bc45f7d1ff550bc905df7c067e012e8adf4b85d003",
+  "foliage/trees_stumps_bushes_v2.png": "e46202b96e7df7f3421ac64d451a157efbbb4d5350db60d90486b401c3a82d15",
+  "mushroom_variants.png": "da085d73b9932d788cae9a6d382388c998c722f7e1aa44a5e2a62b4b53bb01ec",
+  "foliage/farming_plants_v2_watered.png": "c943c18e2654421e2e03032984ed1f75d1302acc1e76072b5ed248fcd5a7f03f",
+  "items/wood_and_mushroom_items.png": "b45dfcf7a478e1dddf8b666c94d16ae5de6971df941f4c6c29ce9c12482b8c53"
 }
