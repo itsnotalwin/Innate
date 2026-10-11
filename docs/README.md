@@ -7,7 +7,7 @@ INNATE is a non-commercial exploration gift for Paige. Milestone 01 uses Godot *
 1. Download the delivery ZIP and extract its contents into `C:\Users\Operations 3\Desktop\GAMES\Innate`, or check out the task branch with Git.
 2. In Godot 4.6.3 Standard, import the `project.godot` directly inside that directory. Allow Godot to import the textures.
 3. Press **F5**. The main scene is `scenes/main.tscn`.
-4. Walk with **WASD** or **arrow keys**, including simultaneous keys for diagonal movement. Release to stop. On a touch-capable browser, drag the joystick at bottom-left. Portrait is the primary phone layout and fills the available screen. Landscape and desktop adapt automatically.
+4. Walk with **WASD** or **arrow keys**, including simultaneous keys for diagonal movement. Release to stop. On a touch device, drag anywhere on the screen to move; the touch control is invisible during play. Portrait is the primary phone layout and fills the available screen. Landscape and desktop adapt automatically.
 
 Older Godot versions are not verified. Godot 4.3 supports TileMapLayer, but use the tested 4.6.3 release and matching export templates for reproducibility.
 
@@ -54,14 +54,14 @@ The browser script uses `/usr/bin/chromium`; adjust that path for another instal
 
 - `scenes/`: main, world, player, mobile controls.
 - `scripts/`: shared player movement, joystick, UI resize/orientation handling.
-- `assets/sprout_lands/`: eight selected original Basic Pack sheets and their license.
+- `assets/sprout_lands/`: eight selected Basic Pack sheets, a matching pine-biome sheet from Cup Nooble’s free gift pack, the small original creek reed sprite, and both licenses.
 - `resources/tilesets/`: native atlases and terrain/collision definitions.
 - `tools/`: optional offline generation, local ZIP import, export helper, browser shell.
 - `build/web/`: genuine generated Godot HTML/JS/WASM/PCK output.
 - `tests/evidence/`: actual running-game screenshots and verification results.
 - `docs/`: credits, licenses, instructions, and build report.
 
-To restore artwork, download the free Basic Pack directly from Cup Nooble and run `python tools/import_assets.py "path/to/Sprout Lands - Sprites - Basic pack.zip"`. The importer only extracts sheets used in this game. It does not download premium assets or replace the world.
+To restore the base artwork, download the free Basic Pack directly from Cup Nooble and run `python tools/import_assets.py "path/to/Sprout Lands - Sprites - Basic pack.zip"`. The supplementary pine sheet and its license are from Cup Nooble’s free Sorry Pack; `creek_reeds.png` is original INNATE artwork. The importer does not download premium assets or replace the world.
 
 ## Deploying from GitHub Pages
 

@@ -4,7 +4,7 @@
 
 Official source: https://cupnooble.itch.io/sprout-lands-asset-pack
 
-The free Basic Pack was acquired through the official itch.io free-download flow on 9 October 2026 (Africa/Johannesburg). Download listing: `Sprout Lands - Sprites - Basic pack.zip`, official upload ID `15327222`, listed update 23 October 2025. No premium-only files, animals, action animations, tools, or unrelated artwork are integrated.
+The free Basic Pack was acquired through the official itch.io free-download flow on 9 October 2026 (Africa/Johannesburg). Download listing: `Sprout Lands - Sprites - Basic pack.zip`, official upload ID `15327222`, listed update 23 October 2025. Selected additional sprites from Cup Nooble’s free `Sprout Lands - Free Gift - “sorry for the delay”` pack were acquired through its no-payment download option on 11 October 2026. Only the supplementary pine-biome tree sheet is integrated; the rest of that pack is not included. Mushroom additions use the original Basic Pack atlas unchanged, with in-game scale and subtle color variations. The Free Gift pack’s unmodified `read_me.txt` is preserved as `assets/sprout_lands/FREE_GIFT_LICENSE.txt` and carries the same Basic Pack non-commercial terms and credit requirement.
 
 ## Applicable artwork terms
 
@@ -24,7 +24,7 @@ The complete, unmodified included `read_me.txt` is preserved as `assets/sprout_l
 >
 > Credit is required : (Cup Nooble).
 
-The official landing page also has older, more generally worded no-redistribution text. This delivery relies on the explicit game/open-source project permission in the updated license included with the legitimately downloaded Basic Pack. The assets are included only as selected components of INNATE, with credits and their full terms; this is not a standalone asset-pack release. The connected repository was verified **private**, and no public deployment or release was made. Preserve the license and credits when sharing this non-commercial game. Commercial use needs separate permission or the appropriate paid license.
+The official landing page also has older, more generally worded no-redistribution text. This delivery relies on the explicit game/open-source project permission in the updated licenses included with the legitimately downloaded packs. The assets are included only as selected components of INNATE, with credits and their full terms; this is not a standalone asset-pack release. The repository is private and the playable non-commercial game is deployed through GitHub Pages. Preserve both licenses and credits when sharing the game. Commercial use needs separate permission or the appropriate paid license.
 
 ## Integrated sheets
 
@@ -35,11 +35,13 @@ The official landing page also has older, more generally worded no-redistributio
 | dirt.png | Tilesets/Tilled Dirt.png | 128×128 | Paths and decorative garden soil |
 | fences.png | Tilesets/Fences.png | 64×64 | Garden fence |
 | house.png | Tilesets/Wooden House.png | 112×80 | Cottage, windows, door, roof, step |
-| nature.png | Objects/Basic Grass Biom things 1.png | 144×80 | Trees, bushes, rocks, flowers, mushrooms, logs, stumps |
+| nature.png | Objects/Basic Grass Biom things 1.png | 144×80 | Starter trees, bushes, rocks, flowers, mushrooms, logs, stumps |
+| pine_biome.png | Free Gift / Plant update 2 / Pine Tree Biome.png | 160×64 | Matching pine trees that frame the mushroom clearing |
 | plants.png | Objects/Basic Plants.png | 96×32 | Decorative plants |
 | character.png | Characters/Basic Charakter Spritesheet.png | 192×192 | One playable character; 48×48 frames |
+| creek_reeds.png | Original INNATE pixel art | 16×24 | Small creek-edge reeds drawn to match the Basic Pack palette and pixel scale |
 
-Artwork is unchanged, only filenames are normalized. The project preserves native sprite/tile scale and uses nearest filtering. Character rows are down, up, right, left. Columns 0–1 are available idle frames, columns 2–3 are walking; this game uses a stationary column-0 idle and both walk frames. It does not use the separate action sheet.
+The eight selected Basic Pack sheets and the pine-biome sheet are unchanged, apart from normalized local filenames. Mushroom sprites use the original Basic Pack art with in-game scaling and restrained color shifts; no alternate mushroom drawings are included. The project preserves nearest filtering. Character rows are down, up, right, left. Columns 0–1 are available idle frames, columns 2–3 are walking; this game uses a stationary column-0 idle and both walk frames. It does not use the separate action sheet.
 
 ## Godot integration
 

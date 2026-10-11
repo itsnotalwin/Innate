@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://7j70whsfvg4r"
-path="res://.godot/imported/grove_mushrooms.png-5258b73f4850dd4db3f329dc30fc5313.ctex"
+uid="uid://cu44lx16wd4qq"
+path="res://.godot/imported/pine_biome.png-7cbcbcdbae972ef54a96b09913b3f339.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprout_lands/grove_mushrooms.png"
-dest_files=["res://.godot/imported/grove_mushrooms.png-5258b73f4850dd4db3f329dc30fc5313.ctex"]
+source_file="res://assets/sprout_lands/pine_biome.png"
+dest_files=["res://.godot/imported/pine_biome.png-7cbcbcdbae972ef54a96b09913b3f339.ctex"]
 
 [params]
 

@@ -70,6 +70,33 @@ func tree(cell: Vector2, kind: int, node_name: String) -> void:
 	var regions := [Rect2(0,0,16,32),Rect2(16,0,32,32),Rect2(48,0,32,32)]
 	object_at(node_name, cell, regions[kind], Vector2(7,7))
 
+func pine_tree(cell: Vector2, node_name: String) -> void:
+	var object := Node2D.new()
+	object.position = cell * 16.0 + Vector2(8,8)
+	own(object,nature,node_name)
+	var sprite := Sprite2D.new()
+	sprite.texture = load("res://assets/sprout_lands/pine_biome.png")
+	sprite.region_enabled = true
+	sprite.region_rect = Rect2(112,0,48,48)
+	sprite.position.y = -20.0
+	own(sprite,object,"Artwork")
+	rectangle(object,Vector2(7,7))
+
+func mushroom(cell: Vector2, variant: int, scale_factor: float, tint: int, node_name: String) -> void:
+	var object := Node2D.new()
+	object.position = cell * 16.0 + Vector2(8,8)
+	own(object,nature,node_name)
+	var sprite := Sprite2D.new()
+	sprite.texture = load("res://assets/sprout_lands/nature.png")
+	sprite.region_rect = Rect2((5+variant)*16,0,16,16)
+	sprite.region_enabled = true
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	sprite.scale = Vector2.ONE*scale_factor
+	sprite.position.y = 4.0 - 8.0*scale_factor
+	var tints := [Color.WHITE,Color(1.10,1.04,0.84),Color(0.90,1.04,1.15),Color(1.12,0.92,1.04)]
+	sprite.modulate = tints[clampi(tint,0,tints.size()-1)]
+	own(sprite,object,"Artwork")
+
 func build() -> void:
 	layout = JSON.parse_string(FileAccess.get_file_as_string("res://tools/world_layout.json"))
 	world.name = "World"
@@ -149,6 +176,9 @@ func build() -> void:
 	for i in range(layout.trees.size()):
 		var p: Array = layout.trees[i]
 		tree(Vector2(p[0],p[1]),p[2],"Tree_%02d" % i)
+	for i in range(layout.grove_pines.size()):
+		var p: Array = layout.grove_pines[i]
+		pine_tree(Vector2(p[0],p[1]),"GrovePine_%02d"%i)
 	# Curated boundary belts: staggered spacing with clear gaps inside the world.
 	for x in range(1,world_width-1,2):
 		tree(Vector2(x,1+(x%3)),x%3,"NorthTree_%02d"%x)
@@ -172,22 +202,7 @@ func build() -> void:
 				object_at("Flower_%02d_%d"%[i,j],cell,Rect2(flower_type*16,48,16,16))
 	for i in range(layout.mushrooms.size()):
 		var p: Array = layout.mushrooms[i]
-		object_at("Mushroom_%02d"%i,Vector2(p[0],p[1]),Rect2((5+i%3)*16,0,16,16))
-	var grove_texture: Texture2D = load("res://assets/sprout_lands/grove_mushrooms.png")
-	for i in range(layout.grove_mushrooms.size()):
-		var p: Array = layout.grove_mushrooms[i]
-		var scale_factor := float(p[3])
-		var fungus := Node2D.new()
-		fungus.position = Vector2(p[0]*16+8,p[1]*16+8)
-		own(fungus,nature,"GroveMushroom_%02d"%i)
-		var sprite := Sprite2D.new()
-		sprite.texture = grove_texture
-		sprite.region_enabled = true
-		sprite.region_rect = Rect2(int(p[2])*16,0,16,16)
-		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		sprite.scale = Vector2.ONE*scale_factor
-		sprite.position.y = -8.0*(scale_factor-1.0)
-		own(sprite,fungus,"Artwork")
+		mushroom(Vector2(p[0],p[1]),p[2],float(p[3]),p[4],"Mushroom_%02d"%i)
 	for i in range(layout.logs.size()):
 		var p: Array = layout.logs[i]
 		object_at("Log_%02d"%i,Vector2(p[0],p[1]),Rect2(0,64,32,16),Vector2(22,7))
