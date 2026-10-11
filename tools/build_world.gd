@@ -41,15 +41,15 @@ func rectangle(parent: Node, size: Vector2, offset: Vector2 = Vector2.ZERO) -> v
 	shape.size = size
 	add_shape(parent, shape, offset)
 
-func paint_path(points: Array) -> void:
+func paint_path(points: Array, radius := 1) -> void:
 	for i in range(points.size()-1):
 		var start := Vector2(points[i][0],points[i][1])
 		var end := Vector2(points[i+1][0],points[i+1][1])
 		var steps := maxi(1, int(start.distance_to(end)*3))
 		for step in range(steps+1):
 			var p := start.lerp(end, float(step)/steps)
-			for dy in range(-1,2):
-				for dx in range(-1,2):
+			for dy in range(-radius,radius+1):
+				for dx in range(-radius,radius+1):
 					route[Vector2i(roundi(p.x)+dx,roundi(p.y)+dy)] = true
 
 func object_at(node_name: String, cell: Vector2, region: Rect2, solid_size := Vector2.ZERO) -> Node2D:
@@ -103,10 +103,12 @@ func build() -> void:
 	paint_path(layout.path)
 	for branch in layout.path_branches:
 		paint_path(branch)
+	# A narrow footpath links the cottage apron to the garden gate.
+	paint_path(layout.garden_access,0)
 	# An apron joins the cottage door to the main path.
 	var cottage: Array = layout.cottage
 	for y in range(cottage[1]+1,cottage[1]+6):
-		for x in range(cottage[0]-2,cottage[0]+4): route[Vector2i(x,y)] = true
+		for x in range(cottage[0]-1,cottage[0]+2): route[Vector2i(x,y)] = true
 	var path_cells: Array[Vector2i] = []
 	for cell in route:
 		if not pond.has(cell): path_cells.append(cell)
@@ -129,9 +131,12 @@ func build() -> void:
 		for x in range(garden[0],garden[2]+1): garden_cells.append(Vector2i(x,y))
 	paths.set_cells_terrain_connect(garden_cells,0,1)
 	var plants := layer("GardenFlowers")
-	for y in range(36,39,2):
-		for x in range(15,23,2):
-			plants.set_cell(Vector2i(x,y),4,Vector2i(3 if x%4==1 else 4,1))
+	# Two compact crop beds flank the garden's clear center path.
+	for y in [48,50]:
+		for x in range(garden[0]+1,garden[0]+4):
+			plants.set_cell(Vector2i(x,y),4,Vector2i(3 if (x+y)%2==0 else 4,1))
+		for x in range(garden[0]+5,garden[2]):
+			plants.set_cell(Vector2i(x,y),4,Vector2i(4 if (x+y)%2==0 else 3,1))
 	nature = Node2D.new()
 	nature.y_sort_enabled = true
 	own(nature,world,"Nature")
@@ -210,10 +215,17 @@ func build_cottage() -> void:
 	step.set_cell(Vector2i(cottage_cell[0],cottage_cell[1]+1),5,Vector2i(0,4))
 
 func build_fence() -> void:
-	# Garden has an open north entrance and generous walking space around it.
+	# A three-cell north opening lines up with the cottage garden footpath.
 	var garden: Array = layout.garden
 	var west: int = garden[0]-1
 	var east: int = garden[2]+1
+	var north: int = garden[1]-1
+	var gate_center: int = int((garden[0]+garden[2])/2)
+	fence_piece(Vector2i(west,north),Vector2i(1,0))
+	fence_piece(Vector2i(east,north),Vector2i(3,0))
+	for x in range(west+1,east):
+		if x >= gate_center-1 and x <= gate_center+1: continue
+		fence_piece(Vector2i(x,north),Vector2i(2,0))
 	for x in range(west,east+1):
 		fence_piece(Vector2i(x,garden[3]+1),Vector2i(1 if x==west else (3 if x==east else 2),3))
 	for y in range(garden[1],garden[3]+1):
