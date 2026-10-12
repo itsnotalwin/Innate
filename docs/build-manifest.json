@@ -1,6 +1,6 @@
 {
   "godot": "4.6.3.stable.official.7d41c59c4",
-  "main_pack": "game-2120e38ba49b2f71.pck",
+  "main_pack": "game-bf84ec2a51f6b900.pck",
   "sources": {
     "assets/innate/README.md": "efb5a020881681025c05d71a7bb453c714948196f2a303ee63038bdb68c168b0",
     "assets/innate/cottage.png": "b7ee4d95ee3946f68eba180a18e0b200050840a97608ec397b3032dc0845299a",
@@ -90,7 +90,7 @@
     "scenes/main.tscn": "8329114464b83d6fd8b3a9a47b7f5493079af7d52f3200bb71549b347d5042fc",
     "scenes/mobile_controls.tscn": "449b82e95c358bb276dbee9e44a4898622315776a37b4b438c0573bc03fab24f",
     "scenes/player.tscn": "c08f643b66797719c76a539f32ee68ebfabaf747618f6e094c03ab8974088c83",
-    "scenes/world.tscn": "f47c01297c35ceafa2d84650ac279a9b9a848d8441595747a3139d984d185c64",
+    "scenes/world.tscn": "07521fa546c5cbc73ed11e2244192c23d533836391e3edaa371f9649d4662836",
     "scripts/atmosphere.gd": "50d0168c8830712c25352caa6371dcd6337c540f2df5931307d52c253cb25df9",
     "scripts/atmosphere.gd.uid": "49d31245a8f2209249fe251e182dd1dc980b319b36e1ff164648d57af25843a3",
     "scripts/countdown.gd": "8f54842e2a2a1a1582d65f1c85d3d9ce9289cbd544f168870304110bd23adbef",
@@ -124,8 +124,8 @@
       "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
       "bytes": 2973
     },
-    "game-2120e38ba49b2f71.pck": {
-      "sha256": "2120e38ba49b2f713372f1fa3be2d477c52c83a7e823c1052192a134bf45968b",
+    "game-bf84ec2a51f6b900.pck": {
+      "sha256": "bf84ec2a51f6b90092354135ef96142c91d6510dcf2b0ff1c214ac7cbc67d0af",
       "bytes": 1323600
     },
     "loader-character.png": {
@@ -133,9 +133,9 @@
       "bytes": 2091
     },
     "index.html": {
-      "sha256": "e166fa78897532ba4201318ef84799d6eb830fbe7ab4c96f69bebe62c98381ae",
+      "sha256": "50dc47fee7c8e14db6f283843df8e0f676c9e73931149aa769d22af51d55e5f9",
       "bytes": 8011
     }
   },
-  "root_html_sha256": "f08bc536a1ecbc916b0037b653ccf0dd1492b790725fbddedf8af67d50fa2f3e"
+  "root_html_sha256": "eb764f8b97d0b17a07fc3ecf050887bd0f8d3c4ea5220c013ab0096747f706f9"
 }
