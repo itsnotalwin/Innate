@@ -60,7 +60,9 @@ def main():
     if args.baseline_ref:
         baseline = ROOT / 'build/performance-baseline'
         baseline.mkdir(parents=True, exist_ok=True)
-        for name in ('index.html', 'index.pck', 'index.js', 'index.wasm', 'index.png', 'index.audio.worklet.js', 'index.audio.position.worklet.js'):
+        manifest = json.loads(subprocess.check_output(
+            ['git', 'show', f'{args.baseline_ref}:docs/build-manifest.json'], cwd=ROOT, text=True))
+        for name in ('index.html', manifest['main_pack'], 'loader-character.png', 'index.js', 'index.wasm', 'index.audio.worklet.js', 'index.audio.position.worklet.js'):
             data = subprocess.check_output(['git', 'show', f'{args.baseline_ref}:docs/{name}'], cwd=ROOT)
             (baseline / name).write_bytes(data)
         urls.append(('baseline ' + args.baseline_ref, base_url + '/build/performance-baseline/'))

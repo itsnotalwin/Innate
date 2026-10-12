@@ -4,6 +4,7 @@ const PORTRAIT_SIZE := Vector2i(216, 384)
 const LANDSCAPE_SIZE := Vector2i(384, 216)
 const WORLD_SIZE := Vector2(2048, 1664)
 var _web_resize_callback: JavaScriptObject
+var _web_lifecycle_callback: JavaScriptObject
 var _resize_pending := false
 
 @onready var player: CharacterBody2D = $World/Nature/Player
@@ -17,6 +18,12 @@ func _ready() -> void:
 		_web_resize_callback = JavaScriptBridge.create_callback(func(_args: Array):
 			_queue_resize())
 		JavaScriptBridge.get_interface("window").addEventListener("resize", _web_resize_callback)
+		_web_lifecycle_callback = JavaScriptBridge.create_callback(func(_args: Array):
+			_clear_input()
+			player.reset_physics_interpolation())
+		for event in ["blur", "pagehide", "pageshow"]:
+			JavaScriptBridge.get_interface("window").addEventListener(event, _web_lifecycle_callback)
+		JavaScriptBridge.get_interface("document").addEventListener("visibilitychange", _web_lifecycle_callback)
 	_apply_layout()
 	player.reset_physics_interpolation()
 	# Hide the HTML loader only once the actual game has drawn its first frame.
@@ -27,6 +34,10 @@ func _ready() -> void:
 func _set_touch_direction(direction: Vector2) -> void:
 	player.touch_direction = direction
 
+func _clear_input() -> void:
+	joystick.release_touch()
+	player.clear_input()
+
 func _queue_resize() -> void:
 	if _resize_pending:
 		return
@@ -35,7 +46,7 @@ func _queue_resize() -> void:
 
 func _apply_layout() -> void:
 	_resize_pending = false
-	joystick.release_touch()
+	_clear_input()
 	var window := get_window()
 	var screen := Vector2(window.size)
 	if screen.x <= 0 or screen.y <= 0:
@@ -45,10 +56,12 @@ func _apply_layout() -> void:
 	var scale_factor := minf(screen.x / base.x, screen.y / base.y)
 	scale_factor = maxf(scale_factor, maxf(screen.x / WORLD_SIZE.x, screen.y / WORLD_SIZE.y))
 	var logical_size := Vector2i(floori(screen.x / scale_factor), floori(screen.y / scale_factor))
-	if window.content_scale_size != logical_size:
+	var layout_changed := window.content_scale_size != logical_size
+	if layout_changed:
 		window.content_scale_size = logical_size
 	var camera: Camera2D = player.get_node("Camera")
-	camera.reset_smoothing()
+	if layout_changed:
+		camera.reset_smoothing()
 	# CSS safe-area values keep the countdown clear of phone notches.
 	if OS.has_feature("web"):
 		var safe_area: Array = JSON.parse_string(str(JavaScriptBridge.eval("JSON.stringify(window.innateSafeArea())")))
@@ -58,9 +71,13 @@ func _apply_layout() -> void:
 		countdown.position = Vector2(logical_size.x - countdown.size.x - 14, 14)
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and is_node_ready():
-		joystick.release_touch()
+	if (what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_APPLICATION_PAUSED) and is_node_ready():
+		_clear_input()
 
 func _exit_tree() -> void:
 	if _web_resize_callback != null:
 		JavaScriptBridge.get_interface("window").removeEventListener("resize", _web_resize_callback)
+	if _web_lifecycle_callback != null:
+		for event in ["blur", "pagehide", "pageshow"]:
+			JavaScriptBridge.get_interface("window").removeEventListener(event, _web_lifecycle_callback)
+		JavaScriptBridge.get_interface("document").removeEventListener("visibilitychange", _web_lifecycle_callback)

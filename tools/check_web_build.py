@@ -11,7 +11,7 @@ PAGES = ROOT / 'docs'
 
 def source_hashes():
     files = [ROOT / 'project.godot', ROOT / 'export_presets.cfg', ROOT / 'tools/web_shell.html']
-    for directory in ('scenes', 'scripts', 'resources', 'assets'):
+    for directory in ('scenes', 'scripts', 'shaders', 'resources', 'assets'):
         files.extend(path for path in (ROOT / directory).rglob('*') if path.is_file())
     return {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
             for path in sorted(files)}

@@ -2,6 +2,7 @@ extends Control
 ## Invisible full-screen touch surface; drag from anywhere to steer.
 signal direction_changed(direction: Vector2)
 const RADIUS := 24.0
+const DEADZONE := 0.16
 var finger := -1
 var touch_origin := Vector2.ZERO
 var direction := Vector2.ZERO
@@ -28,11 +29,12 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func _update_direction(local: Vector2) -> void:
-	direction = ((local - touch_origin) / RADIUS).limit_length(1.0)
-	if direction.length() < 0.16:
-		direction = Vector2.ZERO
-	direction_changed.emit(direction)
-	queue_redraw()
+	var offset := (local - touch_origin) / RADIUS
+	var strength := clampf((offset.length() - DEADZONE) / (1.0 - DEADZONE), 0.0, 1.0)
+	var next_direction := offset.normalized() * strength
+	if not direction.is_equal_approx(next_direction):
+		direction = next_direction
+		direction_changed.emit(direction)
 
 func release_touch() -> void:
 	finger = -1

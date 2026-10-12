@@ -20,9 +20,12 @@ func _physics_process(_delta: float) -> void:
 	if sprite.animation != animation:
 		sprite.play(animation)
 
+func clear_input() -> void:
+	touch_direction = Vector2.ZERO
+	velocity = Vector2.ZERO
+	for action in ["move_left", "move_right", "move_up", "move_down"]:
+		Input.action_release(action)
+
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
-		touch_direction = Vector2.ZERO
-		velocity = Vector2.ZERO
-		for action in ["move_left", "move_right", "move_up", "move_down"]:
-			Input.action_release(action)
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_APPLICATION_PAUSED:
+		clear_input()

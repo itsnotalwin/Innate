@@ -1,5 +1,5 @@
 {
-  "url": "http://127.0.0.1:43047/Innate/",
+  "url": "http://127.0.0.1:44657/Innate/",
   "checks": [
     {
       "check": "Godot initializes and renders its canvas",
@@ -38,6 +38,34 @@
       "passed": true
     },
     {
+      "check": "blur clears held browser touch without stuck movement",
+      "passed": true
+    },
+    {
+      "check": "pagehide clears held browser touch without stuck movement",
+      "passed": true
+    },
+    {
+      "check": "pageshow clears held browser touch without stuck movement",
+      "passed": true
+    },
+    {
+      "check": "visibilitychange clears held browser touch without stuck movement",
+      "passed": true
+    },
+    {
+      "check": "returning from another tab does not resume a held movement key",
+      "passed": true
+    },
+    {
+      "check": "repeated portrait/landscape rotation restores a bounded portrait canvas",
+      "passed": true
+    },
+    {
+      "check": "safe-area bridge includes top and right insets, not just left and bottom",
+      "passed": true
+    },
+    {
       "check": "browser touch drag moves player diagonally",
       "passed": true
     },
@@ -54,7 +82,15 @@
       "passed": true
     },
     {
-      "check": "retina phones do not allocate an oversized game render buffer",
+      "check": "retina phone render buffer remains bounded to 720 pixels",
+      "passed": true
+    },
+    {
+      "check": "graphics interruption after loading recreates a recovery surface",
+      "passed": true
+    },
+    {
+      "check": "recovery action reloads into a running game",
       "passed": true
     },
     {
@@ -67,6 +103,10 @@
     },
     {
       "check": "failed runtime download replaces progress with a retry action",
+      "passed": true
+    },
+    {
+      "check": "failed game-data download shows a usable retry surface",
       "passed": true
     },
     {
@@ -90,19 +130,19 @@
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x1b1c04de0e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+      "text": "[.WebGL-0x50405e41a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x1b1c04de0e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+      "text": "[.WebGL-0x50405e41a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x1b1c04de0e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+      "text": "[.WebGL-0x50405e41a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x1b1c04de0e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+      "text": "[.WebGL-0x50405e41a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
     },
     {
       "type": "log",
@@ -115,6 +155,10 @@
     {
       "type": "log",
       "text": "Build configuration: Emscripten 4.0.20, single-threaded, no GDExtension support."
+    },
+    {
+      "type": "error",
+      "text": "Graphics context lost"
     },
     {
       "type": "log",

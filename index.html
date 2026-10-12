@@ -25,7 +25,7 @@ progress::-moz-progress-bar { background: #809965; }
 .credit a { color: inherit; text-decoration: none; }
 #notice { font-size: 14px; line-height: 1.5; }
 #retry { margin: 16px auto; padding: 10px 22px; border: 1px solid #809965; border-radius: 20px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
-#safe-area { position: fixed; visibility: hidden; pointer-events: none; padding-left: env(safe-area-inset-left); padding-bottom: env(safe-area-inset-bottom); }
+#safe-area { position: fixed; visibility: hidden; pointer-events: none; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
 </style>
 
 </head>
@@ -52,8 +52,10 @@ const MAX_RENDER_EDGE = 720;
 let renderScale = 1;
 function resizeCanvas() {
   renderScale = Math.min(1, MAX_RENDER_EDGE / Math.max(innerWidth, innerHeight));
-  canvas.width = Math.max(1, Math.round(innerWidth * renderScale));
-  canvas.height = Math.max(1, Math.round(innerHeight * renderScale));
+  const width = Math.max(1, Math.round(innerWidth * renderScale));
+  const height = Math.max(1, Math.round(innerHeight * renderScale));
+  if (canvas.width !== width) canvas.width = width;
+  if (canvas.height !== height) canvas.height = height;
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
@@ -64,6 +66,7 @@ window.innateSafeArea = () => {
 };
 window.innateReady = () => {
   document.getElementById('status')?.remove();
+  clearTimeout(startupWatchdog);
   performance.mark('innate-ready');
   canvas.focus({preventScroll: true});
 };
@@ -71,25 +74,77 @@ canvas.addEventListener('keydown', event => {
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(event.code)) event.preventDefault();
 });
 canvas.addEventListener('pointerdown', () => canvas.focus({preventScroll: true}));
-function showFailure(error) {
+function showFailure(error, message = 'The world could not load. Check your connection and try again. A browser with WebGL 2 is required.') {
+  clearTimeout(startupWatchdog);
   console.error(error);
+  // The loader is removed after launch; recreate a recovery surface if graphics
+  // are lost later (for example under mobile memory pressure).
+  if (!document.getElementById('status')) {
+    const status = document.createElement('div');
+    status.id = 'status'; status.setAttribute('role', 'alert');
+    const content = document.createElement('div'); content.className = 'loading';
+    const notice = document.createElement('p'); notice.id = 'notice';
+    const retry = document.createElement('button'); retry.id = 'retry';
+    retry.textContent = 'Try again'; retry.addEventListener('click', () => location.reload());
+    content.append(notice, retry); status.append(content); document.body.append(status);
+  }
   const notice = document.getElementById('notice');
   if (!notice) return;
-  document.getElementById('progress').hidden = true;
-  notice.textContent = 'The world could not load. Check your connection and try again. A browser with WebGL 2 is required.';
+  const progress = document.getElementById('progress');
+  if (progress) progress.hidden = true;
+  notice.textContent = message;
   notice.hidden = false;
   document.getElementById('retry').hidden = false;
 }
+let startupWatchdog = 0;
+canvas.addEventListener('webglcontextlost', event => {
+  event.preventDefault();
+  window.dispatchEvent(new Event('blur'));
+  showFailure('Graphics context lost', 'The graphics connection was interrupted. Tap Try again to reload the world.');
+});
+const nativeFetch = window.fetch.bind(window);
+window.fetch = async (...args) => {
+  const request = args[0];
+  const url = typeof request === 'string' ? request : request?.url || '';
+  try {
+    const response = await nativeFetch(...args);
+    if (!response.ok && /\.(pck|wasm)(?:$|[?#])/i.test(url)) {
+      throw new Error(`Game file download failed (${response.status}): ${url}`);
+    }
+    return response;
+  } catch (error) {
+    if (/\.(pck|wasm)(?:$|[?#])/i.test(url)) showFailure(error);
+    throw error;
+  }
+};
+const nativeXhrOpen = XMLHttpRequest.prototype.open;
+const nativeXhrSend = XMLHttpRequest.prototype.send;
+XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+  this.__innateResourceUrl = String(url);
+  return nativeXhrOpen.call(this, method, url, ...rest);
+};
+XMLHttpRequest.prototype.send = function(...args) {
+  const url = this.__innateResourceUrl || '';
+  if (/\.(pck|wasm)(?:$|[?#])/i.test(url)) {
+    this.addEventListener('loadend', () => {
+      if (this.status === 0 || this.status >= 400) showFailure(`Game file request failed (${this.status}): ${url}`);
+    }, {once: true});
+  }
+  return nativeXhrSend.apply(this, args);
+};
 </script>
 <script src="index.js" onerror="showFailure('Game runtime download failed')"></script>
 <script>
 if (typeof Engine !== 'undefined') {
-  const config = {"args":[],"canvasResizePolicy":0,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.wasm":37700666,"game-f21198315be2d908.pck":620676},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"mainPack":"game-f21198315be2d908.pck"};
+  const config = {"args":[],"canvasResizePolicy":0,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.wasm":37700666,"game-6fc7eb5e1c54cbe5.pck":621380},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"mainPack":"game-6fc7eb5e1c54cbe5.pck"};
   const missing = Engine.getMissingFeatures({threads: false});
   if (missing.length) {
     showFailure(missing.join(', '));
   } else {
     const engine = new Engine(config);
+    startupWatchdog = setTimeout(() => {
+      if (document.getElementById('status')) showFailure('Game startup timed out', 'The world is taking too long to load. Check your connection and try again.');
+    }, 30000);
     engine.startGame({onProgress(current, total) {
       const progress = document.getElementById('progress');
       if (progress && total > 0) { progress.max = total; progress.value = current; }
