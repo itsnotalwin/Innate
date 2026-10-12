@@ -259,10 +259,9 @@ func build() -> void:
 	paint_path(layout.outer_loop)
 	for branch in layout.path_branches:
 		paint_path(branch)
-	# Keep the far glade reachable without making players circle half the map.
-	# These broad, gently curving connectors make the cottage hub a useful starting point.
-	paint_path([[68.0,55.0],[63.0,51.0],[57.0,46.0],[51.0,41.0],[45.0,36.0],[40.0,32.0],[36.09,30.0]],1,true)
-	paint_path([[72.0,60.0],[77.0,62.0],[82.0,65.0],[87.0,68.0],[92.0,71.0],[94.0,71.0]],1,true)
+	# Optional shortcuts keep the long walks reasonable while preserving the main loop.
+	for link in layout.hub_links:
+		paint_path(link,1,true)
 	# A light footpath circles the flower clearing and rejoins the south trail.
 	paint_path(layout.meadow_trail,1,true)
 	# This quieter inner trail crosses the meadow and ends at its rest stone,
@@ -561,6 +560,9 @@ func build_destination_approaches() -> void:
 		{"name":"Creek", "branch":2, "seed":3104},
 	]:
 		build_destination_approach(design)
+	# The direct routes need the same staged scenery as the original destination spurs.
+	build_destination_approach({"name":"Mushroom","points":layout.hub_links[0],"prefix":"MushroomShortcut","seed":3111})
+	build_destination_approach({"name":"Orchard","points":layout.hub_links[1],"prefix":"OrchardShortcut","seed":3112})
 	build_area_thresholds()
 
 func transition_clear(cell: Vector2, spacing := 24.0) -> bool:
@@ -599,7 +601,8 @@ func build_destination_approach(design: Dictionary) -> void:
 	var points: Array[Vector2] = []
 	var minimum := Vector2(INF,INF)
 	var maximum := Vector2(-INF,-INF)
-	for entry in layout.path_branches[int(design.branch)]:
+	var route_points: Array = design.points if design.has("points") else layout.path_branches[int(design.branch)]
+	for entry in route_points:
 		var point := Vector2(entry[0],entry[1])
 		if not points.is_empty() and point == points.back(): continue
 		points.append(point)
@@ -609,6 +612,7 @@ func build_destination_approach(design: Dictionary) -> void:
 	for i in range(points.size()-1): length += points[i].distance_to(points[i+1])
 	var rng := RandomNumberGenerator.new()
 	rng.seed = int(design.seed)
+	var object_prefix := String(design.get("prefix",design.name))
 	var tree_positions: Array[Vector2] = []
 	var accent_positions: Array[Vector2] = []
 	for y in range(maxi(4,int(minimum.y)-6),mini(int(layout.size[1])-4,int(maximum.y)+7)):
@@ -646,7 +650,7 @@ func build_destination_approach(design: Dictionary) -> void:
 					var kind := 1
 					if rng.randf() < richness:
 						kind = {"Mushroom":3,"Meadow":9,"Pond":6,"Creek":11}[String(design.name)]
-					low_tree(Vector2(cell),kind,"%sApproachTree_%d_%d"%[design.name,x,y],0.60)
+					low_tree(Vector2(cell),kind,"%sApproachTree_%d_%d"%[object_prefix,x,y],0.60)
 					tree_positions.append(Vector2(cell))
 					continue
 			var destination_density := 0.60 if String(design.name) == "Meadow" else 0.48
@@ -655,7 +659,7 @@ func build_destination_approach(design: Dictionary) -> void:
 			var early_density := 0.30 if pocket else 0.16
 			if rng.randf() > lerpf(early_density,destination_density,richness): continue
 			if rng.randf() > richness:
-				flower_detail(Vector2(cell),rng.randi_range(0,15),"%sApproachBloom_%d_%d"%[design.name,x,y],0.34)
+				flower_detail(Vector2(cell),rng.randi_range(0,15),"%sApproachBloom_%d_%d"%[object_prefix,x,y],0.34)
 			elif String(design.name) == "Mushroom":
 				var clear := true
 				for other in accent_positions:
@@ -668,11 +672,11 @@ func build_destination_approach(design: Dictionary) -> void:
 				for other in accent_positions:
 					if other.distance_to(Vector2(cell)) < 3.0: clear = false
 				if clear:
-					woodland_prop(Vector2(cell),4+rng.randi_range(0,2),"%sApproachReeds_%d_%d"%[design.name,x,y],0.56)
+					woodland_prop(Vector2(cell),4+rng.randi_range(0,2),"%sApproachReeds_%d_%d"%[object_prefix,x,y],0.56)
 					accent_positions.append(Vector2(cell))
 			else:
 				var variant := rng.randi_range(0,15) if String(design.name) == "Meadow" else rng.randi_range(4,15)
-				flower_clump(Vector2(cell),variant,"%sApproachBloom_%d_%d"%[design.name,x,y],0.38)
+				flower_clump(Vector2(cell),variant,"%sApproachBloom_%d_%d"%[object_prefix,x,y],0.38)
 
 func build_orchard_grove() -> void:
 	for i in range(layout.orchard_trees.size()):

@@ -2,7 +2,7 @@
 	"approach_objects": {
 		"Creek": 5,
 		"Meadow": 10,
-		"Mushroom": 14,
+		"Mushroom": 15,
 		"Orchard": 5,
 		"Pond": 5
 	},
@@ -10,14 +10,20 @@
 	"disconnected_bridge_cells": [],
 	"disconnected_path_cells": [],
 	"failures": [],
-	"nature_objects": 1313,
+	"nature_objects": 1320,
 	"path_cells": 2779,
-	"route_walk_seconds_from_hub": {
-		"Cottage": 6.2,
-		"Creek": 18.4,
-		"Meadow": 7.8,
-		"Mushroom": 12.2,
-		"Orchard": 10.0,
-		"Pond": 12.7
-	}
+	"route_walk_origin": "player spawn",
+	"route_walk_seconds_from_spawn": {
+		"Cottage": 1.5,
+		"Creek": 18.6,
+		"Meadow": 11.5,
+		"Mushroom": 12.8,
+		"Orchard": 10.2,
+		"Pond": 8.8
+	},
+	"shortcut_approach_objects": {
+		"Mushroom": 6,
+		"Orchard": 4
+	},
+	"spawn_to_nearest_path_tiles": 0.71
 }
