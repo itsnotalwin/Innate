@@ -1,12 +1,6 @@
 extends SceneTree
 ## Convert the edited sprite master into a compact, crisp native 16px atlas.
-const PALETTE := [
-	Color("5b7465"), Color("7d9870"), Color("a6bd7d"), Color("c5d496"),
-	Color("c9956c"), Color("e4ae76"), Color("efc18c"),
-	Color("d3ba7e"), Color("e7d69c"), Color("f6e7b7"),
-	Color("b38196"), Color("cd9caf"), Color("e5b9c4"),
-	Color("8297ad"), Color("a2b4c4"), Color("c4d0d4"), Color("f4dca0"),
-]
+const FLOWER_ROW_BOUNDS := [0, 375, 625, 940, 1254]
 
 func _initialize() -> void:
 	var source := Image.load_from_file("res://art/meadow_flowers_master.png")
@@ -15,22 +9,30 @@ func _initialize() -> void:
 		quit(1)
 		return
 	source.convert(Image.FORMAT_RGBA8)
+	var palette_json: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://assets/innate/environment_palette.json"))
+	if not palette_json is Array or palette_json.is_empty():
+		push_error("Missing shared environment palette; run tools/prepare_environment_atlases.py first")
+		quit(1)
+		return
+	var palette: Array[Color] = []
+	for color_hex in palette_json:
+		palette.append(Color(String(color_hex)))
 	var atlas := Image.create(64,64,false,Image.FORMAT_RGBA8)
 	for row in range(4):
 		for column in range(4):
-			var origin := Vector2i(roundi(column*source.get_width()/4.0),roundi(row*source.get_height()/4.0))
-			var end := Vector2i(roundi((column+1)*source.get_width()/4.0),roundi((row+1)*source.get_height()/4.0))
+			var origin := Vector2i(roundi(column*source.get_width()/4.0),FLOWER_ROW_BOUNDS[row])
+			var end := Vector2i(roundi((column+1)*source.get_width()/4.0),FLOWER_ROW_BOUNDS[row+1])
 			var sprite := source.get_region(Rect2i(origin,end-origin))
 			sprite.resize(16,16,Image.INTERPOLATE_NEAREST)
 			for y in range(16):
 				for x in range(16):
 					var pixel := sprite.get_pixel(x,y)
-					if pixel.a < 0.5:
+					if pixel.a < 0.9:
 						sprite.set_pixel(x,y,Color.TRANSPARENT)
 						continue
-					var best := PALETTE[0]
+					var best := palette[0]
 					var distance := INF
-					for color in PALETTE:
+					for color in palette:
 						var delta := Vector3(pixel.r-color.r,pixel.g-color.g,pixel.b-color.b)
 						if delta.length_squared() < distance:
 							distance = delta.length_squared()
@@ -43,5 +45,5 @@ func _initialize() -> void:
 		push_error("Could not save meadow atlas")
 		quit(1)
 		return
-	print("Prepared 16 meadow sprites at native resolution with a shared 17-color palette.")
+	print("Prepared 16 native meadow sprites with the shared environment palette.")
 	quit()

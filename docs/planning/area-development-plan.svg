@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1120" viewBox="0 0 1500 1120">
+<defs>
+  <pattern id="paper" width="34" height="34" patternUnits="userSpaceOnUse"><path d="M34 0H0V34" fill="none" stroke="#dce7d6" stroke-width="1"/></pattern>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#58705c" flood-opacity=".14"/></filter>
+  <pattern id="water" width="36" height="28" patternUnits="userSpaceOnUse"><rect width="36" height="28" fill="#80c8c4"/><path d="M2 8q8-5 16 0t16 0M-8 22q8-5 16 0t16 0t16 0" fill="none" stroke="#b7e5db" stroke-width="2" opacity=".75"/></pattern>
+  <g id="tree"><circle r="13" fill="#76aa63" stroke="#426f55" stroke-width="2"/><circle cx="-4" cy="-4" r="7" fill="#a4ce72"/><path d="M0 8v7" stroke="#806143" stroke-width="3"/></g>
+  <g id="flower"><circle r="5" fill="#f4cf7d"/><circle cx="-4" cy="-3" r="3" fill="#ec91a8"/><circle cx="4" cy="-3" r="3" fill="#ec91a8"/><circle cy="4" r="3" fill="#f3e8bc"/></g>
+  <g id="mushroom"><path d="M-10 1q2-12 10-12t10 12z" fill="#e88b63" stroke="#774e42" stroke-width="2"/><path d="M-5 1v8q5 4 10 0V1" fill="#f0d8a6" stroke="#774e42" stroke-width="2"/><circle cx="-4" cy="-5" r="2" fill="#fff0cf"/><circle cx="4" cy="-3" r="2" fill="#fff0cf"/></g>
+  <g id="apple"><circle r="9" fill="#d96b58" stroke="#804c45" stroke-width="2"/><path d="M0-8v-5m0 4q5-5 8-2" fill="none" stroke="#557a4f" stroke-width="3"/></g>
+</defs>
+<rect width="1500" height="1120" fill="#f4f1e5"/>
+<text x="58" y="58" font-family="Verdana,sans-serif" font-size="30" font-weight="700" fill="#31574b">INNATE · AREA DEVELOPMENT PLAN</text>
+<text x="60" y="88" font-family="Verdana,sans-serif" font-size="16" fill="#71847a">A planning sketch of the current route structure, with a clear visual role and a small landmark for each destination.</text>
+<!-- map board -->
+<rect x="58" y="116" width="1384" height="890" rx="28" fill="#e8f0d8" stroke="#c9d8c2" stroke-width="2"/>
+<rect x="58" y="116" width="1384" height="890" rx="28" fill="url(#paper)"/>
+<!-- river along the eastern map edge -->
+<path d="M1300 118 C1268 220 1322 292 1286 390 C1252 492 1325 581 1287 686 C1252 782 1311 890 1275 1004 L1441 1004 L1441 118Z" fill="url(#water)" stroke="#4a9997" stroke-width="4"/>
+<path d="M1263 120 C1230 226 1284 292 1249 390 C1214 492 1285 580 1248 686 C1213 783 1270 890 1235 1004" fill="none" stroke="#4a9997" stroke-width="3" stroke-dasharray="8 10"/>
+<text x="1364" y="540" transform="rotate(90 1364 540)" font-family="Verdana" font-size="13" font-weight="700" letter-spacing="2" fill="#286d75">MAP-WIDE RIVER</text>
+<!-- paths: branch trails first, then the central loop -->
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+ <g stroke="#d9a96c" stroke-width="24"><path d="M671 532 C594 510 530 500 456 512 C390 526 354 570 360 628 C370 684 435 713 512 709 C600 703 671 666 696 606 C718 556 703 507 671 478 C650 457 623 447 586 449"/><path d="M510 536 C459 490 418 437 377 380"/><path d="M543 505 C558 425 583 348 600 282"/><path d="M694 516 C759 454 802 392 839 340"/><path d="M701 594 C795 618 878 650 962 684 C1030 712 1090 726 1192 720"/><path d="M506 681 C468 752 418 817 369 866"/></g>
+ <g stroke="#fff0cf" stroke-width="14"><path d="M671 532 C594 510 530 500 456 512 C390 526 354 570 360 628 C370 684 435 713 512 709 C600 703 671 666 696 606 C718 556 703 507 671 478 C650 457 623 447 586 449"/><path d="M510 536 C459 490 418 437 377 380"/><path d="M543 505 C558 425 583 348 600 282"/><path d="M694 516 C759 454 802 392 839 340"/><path d="M701 594 C795 618 878 650 962 684 C1030 712 1090 726 1192 720"/><path d="M506 681 C468 752 418 817 369 866"/></g>
+</g>
+<!-- area footprints -->
+<g filter="url(#shadow)">
+ <path d="M235 218h238q22 0 22 22v142q0 22-22 22H235q-22 0-22-22V240q0-22 22-22" fill="#d8c8e9" stroke="#755d8c" stroke-width="3"/>
+ <path d="M497 150h218q22 0 22 22v112q0 22-22 22H497q-22 0-22-22V172q0-22 22-22" fill="#f1d7ac" stroke="#9a754e" stroke-width="3"/>
+ <path d="M745 230h230q22 0 22 22v134q0 22-22 22H745q-22 0-22-22V252q0-22 22-22" fill="#b7dcd4" stroke="#427b7c" stroke-width="3"/>
+ <path d="M1055 631h176q22 0 22 22v134q0 22-22 22h-176q-22 0-22-22V653q0-22 22-22" fill="#b7dcd4" stroke="#427b7c" stroke-width="3"/>
+ <path d="M236 806h244q22 0 22 22v132q0 22-22 22H236q-22 0-22-22V828q0-22 22-22" fill="#efc5d0" stroke="#a25e79" stroke-width="3"/>
+</g>
+<!-- central cottage hub -->
+<ellipse cx="604" cy="586" rx="118" ry="70" fill="#d6e2b9" stroke="#829966" stroke-width="3"/>
+<path d="M578 565l34-26 34 26v40h-68z" fill="#e2bd8e" stroke="#725640" stroke-width="3"/><path d="M570 565l42-33 42 33" fill="none" stroke="#804e43" stroke-width="8"/><rect x="604" y="578" width="16" height="27" fill="#805b43"/>
+<rect x="540" y="620" width="39" height="24" rx="5" fill="#b48a63" stroke="#785a43" stroke-width="2"/><rect x="635" y="620" width="39" height="24" rx="5" fill="#b48a63" stroke="#785a43" stroke-width="2"/>
+<text x="612" y="685" text-anchor="middle" font-family="Verdana" font-size="15" font-weight="700" fill="#31574b">1 · COTTAGE HUB</text>
+<text x="612" y="704" text-anchor="middle" font-family="Verdana" font-size="12" fill="#58705d">home garden · open central clearing · loop junction</text>
+<!-- mushroom grove -->
+<g><use href="#tree" x="258" y="282"/><use href="#tree" x="294" y="272"/><use href="#tree" x="334" y="279"/><use href="#tree" x="375" y="271"/><use href="#tree" x="434" y="288"/><use href="#tree" x="247" y="352"/><use href="#tree" x="293" y="379"/><use href="#tree" x="436" y="360"/><use href="#tree" x="461" y="313"/><use href="#mushroom" x="325" y="335"/><use href="#mushroom" x="373" y="315"/><use href="#mushroom" x="405" y="342"/><use href="#mushroom" x="363" y="369"/><use href="#mushroom" x="291" y="327"/></g>
+<text x="354" y="241" text-anchor="middle" font-family="Verdana" font-size="15" font-weight="700" fill="#5d496f">2 · MUSHROOM GLADE</text>
+<text x="354" y="259" text-anchor="middle" font-family="Verdana" font-size="12" fill="#655a70">woodland edge · mushroom clearings · winding walk</text>
+<!-- orchard -->
+<g><use href="#tree" x="523" y="184"/><use href="#tree" x="572" y="172"/><use href="#tree" x="623" y="180"/><use href="#tree" x="675" y="199"/><use href="#apple" x="547" y="226"/><use href="#apple" x="603" y="224"/><use href="#apple" x="660" y="229"/></g>
+<rect x="567" y="238" width="78" height="28" rx="5" fill="#f4e3c6" stroke="#ad8660" stroke-width="2"/><path d="M574 244h64M574 252h64M574 260h64" stroke="#ce9872" stroke-width="2"/>
+<text x="600" y="298" text-anchor="middle" font-family="Verdana" font-size="15" font-weight="700" fill="#735234">5 · ORCHARD &amp; PICNIC</text>
+<!-- pond -->
+<text x="858" y="252" text-anchor="middle" font-family="Verdana" font-size="15" font-weight="700" fill="#376e71">4 · POND GARDEN</text>
+<text x="858" y="270" text-anchor="middle" font-family="Verdana" font-size="12" fill="#436b6b">clear edge · lilies · small bridge · bank flowers</text>
+<path d="M768 300q31-24 73-11t72-2q42 22 24 55t12 42q-17 35-57 19t-63 5q-45-7-43-37t-18-37q-16-15 0-34" fill="#7ec7c4" stroke="#458e8a" stroke-width="4"/>
+<path d="M777 308q38-15 66 1t69-4" fill="none" stroke="#d0ece1" stroke-width="4"/><ellipse cx="822" cy="340" rx="9" ry="5" fill="#cbe3a5"/><ellipse cx="895" cy="368" rx="9" ry="5" fill="#cbe3a5"/><path d="M926 354v-38h32v38m-36-31h40" fill="none" stroke="#79573e" stroke-width="5"/>
+<g><use href="#flower" x="755" y="283"/><use href="#flower" x="970" y="315"/><use href="#flower" x="965" y="399"/><use href="#flower" x="758" y="397"/></g>
+<!-- creekside rest area -->
+<text x="1144" y="657" text-anchor="middle" font-family="Verdana" font-size="15" font-weight="700" fill="#376e71">6 · CREEKSIDE WALK</text>
+<text x="1144" y="676" text-anchor="middle" font-family="Verdana" font-size="12" fill="#436b6b">shore trail · stepping stones · quiet rest point</text>
+<path d="M1073 727q32-19 63 0t58 0" fill="none" stroke="#428e8d" stroke-width="5"/><path d="M1085 756h61m-54-9v18m20-18v18m20-18v18" stroke="#835e43" stroke-width="6"/><g stroke="#507b63" stroke-width="3"><path d="M1068 716v-28m9 28v-39m153 104v-35m12 35v-28"/></g><g fill="#8eb866"><ellipse cx="1068" cy="687" rx="5" ry="9"/><ellipse cx="1077" cy="677" rx="5" ry="9"/><ellipse cx="1221" cy="769" rx="5" ry="9"/></g>
+<!-- meadow -->
+<path d="M251 905q64-70 122-22t94 12" fill="none" stroke="#a37c9c" stroke-width="2" stroke-dasharray="6 7"/>
+<text x="350" y="830" text-anchor="middle" font-family="Verdana" font-size="15" font-weight="700" fill="#8f4c6b">3 · FLOWER MEADOW</text>
+<text x="350" y="849" text-anchor="middle" font-family="Verdana" font-size="12" fill="#755c6c">curving color drifts · small lookout bench · meadow path</text>
+<g><use href="#flower" x="252" y="872"/><use href="#flower" x="273" y="888"/><use href="#flower" x="298" y="866"/><use href="#flower" x="315" y="905"/><use href="#flower" x="337" y="881"/><use href="#flower" x="355" y="899"/><use href="#flower" x="381" y="871"/><use href="#flower" x="405" y="896"/><use href="#flower" x="429" y="876"/><use href="#flower" x="454" y="899"/><use href="#flower" x="468" y="881"/></g>
+<rect x="288" y="917" width="38" height="9" rx="4" fill="#8a674f"/><path d="M295 926v8m24-8v8" stroke="#806143" stroke-width="3"/>
+<!-- numbered route connections and legend -->
+<g font-family="Verdana" font-size="13" font-weight="700" text-anchor="middle"><circle cx="493" cy="495" r="15" fill="#fff7e6" stroke="#b7844d" stroke-width="3"/><text x="493" y="500" fill="#765a3d">2</text><circle cx="564" cy="371" r="15" fill="#fff7e6" stroke="#b7844d" stroke-width="3"/><text x="564" y="376" fill="#765a3d">5</text><circle cx="756" cy="447" r="15" fill="#fff7e6" stroke="#b7844d" stroke-width="3"/><text x="756" y="452" fill="#765a3d">4</text><circle cx="861" cy="647" r="15" fill="#fff7e6" stroke="#b7844d" stroke-width="3"/><text x="861" y="652" fill="#765a3d">6</text><circle cx="443" cy="786" r="15" fill="#fff7e6" stroke="#b7844d" stroke-width="3"/><text x="443" y="791" fill="#765a3d">3</text></g>
+<text x="88" y="148" font-family="Verdana" font-size="13" font-weight="700" fill="#7b8a76">NORTH ↑</text>
+<!-- planning note card -->
+<rect x="80" y="1024" width="1340" height="70" rx="16" fill="#fffdf7" stroke="#e0e4d8"/>
+<path d="M105 1059h58" stroke="#d9a96c" stroke-width="18" stroke-linecap="round"/><path d="M105 1059h58" stroke="#fff0cf" stroke-width="10" stroke-linecap="round"/>
+<text x="178" y="1064" font-family="Verdana" font-size="14" fill="#546c5d">main loop and destination trails</text>
+<use href="#tree" x="480" y="1058"/><text x="505" y="1064" font-family="Verdana" font-size="14" fill="#546c5d">woodland edge</text>
+<use href="#flower" x="670" y="1058"/><text x="690" y="1064" font-family="Verdana" font-size="14" fill="#546c5d">flower drift</text>
+<path d="M840 1047q15-9 30 0t30 0v25h-60z" fill="url(#water)" stroke="#4a9997" stroke-width="2"/><text x="911" y="1064" font-family="Verdana" font-size="14" fill="#546c5d">river edge</text>
+<text x="1110" y="1064" font-family="Verdana" font-size="13" fill="#7b887c">OPTION A ROUTES · PLAN ONLY</text>
+</svg>

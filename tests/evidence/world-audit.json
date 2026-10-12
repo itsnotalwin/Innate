@@ -1,20 +1,20 @@
 {
 	"approach_objects": {
-		"Creek": 14,
 		"Meadow": 2,
-		"Mushroom": 6,
-		"Orchard": 4,
-		"Pond": 4
+		"Mushroom": 15,
+		"Orchard": 4
 	},
 	"approach_plant_tiles": {
-		"Creek": 17,
-		"Meadow": 26,
-		"Mushroom": 1,
-		"Orchard": 30,
-		"Pond": 13
+		"Creek": 4,
+		"Meadow": 35,
+		"Mushroom": 3,
+		"Orchard": 29,
+		"Pond": 2
 	},
-	"connected_path_cells": 1176,
+	"connected_path_cells": 2040,
+	"disconnected_bridge_cells": [],
+	"disconnected_path_cells": [],
 	"failures": [],
-	"nature_objects": 513,
-	"path_cells": 1176
+	"nature_objects": 928,
+	"path_cells": 2039
 }

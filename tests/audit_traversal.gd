@@ -20,7 +20,7 @@ func audit() -> void:
 	probe.collision_mask = 1
 	var free := {}
 	for y in range(104):
-		for x in range(128):
+		for x in range(154):
 			var cell := Vector2i(x,y)
 			probe.transform = Transform2D(0, Vector2(cell)*16.0+Vector2(8,8))
 			if space.intersect_shape(probe,1).is_empty(): free[cell] = true
@@ -41,7 +41,7 @@ func audit() -> void:
 			reached[next] = true
 			parent_cells[next] = cell
 			queue.append(next)
-	var destinations := {"Cottage":Vector2i(57,55),"Mushroom":Vector2i(27,35),"Meadow":Vector2i(24,80),"Pond":Vector2i(75,33),"Creek":Vector2i(107,67),"Orchard":Vector2i(62,23)}
+	var destinations := {"Cottage":Vector2i(72,43),"Mushroom":Vector2i(32,28),"Meadow":Vector2i(29,80),"Pond":Vector2i(94,27),"Creek":Vector2i(129,67),"Orchard":Vector2i(99,76)}
 	var failures: Array[String] = []
 	var destinations_checked := {}
 	var swept_steps := 0

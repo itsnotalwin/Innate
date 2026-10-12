@@ -87,7 +87,7 @@ shape = SubResource("Feet")
 [node name="Camera" type="Camera2D" parent="."]
 limit_left = 0
 limit_top = 0
-limit_right = 2048
+limit_right = 2464
 limit_bottom = 1664
 process_callback = 0
 position_smoothing_enabled = true

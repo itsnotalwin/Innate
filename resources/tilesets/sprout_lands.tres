@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=41 format=3]
+[gd_resource type="TileSet" load_steps=53 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/sprout_lands/grass.png" id="0"]
 
@@ -39,6 +39,18 @@
 [ext_resource type="Texture2D" path="res://assets/wildflowers/karsiori/flowers.png" id="18"]
 
 [ext_resource type="Texture2D" path="res://assets/wildflowers/meadow/flowers.png" id="19"]
+
+[ext_resource type="Texture2D" path="res://assets/innate/environment_trees.png" id="20"]
+
+[ext_resource type="Texture2D" path="res://assets/innate/mushroom_clusters.png" id="21"]
+
+[ext_resource type="Texture2D" path="res://assets/innate/flower_clumps.png" id="22"]
+
+[ext_resource type="Texture2D" path="res://assets/innate/woodland_props.png" id="23"]
+
+[ext_resource type="Texture2D" path="res://assets/innate/meadow_flowers_detail.png" id="24"]
+
+[ext_resource type="Texture2D" path="res://assets/innate/meadow_patch_clusters.png" id="25"]
 
 [sub_resource type="TileSetAtlasSource" id="Atlas_grass"]
 texture = ExtResource("0")
@@ -2150,6 +2162,126 @@ texture_region_size = Vector2i(16, 16)
 3:3/8 = 8
 3:3/8/texture_origin = Vector2i(3, 0)
 
+[sub_resource type="TileSetAtlasSource" id="Atlas_innate_environment_trees"]
+texture = ExtResource("20")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="Atlas_innate_mushroom_clusters"]
+texture = ExtResource("21")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="Atlas_innate_flower_clumps"]
+texture = ExtResource("22")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="Atlas_innate_woodland_props"]
+texture = ExtResource("23")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="Atlas_innate_meadow_flowers_detail"]
+texture = ExtResource("24")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="Atlas_innate_meadow_patch_clusters"]
+texture = ExtResource("25")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
 [resource]
 tile_size = Vector2i(16, 16)
 physics_layer_0/collision_layer = 1
@@ -2178,3 +2310,9 @@ sources/16 = SubResource("Atlas_mushroom_variants")
 sources/17 = SubResource("Atlas_wildflowers_btl_flowers")
 sources/18 = SubResource("Atlas_wildflowers_karsiori_flowers")
 sources/19 = SubResource("Atlas_wildflowers_meadow_flowers")
+sources/20 = SubResource("Atlas_innate_environment_trees")
+sources/21 = SubResource("Atlas_innate_mushroom_clusters")
+sources/22 = SubResource("Atlas_innate_flower_clumps")
+sources/23 = SubResource("Atlas_innate_woodland_props")
+sources/24 = SubResource("Atlas_innate_meadow_flowers_detail")
+sources/25 = SubResource("Atlas_innate_meadow_patch_clusters")

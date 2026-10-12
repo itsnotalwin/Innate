@@ -44,7 +44,7 @@ func verify() -> void:
 	player = main.get_node("World/Nature/Player")
 	check(player is CharacterBody2D,"one native controllable player initialized")
 	check(main.get_node("World/Nature").y_sort_enabled,"player and nature share Y sorting")
-	check(main.get_node("World/Ground").get_used_cells().size()>13000,"native saved expanded 128x104 ground cells loaded")
+	check(main.get_node("World/Ground").get_used_cells().size()>13000,"native saved expanded 154x104 ground cells loaded")
 	var countdown: Control=main.get_node("Interface/Countdown")
 	check(countdown.get_node("CountdownPanel/CountdownMargins/CountdownContent/DateLabel").text=="MAY 26, 2027","countdown shows the requested target date")
 	check(countdown.get_node("CountdownPanel/CountdownMargins/CountdownContent/TimerLabel").text.length()==13 and countdown.target_unix>Time.get_unix_time_from_system(),"countdown is live, nonnegative, and counts to a future instant")
@@ -62,7 +62,7 @@ func verify() -> void:
 		release()
 		await frames(2)
 		check(player.get_node("Sprite").animation=="idle_"+data[1],"idle preserves facing "+data[1])
-	var tree_position: Vector2 = main.get_node("World/Nature/OrchardTree_10").position
+	var tree_position: Vector2 = main.get_node("World/Nature/OrchardTree_11").position
 	var tree := await move_from(tree_position+Vector2(0,-20),["move_down"],60)
 	check(tree.y<tree_position.y-4 and tree.y>tree_position.y-12,"tree trunk blocks feet, not whole canopy")
 	Input.action_press("move_down")
@@ -71,27 +71,28 @@ func verify() -> void:
 	release()
 	var tree_escape := await move_from(tree,["move_left"],30)
 	check(tree_escape.x < tree.x - 33,"player can slide sideways away from tree contact")
-	var pond := await move_from(Vector2(1484,488),["move_left"],60)
-	check(pond.x>1459 and pond.x<1462,"pond prevents walking across open water")
-	var house := await move_from(Vector2(912,848),["move_up"],60)
-	check(house.y>823 and house.y<826,"cottage footprint blocks entry")
+	var pond := await move_from(Vector2(96*16+8,24*16+8),["move_right"],60)
+	check(pond.x>96*16+8 and pond.x<99*16+16,"pond prevents walking across open water")
+	var house := await move_from(Vector2(67.19*16+8,50*16+8),["move_up"],60)
+	check(house.y>756 and house.y<765,"cottage footprint blocks entry")
 	var house_escape := await move_from(house,["move_left"],30)
 	check(house_escape.x < house.x - 33,"player can slide along the cottage wall without snagging")
-	var fence := await move_from(Vector2(920,1048),["move_up"],60)
-	check(fence.y>1026 and fence.y<1029,"garden fence blocks feet")
+	var fence := await move_from(Vector2(64*16+8,60*16+8),["move_up"],60)
+	check(fence.y>914 and fence.y<923,"garden fence blocks feet")
 	var fence_escape := await move_from(fence,["move_left"],30)
 	check(fence_escape.x < fence.x - 33,"player can slide along a fence without snagging")
-	for data in [[Vector2(1024,20),"move_up",0],[Vector2(1024,1644),"move_down",1],[Vector2(20,832),"move_left",2],[Vector2(2028,832),"move_right",3]]:
+	for data in [[Vector2(1232,20),"move_up",0],[Vector2(1232,1644),"move_down",1],[Vector2(20,832),"move_left",2],[Vector2(2444,832),"move_right",3]]:
 		var end := await move_from(data[0],[data[1]],60)
-		check(end.x>=3.9 and end.x<=2044.1 and end.y>=3.9 and end.y<=1660.1,"world boundary "+str(data[2]))
+		check(end.x>=3.9 and end.x<=2460.1 and end.y>=3.9 and end.y<=1660.1,"world boundary "+str(data[2]))
 	var camera: Camera2D=player.get_node("Camera")
-	for position in [Vector2(1024,832),Vector2(1024,4),Vector2(1024,1660),Vector2(4,832),Vector2(2044,832)]:
+	check(camera.zoom==Vector2.ONE,"camera starts at the default 1x zoom")
+	for position in [Vector2(1232,832),Vector2(1232,4),Vector2(1232,1660),Vector2(4,832),Vector2(2460,832)]:
 		player.position=position
 		camera.reset_smoothing()
 		await frames(2)
 		var center:=camera.get_screen_center_position()
 		var half_view := Vector2(root.content_scale_size) / 2.0
-		check(center.x>=half_view.x-0.1 and center.x<=2048.1-half_view.x and center.y>=half_view.y-0.1 and center.y<=1664.1-half_view.y,"camera stays inside map at "+str(position))
+		check(center.x>=half_view.x-0.1 and center.x<=2464.1-half_view.x and center.y>=half_view.y-0.1 and center.y<=1664.1-half_view.y,"camera stays inside map at "+str(position))
 	var joystick: Control=main.get_node("Interface/MobileControls")
 	joystick.visible=true
 	player.position=start
@@ -108,14 +109,16 @@ func verify() -> void:
 	unrelated.index=1;unrelated.pressed=false;unrelated.position=Vector2.ZERO
 	joystick._input(unrelated)
 	check(joystick.finger==0,"second finger release does not stop active finger")
-	unrelated.pressed = true
+	unrelated.pressed = true; unrelated.position = touch.position - Vector2(80,0)
 	joystick._input(unrelated)
 	var other_drag := InputEventScreenDrag.new()
-	other_drag.index = 1; other_drag.position = Vector2(0,60)
+	other_drag.index = 1; other_drag.position = unrelated.position - Vector2(60,0)
 	joystick._input(other_drag)
-	check(joystick.finger == 0 and player.touch_direction.x > 0.99,"a second finger cannot steal or steer the active joystick")
+	check(joystick.pinch_active and joystick.finger == -1 and player.touch_direction == Vector2.ZERO and camera.zoom.x > 1.0,"second finger takes over movement and pinches to zoom")
 	touch.pressed=false;touch.position=Vector2(10,10)
 	joystick._input(touch)
+	unrelated.pressed=false
+	joystick._input(unrelated)
 	await frames(2)
 	var stopped:=player.position
 	await frames(10)
@@ -172,7 +175,11 @@ func verify() -> void:
 	release()
 	check(largest_step < 2.0,"camera follows without large per-tick jumps")
 	check(fractional_steps > 15,"camera preserves subpixel positions instead of whole-pixel snapping")
-	check(camera.zoom == Vector2.ONE,"camera zoom remains unchanged")
+	check(camera.zoom.x > 1.0 and camera.zoom.x <= 1.8,"pinch zoom stays within its configured range")
+	main._zoom_camera(100.0)
+	check(is_equal_approx(camera.zoom.x,1.8),"zoom-in clamp prevents an excessively tight view")
+	main._zoom_camera(0.001)
+	check(is_equal_approx(camera.zoom.x,0.25),"zoom-out clamp keeps the world readable")
 	check(main.get_node("Interface").get_child_count()==2,"gameplay interface contains touch controls and the requested countdown")
 	root.size = Vector2i(390,844)
 	main._apply_layout()

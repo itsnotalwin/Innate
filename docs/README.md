@@ -84,7 +84,7 @@ Root-folder Pages hosting is supported through the root Godot export HTML shell 
 
 The default logical view is 216×384 in portrait and 384×216 in landscape, expanded to fill the screen. Ultrawide views are capped to the map dimensions. Canvas-items rendering, nearest texture filtering, physics interpolation, and physics-tick camera smoothing preserve the artwork while allowing finer camera movement. The Web canvas has a maximum 720px render edge to bound GPU work independently of phone pixel density. The CSS display still fills the screen. Safe-area padding keeps the joystick away from home indicators.
 
-The custom loader replaces the Godot splash and disappears after the first actual game frame. Credits are on that loader and in the repository documentation. Only the joystick appears over gameplay on touch devices.
+The custom loader replaces the Godot splash and disappears after the first actual game frame. Credits are on that loader and in the repository documentation. Touch controls remain invisible during play: drag one finger to move and use two fingers to pinch zoom.
 
 ## Export integrity
 

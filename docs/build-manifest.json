@@ -1,7 +1,29 @@
 {
   "godot": "4.6.3.stable.official.7d41c59c4",
-  "main_pack": "game-6fc7eb5e1c54cbe5.pck",
+  "main_pack": "game-227e4ab81a101927.pck",
   "sources": {
+    "assets/innate/README.md": "6e49eea06ad70452aa05c7a2459d21c30b99ce973358880a5b316f5014f23fe8",
+    "assets/innate/cottage.png": "b7ee4d95ee3946f68eba180a18e0b200050840a97608ec397b3032dc0845299a",
+    "assets/innate/cottage.png.import": "93cef683b8aeb958383340732a0d7386ab0ae74268209eed6c8b250f6197d4e4",
+    "assets/innate/cottage_trellis.png": "5e163c039737252b1a75283871e028996e6e009604b4aa52c631c159e11c913f",
+    "assets/innate/cottage_trellis.png.import": "375d08d5da13ede0c8ffc26be51ea11e83b69c219bd5e98f6d5479723a92e0ae",
+    "assets/innate/creek_footbridge.png": "0a4ef43ebc966cbc591360364989f192edf35be1eb3093558c9a6be7ac8ed484",
+    "assets/innate/creek_footbridge.png.import": "f02f32353ec272a12423d46151dbff382eed7872102adbf99538b2c6041fabb8",
+    "assets/innate/environment_palette.json": "8f4ae1e6e29100bca3059c2ee50ef057248eada28a7c35a6f4801bce2381a60b",
+    "assets/innate/environment_trees.png": "40df1d0bc7ca9f21a960e667b06d6007a81f03d80d65f78c95218adbfa323add",
+    "assets/innate/environment_trees.png.import": "3132d39d5faab9a6ae65ec033ffa57cfa96908004e48b2cb6af74af25b0c3f5b",
+    "assets/innate/flower_clumps.png": "64f591ab3f83c12afadb674b4b315d225e02d77efc885b4d9c86e72985d5817b",
+    "assets/innate/flower_clumps.png.import": "4d2453ecc1926f77ce581d2bf97fa7c389f60a8593cb2849a608aad37ccc5f57",
+    "assets/innate/meadow_flowers_detail.png": "372a6bdb2c8e6fd7ddb17b08fe916b37172c291a2074988364889cec91bc3556",
+    "assets/innate/meadow_flowers_detail.png.import": "478b19eb0d1644733784813861986964d3ee7a4b02cc178d8a0d91a062360795",
+    "assets/innate/meadow_patch_clusters.png": "de38741b1a7216d3196490eeccf0b7d98c18b7649c5019d76a9da47c1445a8a2",
+    "assets/innate/meadow_patch_clusters.png.import": "db550df9b2d80240ac4bba08897cf46be135d7a9e3ae91605980985d115f819a",
+    "assets/innate/mushroom_clusters.png": "d110bf066f6da46af3a924ffc6544277c23e9c220e63832f346c7ac9de779c4f",
+    "assets/innate/mushroom_clusters.png.import": "0169d4cd16ac1afb124c6795cc0ac03b17cbc760aa4ff261b2f9471746a02685",
+    "assets/innate/tree_variants.png": "39364f55fd1cea915941596e8fe8b55b3fbdadfbcee6dce2b5b87f062bd15a0c",
+    "assets/innate/tree_variants.png.import": "c3f4c6507846dc452206bf2825ecfc94a534747abab3b72127ebe1825ba5a975",
+    "assets/innate/woodland_props.png": "9608736cba2af19f8db77f6340f652638dc27df34859a4293c5618ddb18417a7",
+    "assets/innate/woodland_props.png.import": "9d55baab57180c41c687bd6d34daa31f03e3aa1a401c0290985f86ff4341548d",
     "assets/sprout_lands/FREE_GIFT_LICENSE.txt": "09fc51330037dac5149db63ab9e43acb019e70bbee6d2267b5e577b36ad978df",
     "assets/sprout_lands/LICENSE.txt": "f41c94ec4e417de51cf25cb7b01f44c52c8c16ee4cb223db2de37f3dd0316dff",
     "assets/sprout_lands/character.png": "f45a7c06bd6df451832b4ab793c0a204e2832335037636decc6966bbf9b69b76",
@@ -56,30 +78,30 @@
     "assets/wildflowers/catalog.json": "cb1f26ca3ec8039c3f78c8603e5f410e979571a017c79faca7d2207b21b5b0fc",
     "assets/wildflowers/karsiori/flowers.png": "2c957843c21cbcdcc552b5e55956105a3972987627a02a265dff9e215fd1f364",
     "assets/wildflowers/karsiori/flowers.png.import": "55cfcac66b366bcb8bebee6b9e7585fab1804d5674d6b95503578cf24b2c8936",
-    "assets/wildflowers/meadow/STYLE.md": "7974cea42101683002329f5d72a8d491f6fd75ad7bf8130f2644579b19be9f18",
-    "assets/wildflowers/meadow/flowers.png": "953f64fc5a27d858ee07de8f920e6ac14a1b25ad912c54de7e3562f88968eb17",
+    "assets/wildflowers/meadow/STYLE.md": "2778b0285e43507a868ff6025e7b21b9d5814fcd76bd1ac71c334c437ba7dd60",
+    "assets/wildflowers/meadow/flowers.png": "9db60d771a6f04b068a76aa5e7111f2d92bef05e9727bd5ae2dd67b2a56f1e38",
     "assets/wildflowers/meadow/flowers.png.import": "37f4b1872e3ebbc5d449e2c4dd526a29e5d2a3a9535e64da69a6816924b87b59",
     "export_presets.cfg": "07dc40c2a62ed3bf38d2c05a149f38be56f6ec26ec5584d2ec080de631f1c976",
     "project.godot": "ca8695362babfb7a12eedcd66c1b085dc51e87375716639b9ab3b314e479c1c5",
-    "resources/tilesets/sprout_lands.tres": "441066f62e4a5779b64b2a473e59838cf68ce02e20acbb1c2920282f8f4e0527",
+    "resources/tilesets/sprout_lands.tres": "b28f5518886bb75990d0b4ece190c9e88826340fd0e022cd6656b38ea4094b0f",
     "scenes/countdown.tscn": "8801afcd880c2d65de78950d95d972a36a3b4446223ba909f89f83705ab6201e",
     "scenes/main.tscn": "8329114464b83d6fd8b3a9a47b7f5493079af7d52f3200bb71549b347d5042fc",
     "scenes/mobile_controls.tscn": "449b82e95c358bb276dbee9e44a4898622315776a37b4b438c0573bc03fab24f",
-    "scenes/player.tscn": "6164429dac9665316bf3a12863f28fee43c30f7fcc4c778ac7ec7ec4f29c164f",
-    "scenes/world.tscn": "07534fbf3449ba57320a43ffa07992b708f7314a29355ca4cd95747cd052824f",
-    "scripts/atmosphere.gd": "cd2a2bf47b4892a2e61c913341f48e466627cdb01c8530dbcc70778e69ea2f4d",
+    "scenes/player.tscn": "c08f643b66797719c76a539f32ee68ebfabaf747618f6e094c03ab8974088c83",
+    "scenes/world.tscn": "859fd3cedff1494ffa5e9794708ccdc3159ca96b17a18acb3f480719cd960f55",
+    "scripts/atmosphere.gd": "473dc29328973f909dc4972ec8b7084d5c09c3d4602324ee76c146e522c8f90d",
     "scripts/atmosphere.gd.uid": "49d31245a8f2209249fe251e182dd1dc980b319b36e1ff164648d57af25843a3",
     "scripts/countdown.gd": "8f54842e2a2a1a1582d65f1c85d3d9ce9289cbd544f168870304110bd23adbef",
     "scripts/countdown.gd.uid": "0c0f2a032ff44ec0c68ec9374fdd94f13b2516e7d6d3cd3950f36384c2d586f8",
-    "scripts/main.gd": "73e0be22549bde8e8762b524688886cb2244a3ff5bebb566d6a069848a604e01",
+    "scripts/main.gd": "abf32de35785a258cfa123ffb037843067fc16e77dd87206a992de5274fda412",
     "scripts/main.gd.uid": "356d594d69a0e0fe96e188e19e56bc4d3987227a63e2b328132a0f1209775512",
-    "scripts/mobile_controls.gd": "8aaf600103d3d332b0a3e652e12715cf10cd1a04ec27a6afc295b95319aeb20b",
+    "scripts/mobile_controls.gd": "78fc09c0c0d041f3b9ceab41431fc34a2e8f86f9a683559a7c927e5f15956172",
     "scripts/mobile_controls.gd.uid": "f3b25e3efcf75db5e16578d25c6dbccccc77f42d0f466c4d8ae640c740e2cb70",
     "scripts/player.gd": "bebaebbf51644ad8b01817f8dbc4d005025c88691a3b780876fc425f2cffb445",
     "scripts/player.gd.uid": "0e68c737ed141b9c94eb9ff7844a949c1cafafd6625ea596eae0957c456994c0",
-    "shaders/afternoon.gdshader": "d897781854f5dd2c29b5e1c7604613b8f40eab49061f7c0760f2a6958b221b1f",
+    "shaders/afternoon.gdshader": "3be4157250df29f76656de8a6d0d9ea8530b2b84f428381979d6de6e4a6714f0",
     "shaders/afternoon.gdshader.uid": "7359a58d823015f61cff78b528105affdb4d154ca30321f156d244c6126f8ad4",
-    "shaders/water.gdshader": "36f73ceb36a036c480f4be11f16f85c2332d26a1964a833e25b6f2700ab6cf3b",
+    "shaders/water.gdshader": "889403d4a1fbab7e6fca1636207a2795f21ac157932829d7aa1a11c68b11d825",
     "shaders/water.gdshader.uid": "6e6e9d6458134d1de28a056afb02eb661777abc62da67d309472fcdd2af96bf1",
     "tools/web_shell.html": "1f34608f26a87a333e674d716b645a853fcaa748339f6974311242b7be1ca232"
   },
@@ -100,18 +122,18 @@
       "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
       "bytes": 2973
     },
-    "game-6fc7eb5e1c54cbe5.pck": {
-      "sha256": "6fc7eb5e1c54cbe5527b2181f08da59f4f12127882487c8f50e7a22f2b801fd3",
-      "bytes": 621380
+    "game-227e4ab81a101927.pck": {
+      "sha256": "227e4ab81a101927b0e400cde8f877308cf43d739103b55bc3fe168c9ef0231c",
+      "bytes": 1021496
     },
     "loader-character.png": {
       "sha256": "f45a7c06bd6df451832b4ab793c0a204e2832335037636decc6966bbf9b69b76",
       "bytes": 2091
     },
     "index.html": {
-      "sha256": "5ddc0db2382315b6649d61a3961407e72a43061eb99551936632b3bd8d1cddac",
-      "bytes": 8010
+      "sha256": "da81c2bf7af7d7bf43bd3ca11cd693b10a18880935a3cbc793fafe5c8ea20aed",
+      "bytes": 8011
     }
   },
-  "root_html_sha256": "b3e54cd6f14e1cf73fb0b9e1c585f0a55d917ca73fdcd11b8098d4581ee6ed54"
+  "root_html_sha256": "62eb9a02e9fbd746aa38d04299e5501fbad8cf6df439ef08d2a0c22dc01af9cb"
 }

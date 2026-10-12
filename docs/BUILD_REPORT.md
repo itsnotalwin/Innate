@@ -38,7 +38,7 @@ Maaack integration inspection covered its documentation, base atlas/terrain reso
 - Circle collider of radius 4 near the feet. Trees have 7×7 trunk footprints, while their canopies overlap the player by Y sorting. Large rocks, stumps, logs, cottage, garden fences, water, and perimeter boundaries are solid. Small plants and flowers are walkable.
 - Camera2D follows with smoothing, map limits, nearest filtering, and pixel transform snapping. Camera limits were verified at the center and all four edges.
 - Native Godot Input Map supports physical WASD and arrow keys. Browser shell prevents focused gameplay keys from scrolling.
-- An invisible full-screen touch surface tracks one finger from any starting point, supports diagonal drags, shares the player controller, and releases on touch end, cancellation, focus loss, and resizing. Disabled on non-touch desktop.
+- An invisible full-screen touch surface tracks one finger from any starting point, supports diagonal drags, and shares the player controller. A second finger takes over for pinch zoom, bounded from 0.25× to 1.8× with a 1× default. Touch state clears on release, cancellation, focus loss, and resizing. Disabled on non-touch desktop.
 - Fixed widescreen presentation avoids aspect distortion. Portrait has letterboxing and a native rotation label. Web resize events are bridged only for clearing touch and updating that label; all gameplay remains Godot-native.
 
 ## Web export

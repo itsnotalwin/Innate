@@ -2,7 +2,9 @@ extends Node2D
 ## Adapt the native canvas to portrait phones and wider displays without bars.
 const PORTRAIT_SIZE := Vector2i(216, 384)
 const LANDSCAPE_SIZE := Vector2i(384, 216)
-const WORLD_SIZE := Vector2(2048, 1664)
+const WORLD_SIZE := Vector2(2464, 1664)
+const MIN_CAMERA_ZOOM := 0.25
+const MAX_CAMERA_ZOOM := 1.8
 var _web_resize_callback: JavaScriptObject
 var _web_lifecycle_callback: JavaScriptObject
 var _resize_pending := false
@@ -10,9 +12,11 @@ var _resize_pending := false
 @onready var player: CharacterBody2D = $World/Nature/Player
 @onready var joystick: Control = $Interface/MobileControls
 @onready var countdown: Control = $Interface/Countdown
+@onready var camera: Camera2D = player.get_node("Camera")
 
 func _ready() -> void:
 	joystick.direction_changed.connect(_set_touch_direction)
+	joystick.pinch_zoomed.connect(_zoom_camera)
 	get_window().size_changed.connect(_queue_resize)
 	if OS.has_feature("web"):
 		_web_resize_callback = JavaScriptBridge.create_callback(func(_args: Array):
@@ -34,8 +38,12 @@ func _ready() -> void:
 func _set_touch_direction(direction: Vector2) -> void:
 	player.touch_direction = direction
 
+func _zoom_camera(factor: float) -> void:
+	var zoom := clampf(camera.zoom.x * factor, MIN_CAMERA_ZOOM, MAX_CAMERA_ZOOM)
+	camera.zoom = Vector2.ONE * zoom
+
 func _clear_input() -> void:
-	joystick.release_touch()
+	joystick.cancel_all()
 	player.clear_input()
 
 func _queue_resize() -> void:

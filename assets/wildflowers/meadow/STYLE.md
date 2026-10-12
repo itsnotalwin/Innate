@@ -2,21 +2,23 @@
 
 This is the active meadow atlas: 16 sprites, each 16×16, in a 64×64 sheet.
 Columns are apricot orange, butter cream, dusty pink, and powder blue. Rows are
-short daisies, low flower clumps, rounded blossoms, and two-bloom bellflowers.
+short daisies, low flower clumps, rounded blossoms, and bellflower sprigs.
 
-The sprites were adapted with AI-assisted image editing from the imported CC0
-flower references, using the existing game's pixel scale and foliage as visual
-references. The free packs remain unmodified in the adjacent `btl/` and
-`karsiori/` directories, with their original licenses and source hashes.
+The sprite master was redrawn with the project's detailed woodland pixel art as
+its style reference, then packed at native resolution. It shares the palette
+used by the custom trees, mushrooms, patch clusters, and woodland props. The
+free packs remain unmodified in the adjacent `btl/` and `karsiori/` directories,
+with their original licenses and source hashes.
 
-The edited master is saved in `art/meadow_flowers_master.png`. The offline
-converter `tools/prepare_meadow.gd` makes a crisp 16px atlas, removes translucent
-edge fringes, and snaps shading to a shared 17-color palette. It adds no runtime
-image processing or shader. The flowers render at their native pixel scale.
+The master is saved in `art/meadow_flowers_master.png`. Build the common foliage
+palette and larger atlases first with `tools/prepare_environment_atlases.py`,
+then run `tools/prepare_meadow.gd` to pack the 16px flower sheet at native scale.
+The game adds no runtime image processing or shader.
 
 To rebuild after editing the master:
 
 ```sh
+python tools/prepare_environment_atlases.py
 godot --headless --path . --script tools/prepare_meadow.gd
 python tools/prepare_tiles.py
 godot --headless --path . --script tools/build_world.gd

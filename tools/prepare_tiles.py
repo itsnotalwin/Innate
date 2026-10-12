@@ -22,7 +22,14 @@ files += [
  'wildflowers/btl/flowers',
  'wildflowers/karsiori/flowers',
  'wildflowers/meadow/flowers',
+ 'innate/environment_trees',
+ 'innate/mushroom_clusters',
+ 'innate/flower_clumps',
+ 'innate/woodland_props',
+ 'innate/meadow_flowers_detail',
+ 'innate/meadow_patch_clusters',
 ]
+CUSTOM_ATLASES = {name for name in files if name.startswith('innate/')}
 BIG_TILES = {
  'pine_biome': [(112,0,48,48),(80,16,32,32)],
  'foliage/trees_stumps_bushes_v2': [(96,0,48,48),(0,80,32,32),(32,80,32,32),(64,80,32,32),(96,80,32,32)],
@@ -37,15 +44,21 @@ if wildflower_sheet.exists():
  BIG_TILES['wildflowers/karsiori/flowers']=[(x,y,80,80) for y in range(0,sheet.height,80) for x in range(0,sheet.width,80) if sheet.crop((x,y,x+80,y+80)).getbbox()]
 
 def asset_path(name):
- return f'assets/{name}.png' if name.startswith('wildflowers/') else f'assets/sprout_lands/{name}.png'
+ if name.startswith(('wildflowers/','innate/')):return f'assets/{name}.png'
+ return f'assets/sprout_lands/{name}.png'
 
 s=f'[gd_resource type="TileSet" load_steps={1 + len(files) * 2} format=3]\n'
 for i,name in enumerate(files):s+=f'\n[ext_resource type="Texture2D" path="res://{asset_path(name)}" id="{i}"]\n'
 for i,name in enumerate(files):
  im=Image.open(ROOT/asset_path(name)).convert('RGBA')
  atlas_id=name.replace('/','_')
- s+=f'\n[sub_resource type="TileSetAtlasSource" id="Atlas_{atlas_id}"]\ntexture = ExtResource("{i}")\ntexture_region_size = Vector2i(16, 16)\n'
+ region_size=64 if name in CUSTOM_ATLASES else 16
+ s+=f'\n[sub_resource type="TileSetAtlasSource" id="Atlas_{atlas_id}"]\ntexture = ExtResource("{i}")\ntexture_region_size = Vector2i({region_size}, {region_size})\n'
  occupied=set()
+ if name in CUSTOM_ATLASES:
+  for y in range(im.height//64):
+   for x in range(im.width//64):s+=f'{x}:{y}/0 = 0\n'
+  continue
  for rx,ry,rw,rh in BIG_TILES.get(name, []):
   tx,ty=rx//16,ry//16
   cw,ch=rw//16,rh//16

@@ -11,29 +11,24 @@ var pond := {}
 var route := {}
 var layout: Dictionary
 
-const TREE_ASSETS := [
-	{"texture": "nature.png", "region": Rect2(0, 0, 16, 32)},
-	{"texture": "nature.png", "region": Rect2(16, 0, 32, 32)},
-	{"texture": "nature.png", "region": Rect2(48, 0, 32, 32)},
-	{"texture": "foliage/trees_stumps_bushes_v2.png", "region": Rect2(96, 0, 48, 48)},
-	{"texture": "foliage/trees_stumps_bushes_v2.png", "region": Rect2(64, 16, 32, 32)},
-	{"texture": "foliage/trees_stumps_bushes_v2.png", "region": Rect2(0, 80, 32, 32)},
-	{"texture": "foliage/birch_biome.png", "region": Rect2(112, 0, 48, 48)},
-	{"texture": "foliage/birch_biome.png", "region": Rect2(64, 16, 16, 32)},
-	{"texture": "foliage/cherry_blossom_biome.png", "region": Rect2(112, 0, 48, 48)},
-	{"texture": "foliage/cherry_blossom_biome.png", "region": Rect2(80, 16, 32, 32)},
-	{"texture": "pine_biome.png", "region": Rect2(112, 0, 48, 48)},
-	{"texture": "pine_biome.png", "region": Rect2(80, 16, 32, 32)},
-	{"texture": "foliage/trees_stumps_bushes_v2.png", "region": Rect2(32, 80, 32, 32)},
-]
-
-const BUSH_ASSETS := [
-	{"texture": "nature.png", "region": Rect2(0, 48, 16, 16)},
-	{"texture": "nature.png", "region": Rect2(16, 48, 16, 16)},
-]
+const TREE_ATLAS := "res://assets/innate/environment_trees.png"
+const MUSHROOM_ATLAS := "res://assets/innate/mushroom_clusters.png"
+const FLOWER_ATLAS := "res://assets/innate/meadow_patch_clusters.png"
+const FLOWER_DETAIL_ATLAS := "res://assets/innate/meadow_flowers_detail.png"
+const PROP_ATLAS := "res://assets/innate/woodland_props.png"
+const WORLD_X_SCALE := 1.203125 # 154 tiles wide, matching the reference map's 1.5:1 framing.
 
 func _initialize() -> void:
 	call_deferred("build")
+
+func sx(x: float) -> float:
+	return x * WORLD_X_SCALE
+
+func route_clearance(cell: Vector2i) -> bool:
+	for dy in range(-1,2):
+		for dx in range(-1,2):
+			if route.has(cell+Vector2i(dx,dy)): return false
+	return true
 
 func own(node: Node, parent: Node, node_name: String) -> void:
 	node.name = node_name
@@ -62,14 +57,22 @@ func rectangle(parent: Node, size: Vector2, offset: Vector2 = Vector2.ZERO) -> v
 	shape.size = size
 	add_shape(parent, shape, offset)
 
+func curve_point(p0: Vector2, p1: Vector2, p2: Vector2, p3: Vector2, t: float) -> Vector2:
+	var t2 := t * t
+	var t3 := t2 * t
+	return 0.5 * ((2.0 * p1) + (-p0 + p2) * t + (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * t2 + (-p0 + 3.0 * p1 - 3.0 * p2 + p3) * t3)
+
 func paint_path(points: Array, radius := 1, bridge_diagonals := false) -> void:
+	var closed: bool = points.size() > 2 and points[0] == points[points.size()-1]
 	for i in range(points.size()-1):
 		var start := Vector2(points[i][0],points[i][1])
 		var end := Vector2(points[i+1][0],points[i+1][1])
-		var steps := maxi(1, int(start.distance_to(end)*3))
+		var previous_control := Vector2(points[i-1][0],points[i-1][1]) if i > 0 else (Vector2(points[points.size()-2][0],points[points.size()-2][1]) if closed else start * 2.0 - end)
+		var next_control := Vector2(points[i+2][0],points[i+2][1]) if i+2 < points.size() else (Vector2(points[1][0],points[1][1]) if closed else end * 2.0 - start)
+		var steps := maxi(1, int(start.distance_to(end)*4))
 		var previous := Vector2i(roundi(start.x),roundi(start.y))
 		for step in range(steps+1):
-			var p := start.lerp(end, float(step)/steps)
+			var p := curve_point(previous_control,start,end,next_control,float(step)/steps)
 			var cell := Vector2i(roundi(p.x),roundi(p.y))
 			if bridge_diagonals:
 				# Two cells across give the terrain atlas room for continuous corners.
@@ -96,19 +99,85 @@ func object_from(node_name: String, cell: Vector2, texture_path: String, region:
 		rectangle(object, solid_size)
 	return object
 
-func object_at(node_name: String, cell: Vector2, region: Rect2, solid_size := Vector2.ZERO) -> Node2D:
-	return object_from(node_name, cell, "nature.png", region, solid_size)
-
 func tree(cell: Vector2, kind: int, node_name: String) -> void:
-	if route.has(Vector2i(cell)): return
-	var asset: Dictionary = TREE_ASSETS[posmod(kind, TREE_ASSETS.size())]
-	object_from(node_name, cell, String(asset["texture"]), asset["region"], Vector2(7, 7))
+	if not route_clearance(Vector2i(cell)): return
+	var selector := absi(roundi(cell.x) * 37 + roundi(cell.y) * 71 + kind * 13)
+	var variant := posmod(kind, 15)
+	if kind in [3, 8, 9, 12]: variant = [3, 8, 9, 12][selector % 4]
+	elif kind in [4, 10]: variant = [4, 10, 14][selector % 3]
+	elif kind in [5, 6, 7, 11]: variant = [0, 1, 5, 6, 7, 11, 12, 13, 14][selector % 9]
+	var region := Rect2((variant % 4) * 64, int(variant / 4) * 64, 64, 64)
+	var scale_factor := 0.92 if selector % 5 == 0 else (0.78 if selector % 3 == 0 else 0.86)
+	if node_name.begins_with("NorthInnerTree") or node_name.begins_with("SouthInnerTree") or node_name.begins_with("GroveTree"):
+		scale_factor = 1.0 if selector % 4 == 0 else 0.90
+	var placed := object_from(node_name, cell, TREE_ATLAS, region, Vector2(7, 6))
+	placed.get_node("Artwork").scale = Vector2.ONE * scale_factor
+
+func cluster_from(node_name: String, cell: Vector2, atlas: String, variant: int, scale_factor: float, solid_size := Vector2.ZERO) -> Node2D:
+	var index := posmod(variant, 16)
+	var region := Rect2((index % 4) * 64, int(index / 4) * 64, 64, 64)
+	var object := object_from(node_name, cell, atlas, region, solid_size)
+	var sprite: Sprite2D = object.get_node("Artwork")
+	sprite.scale = Vector2.ONE * scale_factor
+	sprite.position.y = (-region.size.y / 2.0 + 4.0) * scale_factor
+	return object
+
+func mushroom_cluster(cell: Vector2, variant: int, node_name: String, scale_factor := 0.88) -> void:
+	cluster_from(node_name, cell, MUSHROOM_ATLAS, variant, scale_factor)
+
+func flower_clump(cell: Vector2, variant: int, node_name: String, scale_factor := 0.58) -> void:
+	cluster_from(node_name, cell, FLOWER_ATLAS, variant, scale_factor)
+
+func flower_detail(cell: Vector2, variant: int, node_name: String, scale_factor := 0.42) -> void:
+	cluster_from(node_name, cell, FLOWER_DETAIL_ATLAS, variant, scale_factor)
+
+func woodland_prop(cell: Vector2, variant: int, node_name: String, scale_factor := 0.7, solid_size := Vector2.ZERO) -> Node2D:
+	return cluster_from(node_name, cell, PROP_ATLAS, variant, scale_factor, solid_size)
+
+func low_tree(cell: Vector2, variant: int, node_name: String, scale_factor := 0.46) -> Node2D:
+	return cluster_from(node_name, cell, TREE_ATLAS, variant, scale_factor)
+
+func add_river(points: Array, radius: int) -> void:
+	for i in range(points.size()-1):
+		var start := Vector2(points[i][0],points[i][1])
+		var end := Vector2(points[i+1][0],points[i+1][1])
+		var steps := maxi(1,int(start.distance_to(end)*3.0))
+		for step in range(steps+1):
+			var point := start.lerp(end,float(step)/steps)
+			var center := Vector2i(roundi(point.x),roundi(point.y))
+			for dy in range(-radius,radius+1):
+				for dx in range(-radius,radius+1):
+					if Vector2(dx,dy).length() <= radius+0.35:
+						pond[center+Vector2i(dx,dy)] = true
+
+func build_river_reeds() -> void:
+	# Reeds follow both banks of the full river to keep the water integrated into the map.
+	var placed := {}
+	for y in range(5,int(layout.size[1])-5,3):
+		var center_x := river_center_x(float(y))
+		for side in [-1,1]:
+			for offset in [3,5]:
+				var cell := Vector2i(center_x+side*offset,y+((y+side+offset)%3)-1)
+				if placed.has(cell) or pond.has(cell) or route.has(cell): continue
+				placed[cell] = true
+				woodland_prop(Vector2(cell),4+posmod(y+side+offset,3),"RiverBankReeds_%d_%d"%[cell.x,cell.y],0.58)
+
+func river_center_x(y: float) -> int:
+	var points: Array = layout.river_path
+	for i in range(points.size()-1):
+		var a := Vector2(points[i][0],points[i][1])
+		var b := Vector2(points[i+1][0],points[i+1][1])
+		if y < a.y or y > b.y: continue
+		return roundi(lerpf(a.x,b.x,inverse_lerp(a.y,b.y,y)))
+	return int(layout.river_path.back()[0])
 
 func edge_tree_kind(cell: Vector2i) -> int:
 	var selector := absi(cell.x * 17 + cell.y * 31)
-	if cell.x >= 68 and cell.y <= 43:
+	if cell.x <= 3 or cell.x >= int(layout.size[0])-4 or cell.y <= 4 or cell.y >= int(layout.size[1])-8:
+		return [3,4,5,12][selector % 4]
+	if cell.x >= 82 and cell.y <= 43:
 		return [10, 11, 10, 6][selector % 4]
-	if cell.x >= 32 and cell.x <= 60 and cell.y <= 23:
+	if cell.x >= 38 and cell.x <= 72 and cell.y <= 23:
 		return [8, 9, 6, 3][selector % 4]
 	if cell.y >= 54:
 		return [3, 4, 5, 12][selector % 4]
@@ -117,17 +186,10 @@ func edge_tree_kind(cell: Vector2i) -> int:
 	return [0, 1, 2, 3, 4, 6][selector % 6]
 
 func mushroom(cell: Vector2, variant: int, scale_factor: float, tint: int, node_name: String) -> void:
-	var object := Node2D.new()
-	object.position = cell * 16.0 + Vector2(8,8)
-	own(object,nature,node_name)
-	var sprite := Sprite2D.new()
-	sprite.texture = load("res://assets/sprout_lands/mushroom_variants.png")
-	sprite.region_enabled = true
-	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	sprite.scale = Vector2.ONE*scale_factor
-	sprite.position.y = 4.0 - 8.0*scale_factor
-	sprite.region_rect = Rect2((variant%3)*16,clampi(tint,0,5)*16,16,16)
-	own(sprite,object,"Artwork")
+	# Use the same detailed woodland mushroom family everywhere; tint now selects
+	# a palette-matched silhouette rather than switching back to the legacy pack.
+	var selected := posmod(variant * 5 + tint, 16)
+	mushroom_cluster(cell, selected, node_name, scale_factor * 0.62)
 
 func build() -> void:
 	layout = JSON.parse_string(FileAccess.get_file_as_string("res://tools/world_layout.json"))
@@ -144,6 +206,13 @@ func build() -> void:
 	for row in layout.pond_rows:
 		for x in range(row[1], row[2]+1):
 			pond[Vector2i(x,row[0])] = true
+	# Extend the existing eastern stream beyond both map edges into one continuous river.
+	add_river(layout.river_path, 2)
+	# Open a short walkable channel through the water beneath the authored footbridge.
+	for bridge_key in ["pond_bridge_bounds","creek_bridge_bounds"]:
+		var bridge_bounds: Array = layout[bridge_key]
+		for y in range(bridge_bounds[1],bridge_bounds[3]+1):
+			for x in range(bridge_bounds[0],bridge_bounds[2]+1): pond.erase(Vector2i(x,y))
 	# Water extends under transparent shoreline pixels; only open water has physics.
 	for cell in pond:
 		water.set_cell(cell, 2, Vector2i((cell.x+cell.y)%4,0))
@@ -164,23 +233,36 @@ func build() -> void:
 			if not pond.has(cell): land.append(cell)
 	ground.set_cells_terrain_connect(land, 0, 0)
 	paint_path(layout.path)
+	# The cottage yard sits inside a readable walking loop, as in the selected mockup.
+	# A slightly wider, bridged stroke reads as one continuous loop at game scale.
+	paint_path(layout.cottage_loop,0,true)
+	# A wide outer route links the destination approaches into one continuous loop.
+	paint_path(layout.outer_loop)
 	for branch in layout.path_branches:
 		paint_path(branch)
 	# A light footpath circles the flower clearing and rejoins the south trail.
 	paint_path(layout.meadow_trail,0,true)
-	# A narrow footpath links the cottage apron to the garden gate.
+	# The cottage garden gate opens onto the northern walking route.
 	paint_path(layout.garden_access,0,true)
+	var garden: Array = layout.garden
+	var garden_gate_x := roundi((float(garden[0])+float(garden[2]))/2.0)
+	# Keep the garden green, with a single clear path between both gates.
+	paint_path([[garden_gate_x,garden[1]-2],[garden_gate_x,garden[3]+2]],0)
 	# A footpath follows the west bank into the creekside rest clearing.
 	paint_path(layout.creek_trail,0)
+	paint_path(layout.creek_rest_trail,0,true)
+	paint_path(layout.creek_bridge_trail,0,true)
 	# A slim loop makes the pond garden a destination from the main road.
 	paint_path(layout.pond_garden_trail,0,true)
+	paint_path(layout.pond_bridge_trail,0,true)
 	# A soft loop turns the northern fruit grove into a walkable destination.
 	paint_path(layout.orchard_trail,0,true)
-	# A subtle spur opens a side clearing in the mushroom grove.
-	paint_path(layout.mushroom_trail,0)
+	# A small loop lets the mushroom glade unfold beyond its entrance spur.
+	paint_path(layout.mushroom_trail,0,true)
+	# The main loop frames the central green; avoid stacking a second hub ring.
 	# An apron joins the cottage door to the main path.
 	var cottage: Array = layout.cottage
-	for y in range(cottage[1]+1,cottage[1]+6):
+	for y in range(cottage[1]+2,cottage[1]+8):
 		for x in range(cottage[0]-1,cottage[0]+2): route[Vector2i(x,y)] = true
 	var path_cells: Array[Vector2i] = []
 	for cell in route:
@@ -193,29 +275,22 @@ func build() -> void:
 			if pond.has(cell) or route.has(cell): continue
 			if meadow_contains(Vector2(cell)) or orchard_contains(Vector2(cell)): continue
 			var hash_value := absi(x*73856093 ^ y*19349663)
-			if hash_value % 13 == 0:
-				details.set_cell(cell,0,Vector2i(hash_value%3,5+(hash_value%2)))
-			elif hash_value % 19 == 0:
-				details.set_cell(cell,0,Vector2i(6+hash_value%2,5+hash_value%2))
+			if hash_value % 17 == 0:
+				details.set_cell(cell,19,Vector2i(hash_value%4,0),1+hash_value%8)
 			elif hash_value % 31 == 0:
-				details.set_cell(cell,0,Vector2i(8+hash_value%2,5))
-	build_meadow_blooms()
+				details.set_cell(cell,19,Vector2i(int(hash_value/7)%4,1),1+hash_value%8)
 	build_pond_water_garden()
-	var garden: Array = layout.garden
-	var garden_cells: Array[Vector2i] = []
-	for y in range(garden[1],garden[3]+1):
-		for x in range(garden[0],garden[2]+1): garden_cells.append(Vector2i(x,y))
-	paths.set_cells_terrain_connect(garden_cells,0,1)
-	var plants := layer("GardenFlowers")
-	# Two compact crop beds flank the garden's clear center path.
-	for y in [int(garden[1])+1,int(garden[1])+3]:
-		for x in range(garden[0]+1,garden[0]+4):
-			plants.set_cell(Vector2i(x,y),4,Vector2i(3 if (x+y)%2==0 else 4,1))
-		for x in range(garden[0]+5,garden[2]):
-			plants.set_cell(Vector2i(x,y),4,Vector2i(4 if (x+y)%2==0 else 3,1))
 	nature = Node2D.new()
 	nature.y_sort_enabled = true
 	own(nature,world,"Nature")
+	build_meadow_blooms()
+	# Larger hand-painted lily groups sit above the animated water surface.
+	for i in range(14):
+		var x := roundi(sx(94 + (i*7)%18))
+		var y := 21 + (i*11)%16
+		if pond.has(Vector2i(x,y)):
+			var lily := cluster_from("PondLilyGroup_%02d"%i,Vector2(x,y),PROP_ATLAS,7+i%4,0.62)
+			lily.get_node("Artwork").position.y = 0
 	build_orchard_grove()
 	for i in range(layout.trees.size()):
 		var p: Array = layout.trees[i]
@@ -232,6 +307,12 @@ func build() -> void:
 		# Looser tree groups frame the meadow instead of a continuous hedge.
 		if x < 5 or x > 25 or x%6 == 1:
 			tree(south_cell,edge_tree_kind(south_cell),"SouthTree_%02d"%x)
+	# A staggered inner canopy row gives the map the framed, enclosed feel of the reference.
+	for x in range(2,world_width-2,3):
+		var north_inner := Vector2i(x,5+(x%2))
+		var south_inner := Vector2i(x,world_height-7-(x%2))
+		tree(north_inner,edge_tree_kind(north_inner),"NorthInnerTree_%02d"%x)
+		tree(south_inner,edge_tree_kind(south_inner),"SouthInnerTree_%02d"%x)
 	for y in range(5,world_height-3,3):
 		var west_cell := Vector2i(1+(y%2),y)
 		var east_cell := Vector2i(world_width-3+(y%2),y)
@@ -241,13 +322,12 @@ func build() -> void:
 		var p: Array = layout.bushes[i]
 		if route.has(Vector2i(p[0],p[1])): continue
 		if pond_garden_contains(Vector2(p[0],p[1])) or orchard_contains(Vector2(p[0],p[1])): continue
-		var asset: Dictionary = BUSH_ASSETS[posmod(i*5+p[0]+p[1], BUSH_ASSETS.size())]
-		object_from("Bush_%02d"%i,Vector2(p[0],p[1]),String(asset["texture"]),asset["region"])
+		low_tree(Vector2(p[0],p[1]),[6,7,0,4][posmod(i*5+p[0]+p[1],4)],"Bush_%02d"%i,0.42 if i%3 else 0.48)
 	for i in range(layout.rocks.size()):
 		var p: Array = layout.rocks[i]
 		if route.has(Vector2i(p[0],p[1])): continue
 		if pond_garden_contains(Vector2(p[0],p[1])) or orchard_contains(Vector2(p[0],p[1])): continue
-		object_at("Rock_%02d"%i,Vector2(p[0],p[1]),Rect2(80,64,16,16),Vector2(11,7))
+		woodland_prop(Vector2(p[0],p[1]),i%4,"Rock_%02d"%i,0.6,Vector2(9,6))
 	for i in range(layout.flower_patches.size()):
 		var p: Array = layout.flower_patches[i]
 		if meadow_contains(Vector2(p[0],p[1])): continue
@@ -258,31 +338,47 @@ func build() -> void:
 		for j in range(offset_list.size()):
 			var cell: Vector2 = Vector2(p[0],p[1])+offset_list[j]
 			if not pond.has(Vector2i(cell)) and not route.has(Vector2i(cell)):
-				# Use world flowers, rather than fruit/UI icons from the nature sheet.
-				object_from("Flower_%02d_%d"%[i,j],cell,"res://assets/wildflowers/meadow/flowers.png",Rect2((flower_type%4)*16,(0 if flower_type<4 else 1)*16,16,16))
+				# Compact clumps repeat native pixel groupings at varied scales.
+				flower_clump(cell,flower_type*2+j,"Flower_%02d_%d"%[i,j],0.30)
 	for i in range(layout.mushrooms.size()):
 		var p: Array = layout.mushrooms[i]
 		if route.has(Vector2i(p[0],p[1])): continue
-		mushroom(Vector2(p[0],p[1]),p[2],float(p[3]),p[4],"Mushroom_%02d"%i)
+		var cell := Vector2(p[0],p[1])
+		if i%3 == 0 and cell.x < 56 and cell.y > 12 and cell.y < 50:
+			mushroom_cluster(cell,i*7+int(p[2]),"Mushroom_%02d"%i,0.48)
+		else:
+			mushroom(cell,p[2],float(p[3]),p[4],"Mushroom_%02d"%i)
+	# Large clusters give the western destination the reference image's rich focal canopy.
+	var cluster_slots := [[sx(10),23],[sx(17),17],[sx(20),31],[sx(26),20],[sx(27),38],[sx(35),18],[sx(38),37],[sx(43),23],[sx(43),33],[sx(12),37],[sx(24),16],[sx(37),30]]
+	for i in range(cluster_slots.size()):
+		var cell := Vector2(cluster_slots[i][0],cluster_slots[i][1])
+		var clear := true
+		for nearby in route:
+			if Vector2(nearby).distance_to(cell) < 2.2: clear = false
+		if clear: mushroom_cluster(cell,i*5+2,"MushroomCluster_%02d"%i,0.78 if i%3 else 0.88)
 	for i in range(layout.logs.size()):
 		var p: Array = layout.logs[i]
 		if route.has(Vector2i(p[0],p[1])): continue
-		object_at("Log_%02d"%i,Vector2(p[0],p[1]),Rect2(0,64,32,16),Vector2(22,7))
+		woodland_prop(Vector2(p[0],p[1]),12,"Log_%02d"%i,0.62,Vector2(22,7))
 	for i in range(layout.stumps.size()):
 		var p: Array = layout.stumps[i]
 		if route.has(Vector2i(p[0],p[1])): continue
-		object_at("Stump_%02d"%i,Vector2(p[0],p[1]),Rect2(64,32,16,16),Vector2(9,6))
+		woodland_prop(Vector2(p[0],p[1]),14,"Stump_%02d"%i,0.58,Vector2(9,6))
 	for i in range(layout.creek_reeds.size()):
 		var p: Array = layout.creek_reeds[i]
-		var atlas := "foliage/birch_water_plants.png" if i%2 == 0 else "foliage/pine_water_plants.png"
-		object_from("CreekReeds_%02d"%i,Vector2(p[0],p[1]),atlas,Rect2(16,(i%2)*16,16,16))
+		woodland_prop(Vector2(p[0],p[1]),4+i%3,"CreekReeds_%02d"%i,0.62)
+	build_river_reeds()
+	build_creekside_clearing()
 	build_meadow_accents()
 	build_pond_garden_accents()
 	build_orchard_approach()
+	build_central_green()
 	build_destination_approaches()
+	build_reference_scatter()
 	build_roadside_discoveries()
 	build_cottage()
 	build_fence()
+	build_cottage_garden()
 	var boundaries := Node2D.new()
 	own(boundaries,world,"WorldBoundaries")
 	var world_pixels := Vector2(world_width,world_height)*16.0
@@ -305,7 +401,7 @@ func build_roadside_discoveries() -> void:
 	# Small authored compositions, not uniform scatter. Alternate trail sides.
 	var pockets := layer("RoadsideDiscoveryFlowers")
 	pockets.collision_enabled = false
-	var stops := [Vector2i(56,36), Vector2i(76,43), Vector2i(83,66), Vector2i(37,76), Vector2i(29,43), Vector2i(46,68)]
+	var stops := [Vector2i(roundi(sx(56)),36), Vector2i(roundi(sx(81)),37), Vector2i(roundi(sx(83)),62), Vector2i(roundi(sx(37)),76), Vector2i(roundi(sx(29)),36), Vector2i(roundi(sx(46)),68)]
 	for i in range(stops.size()):
 		var center: Vector2i = stops[i]
 		for offset in [Vector2i(-1,0),Vector2i(0,-1),Vector2i(1,1),Vector2i(-2,1),Vector2i(0,2),Vector2i(2,0)]:
@@ -318,11 +414,11 @@ func build_roadside_discoveries() -> void:
 			if existing.position.distance_to(Vector2(center)*16.0+Vector2(8,8)) < 26.0: clear = false
 		if not clear: continue
 		if i == 4:
-			mushroom(Vector2(center),1,1.3,3,"TrailDiscoveryMushroom")
+			mushroom_cluster(Vector2(center),8,"TrailDiscoveryMushroom",0.85)
 		elif i % 2 == 0:
-			object_at("TrailDiscoveryRock_%d"%i,Vector2(center),Rect2(80,64,16,16),Vector2(11,7))
+			woodland_prop(Vector2(center),i%4,"TrailDiscoveryRock_%d"%i,0.58,Vector2(9,6))
 		else:
-			object_at("TrailDiscoveryLog_%d"%i,Vector2(center),Rect2(0,64,32,16),Vector2(22,7))
+			woodland_prop(Vector2(center),13,"TrailDiscoveryLog_%d"%i,0.6,Vector2(14,5))
 
 func discovery_cell_clear(cell: Vector2i) -> bool:
 	if pond.has(cell): return false
@@ -344,9 +440,9 @@ func orchard_contains(cell: Vector2) -> bool:
 	return cell.x >= bounds[0] and cell.x < bounds[2] and cell.y >= bounds[1] and cell.y < bounds[3]
 
 func build_orchard_approach() -> void:
-	# Bake a seeded gradient along the walking route; no runtime generation cost.
-	var points: Array[Vector2] = [Vector2(55,47),Vector2(60,43)]
-	for entry in layout.path_branches[0]:
+	# Bake a seeded gradient on the southbound route into the expanded orchard.
+	var points: Array[Vector2] = [Vector2(sx(61.6)+19.0,80)]
+	for entry in layout.orchard_trail:
 		var point := Vector2(entry[0],entry[1])
 		if point != points.back(): points.append(point)
 	var total_length := 0.0
@@ -357,8 +453,8 @@ func build_orchard_approach() -> void:
 	var blooms := layer("OrchardApproachBlooms")
 	blooms.collision_enabled = false
 	var placed_trees: Array[Vector2] = []
-	for y in range(23,49):
-		for x in range(49,71):
+	for y in range(62,91):
+		for x in range(roundi(sx(51)+19.0),roundi(sx(82)+19.0)):
 			var cell := Vector2i(x,y)
 			if route.has(cell) or pond.has(cell) or orchard_contains(Vector2(cell)): continue
 			var distance := INF
@@ -390,7 +486,7 @@ func build_orchard_approach() -> void:
 				if clear:
 					var name := "ApproachTree_%d_%d"%[x,y]
 					if rng.randf() < richness*0.85:
-						object_from(name,Vector2(cell),"orchard_trees.png",Rect2(rng.randi_range(0,3)*32,0,32,32),Vector2(7,7))
+						low_tree(Vector2(cell),[0,1,2,4,6,8,10,12][rng.randi_range(0,7)],name,0.62)
 					else:
 						tree(Vector2(cell),[1,4,6][rng.randi_range(0,2)],name)
 					placed_trees.append(Vector2(cell))
@@ -399,7 +495,7 @@ func build_orchard_approach() -> void:
 				if rng.randf() < richness:
 					blooms.set_cell(cell,19,Vector2i(rng.randi_range(0,3),rng.randi_range(0,1)),rng.randi_range(1,8))
 				else:
-					blooms.set_cell(cell,0,Vector2i(rng.randi_range(0,2),5))
+					blooms.set_cell(cell,19,Vector2i(rng.randi_range(0,3),0),rng.randi_range(1,8))
 
 func build_destination_approaches() -> void:
 	# Independent seeds keep one destination's edits from reshuffling another.
@@ -432,7 +528,8 @@ func build_destination_approach(design: Dictionary) -> void:
 	for y in range(maxi(4,int(minimum.y)-6),mini(int(layout.size[1])-4,int(maximum.y)+7)):
 		for x in range(maxi(4,int(minimum.x)-6),mini(int(layout.size[0])-4,int(maximum.x)+7)):
 			var cell := Vector2i(x,y)
-			if pond.has(cell) or meadow_contains(Vector2(cell)) or orchard_contains(Vector2(cell)) or pond_garden_contains(Vector2(cell)): continue
+			var is_meadow_approach := String(design.name) == "Meadow"
+			if pond.has(cell) or (meadow_contains(Vector2(cell)) and not is_meadow_approach) or orchard_contains(Vector2(cell)) or pond_garden_contains(Vector2(cell)): continue
 			# Protect the complete road network, including nearby junctions.
 			var road_clear := true
 			for dy in range(-1,2):
@@ -477,7 +574,7 @@ func build_destination_approach(design: Dictionary) -> void:
 			var early_density := 0.22 if pocket else 0.07
 			if rng.randf() > lerpf(early_density,destination_density,richness): continue
 			if rng.randf() > richness:
-				plants.set_cell(cell,0,Vector2i(rng.randi_range(0,2),5))
+				plants.set_cell(cell,19,Vector2i(rng.randi_range(0,3),0),rng.randi_range(1,8))
 			elif String(design.name) == "Mushroom":
 				var clear := true
 				for other in accent_positions:
@@ -490,8 +587,7 @@ func build_destination_approach(design: Dictionary) -> void:
 				for other in accent_positions:
 					if other.distance_to(Vector2(cell)) < 3.0: clear = false
 				if clear:
-					var atlas := "foliage/pine_water_plants.png" if String(design.name) == "Creek" and rng.randf() < 0.5 else "foliage/birch_water_plants.png"
-					object_from("%sApproachReeds_%d_%d"%[design.name,x,y],Vector2(cell),atlas,Rect2(16,rng.randi_range(0,1)*16,16,16))
+					woodland_prop(Vector2(cell),4+rng.randi_range(0,2),"%sApproachReeds_%d_%d"%[design.name,x,y],0.56)
 					accent_positions.append(Vector2(cell))
 			else:
 				var color := rng.randi_range(0,3) if String(design.name) == "Meadow" else rng.randi_range(2,3)
@@ -500,18 +596,48 @@ func build_destination_approach(design: Dictionary) -> void:
 func build_orchard_grove() -> void:
 	for i in range(layout.orchard_trees.size()):
 		var entry: Array = layout.orchard_trees[i]
-		if route.has(Vector2i(entry[0],entry[1])): continue
-		object_from("OrchardTree_%02d"%i,Vector2(entry[0],entry[1]),"res://assets/sprout_lands/orchard_trees.png",Rect2(int(entry[2])*32,0,32,32),Vector2(7,7))
+		var orchard_cell := Vector2i(entry[0],entry[1])
+		if not route_clearance(orchard_cell): continue
+		var variety: int = [4,10,14,5][posmod(int(entry[2])+i,4)]
+		var orchard_tree := cluster_from("OrchardTree_%02d"%i,Vector2(entry[0],entry[1]),TREE_ATLAS,variety,1.08,Vector2(7,6))
+		orchard_tree.get_node("Artwork").position.y -= 3.0
 	# The blanket is the quiet focal point under the central shade tree.
-	object_from("PicnicBlanket",Vector2(67.0,15.6),"res://assets/sprout_lands/picnic_grove.png",Rect2(0,0,48,32))
-	object_from("HarvestCrate",Vector2(70.1,15.7),"res://assets/sprout_lands/picnic_grove.png",Rect2(48,0,16,16),Vector2(8,6))
+	object_from("PicnicBlanket",Vector2(sx(71.4)+19.0,72.0),"res://assets/sprout_lands/picnic_grove.png",Rect2(0,0,48,32))
+	object_from("HarvestCrate",Vector2(sx(73.9)+19.0,72.1),"res://assets/sprout_lands/picnic_grove.png",Rect2(48,0,16,16),Vector2(8,6))
 	for i in range(layout.orchard_fruit.size()):
 		var entry: Array = layout.orchard_fruit[i]
 		object_from("FallenFruit_%02d"%i,Vector2(entry[0],entry[1]),"res://assets/sprout_lands/picnic_grove.png",Rect2(64+int(entry[2])*16,0,16,16))
+	# A small secondary fruit cluster gives the southern grove a fuller silhouette.
 	for i in range(layout.orchard_flowers.size()):
 		var entry: Array = layout.orchard_flowers[i]
-		var object := object_from("OrchardFlower_%02d"%i,Vector2(entry[0],entry[1]),"res://assets/wildflowers/meadow/flowers.png",Rect2(int(entry[2])*16,48,16,16))
-		object.get_node("Artwork").texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		var cell := Vector2(entry[0],entry[1])
+		if route.has(Vector2i(cell)): continue
+		flower_clump(cell,int(entry[2])*3+i,"OrchardFlower_%02d"%i,0.38)
+	# Varied fruit trees surround a clear picnic interior.
+	for entry in [[sx(57.5)+19.0,65.0,4],[sx(66.5)+19.0,62.0,10],[sx(73.9)+19.0,67.0,14],[sx(81.2)+19.0,69.0,4],[sx(65.7)+19.0,80.0,10],[sx(79.6)+19.0,80.0,14]]:
+		var cell := Vector2(entry[0],entry[1])
+		if not route_clearance(Vector2i(cell)): continue
+		cluster_from("OrchardTreeAccent_%02d_%02d"%[int(cell.x),int(cell.y)],cell,TREE_ATLAS,int(entry[2]),1.08,Vector2(7,6))
+	# Fill the picnic grove interior with a loose ring of fruit trees around open grass.
+	for entry in [[91,67,4],[97,71,10],[102,65,14],[109,67,5],[117,70,4],[123,74,10],[119,80,14],[110,82,5],[100,80,4],[92,77,10],[106,75,14]]:
+		var cell := Vector2(entry[0],entry[1])
+		if not route_clearance(Vector2i(cell)): continue
+		cluster_from("OrchardInteriorTree_%02d_%02d"%[int(cell.x),int(cell.y)],cell,TREE_ATLAS,int(entry[2]),1.08,Vector2(7,6))
+
+func build_reference_scatter() -> void:
+	# Light tree and stone groupings restore the small discoveries visible in the reference lawn.
+	for entry in [[52,38,0],[59,35,1],[66,39,4],[77,43,1],[82,50,0],[57,56,6],[78,57,2],[91,50,4],[104,49,1],[55,32,4],[65,34,0],[84,40,2],[92,46,1],[108,43,6],[63,56,3],[83,58,4],[97,54,2],[113,51,0],[74,38,6]]:
+		var cell := Vector2(entry[0],entry[1])
+		if pond.has(Vector2i(cell)) or orchard_contains(cell) or meadow_contains(cell): continue
+		tree(cell,int(entry[2]),"ReferenceLawnTree_%02d_%02d"%[entry[0],entry[1]])
+	for entry in [[55,36,0],[70,43,1],[80,52,2],[93,47,0],[52,58,1],[74,60,2],[102,52,1],[57,42,2],[69,34,0],[88,52,1],[105,57,2],[79,45,1],[64,50,0]]:
+		var cell := Vector2(entry[0],entry[1])
+		if route_clearance(Vector2i(cell)) and not pond.has(Vector2i(cell)) and not orchard_contains(cell) and not meadow_contains(cell):
+			woodland_prop(cell,int(entry[2]),"ReferenceLawnStone_%02d_%02d"%[entry[0],entry[1]],0.48,Vector2(7,4))
+	for entry in [[54,44,2],[69,47,6],[84,53,4],[95,46,7],[62,60,1],[80,61,3],[58,36,5],[73,41,0],[90,45,6],[110,51,2],[69,56,1],[85,59,4],[98,43,3]]:
+		var cell := Vector2(entry[0],entry[1])
+		if route_clearance(Vector2i(cell)) and not pond.has(Vector2i(cell)) and not orchard_contains(cell) and not meadow_contains(cell):
+			flower_clump(cell,int(entry[2])*2+int(cell.x)%4,"ReferenceLawnFlower_%02d_%02d"%[entry[0],entry[1]],0.38)
 
 func build_pond_water_garden() -> void:
 	var plants := layer("PondGardenPlants")
@@ -548,94 +674,108 @@ func pond_dragonfly(cell: Vector2, color_row: int, index: int) -> void:
 func build_pond_garden_accents() -> void:
 	for i in range(layout.pond_reeds.size()):
 		var entry: Array = layout.pond_reeds[i]
-		var texture := "foliage/birch_water_plants.png" if int(entry[2]) == 0 else "foliage/pine_water_plants.png"
-		object_from("PondReeds_%02d"%i,Vector2(entry[0],entry[1]),texture,Rect2(16,0,16,16))
+		woodland_prop(Vector2(entry[0],entry[1]),4+i%3,"PondReeds_%02d"%i,0.58)
 	for i in range(layout.pond_dragonflies.size()):
 		var entry: Array = layout.pond_dragonflies[i]
 		pond_dragonfly(Vector2(entry[0],entry[1]),int(entry[2]),i)
 	# A natural log and flat stone make the east bank a quiet viewing spot.
-	object_at("PondGardenBench",Vector2(95.0,30.8),Rect2(0,64,32,16),Vector2(22,7))
-	object_at("PondGardenSeat",Vector2(96.0,33.8),Rect2(80,64,16,16),Vector2(11,7))
+	woodland_prop(Vector2(sx(113.0),36.0),11,"PondGardenBench",0.7,Vector2(18,6))
+	woodland_prop(Vector2(sx(115.0),38.0),1,"PondGardenSeat",0.55,Vector2(9,6))
+	var bridge := object_from("PondGardenFootbridge",Vector2(sx(102),19),"res://assets/innate/creek_footbridge.png",Rect2(0,0,128,64))
+	bridge.get_node("Artwork").texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 func build_meadow_blooms() -> void:
-	# Low, coordinated flower clumps build a carpet without adding runtime objects.
-	var blooms := layer("MeadowBlooms")
-	blooms.collision_enabled = false
-	var design: Dictionary = layout.meadow_design
-	var bounds: Array = design.bounds
-	var quiet: Array = design.quiet_spot
-	for y in range(bounds[1],bounds[3]):
-		for x in range(bounds[0],bounds[2]):
-			var cell := Vector2i(x,y)
-			if pond.has(cell) or route.has(cell): continue
-			if Vector2(cell).distance_to(Vector2(quiet[0],quiet[1])) < float(quiet[2]): continue
-			var hash_value := absi(x*83492791 ^ y*297121507)
-			var best_edge := 2.0
-			var color := -1
-			for drift in design.drifts:
-				var center := Vector2(drift.center[0],drift.center[1])
-				var radius := Vector2(drift.radius[0],drift.radius[1])
-				var delta := Vector2(cell)-center
-				var edge := (delta.x*delta.x)/(radius.x*radius.x)+(delta.y*delta.y)/(radius.y*radius.y)
-				edge += float(hash_value%7-3)*0.05
-				if edge < best_edge:
-					best_edge = edge
-					color = int(drift.color)
-			if best_edge >= 1.0: continue
-			if hash_value%10 < (1 if best_edge < 0.6 else 3): continue
-			# Orange and yellow gently mingle; cool blooms remain smaller accents.
-			if color <= 1 and hash_value%11 == 0: color = 1-color
-			var shape_choice := int(hash_value/97.0)%13
-			var row := 1 if shape_choice < 7 else (0 if shape_choice < 9 else (2 if shape_choice < 12 else 3))
-			var variation := 1+int(hash_value/389.0)%8
-			blooms.set_cell(cell,19,Vector2i(color,row),variation)
+	# Larger shaded clusters replace the tiny isolated blooms with a continuous,
+	# layered flower carpet. Their silhouettes and palette now match the trees.
+	var bounds: Array = layout.meadow_design.bounds
+	var first_x := int(bounds[0]) + 2
+	var last_x := int(bounds[2]) - 2
+	var grid_index := 0
+	for x in range(first_x,last_x,2):
+		var progress := inverse_lerp(float(first_x),float(last_x),float(x))
+		var spine_y := lerpf(68.0,88.0,progress)+sin(float(x)*0.31)*1.4+sin(float(x)*0.13)*0.9
+		for row in range(-4,5):
+			var jitter := posmod(x*17 + row*29,3) - 1
+			var cell := Vector2(x + posmod(row + x,2), spine_y + row*1.8 + jitter*0.35)
+			var across := absf(cell.y-spine_y)
+			if across > 8.0 or not meadow_contains(cell): continue
+			var center := Vector2i(roundi(cell.x),roundi(cell.y))
+			if pond.has(center): continue
+			var hash_value := absi(int(cell.x)*73856093 ^ int(cell.y)*19349663 ^ 83492791)
+			var density := lerpf(0.96,0.32,clampf(across/8.0,0.0,1.0))
+			if float(hash_value%100)/100.0 > density: continue
+			var clear := true
+			for dy in range(-2,3):
+				for dx in range(-2,3):
+					if route.has(center+Vector2i(dx,dy)): clear = false
+			if not clear: continue
+			var scale_factor := 0.60 + float(hash_value%13)/100.0
+			flower_clump(cell,hash_value%16,"MeadowDrift_%03d"%grid_index,scale_factor)
+			grid_index += 1
 
 func build_meadow_accents() -> void:
-	# A few higher blooms break up the low carpets; all use the same 16px palette.
+	# A handful of taller flowers act as individual landmarks beside the drifts.
 	var accents := [
-		[Vector2(14.4,82.6),0], [Vector2(16.2,84.5),0],
-		[Vector2(17.5,82.3),1], [Vector2(13.5,84.0),0],
-		[Vector2(23.3,81.8),1], [Vector2(25.5,82.5),1],
-		[Vector2(26.4,85.6),2], [Vector2(28.7,87.6),2],
-		[Vector2(30.8,85.2),2], [Vector2(13.4,89.5),3],
-		[Vector2(15.7,91.4),3], [Vector2(12.8,91.1),3],
-		[Vector2(21.3,91.2),0], [Vector2(24.6,90.8),1],
-		[Vector2(23.3,93.1),0], [Vector2(27.6,92.4),1],
-		[Vector2(29.6,93.0),2], [Vector2(21.0,85.0),1],
+		[Vector2(sx(12.0),69.2),0], [Vector2(sx(17.4),75.6),1],
+		[Vector2(sx(22.2),82.0),3], [Vector2(sx(28.7),85.8),1],
+		[Vector2(sx(34.2),89.0),2], [Vector2(sx(40.5),92.8),0],
+		[Vector2(sx(45.0),96.1),3], [Vector2(sx(11.2),84.1),2],
+		[Vector2(sx(31.0),94.1),1],
 	]
 	for i in range(accents.size()):
 		var entry: Array = accents[i]
 		var cell: Vector2 = entry[0]
 		if route.has(Vector2i(cell)) or pond.has(Vector2i(cell)): continue
-		var region := Rect2(int(entry[1])*16,48,16,16)
-		var object := object_from("MeadowAccent_%02d"%i,cell,"res://assets/wildflowers/meadow/flowers.png",region)
-		object.get_node("Artwork").texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	object_at("MeadowRestStone",Vector2(21.0,88.8),Rect2(80,64,16,16))
+		flower_clump(cell,int(entry[1])*4+i,"MeadowAccent_%02d"%i,0.62)
+	woodland_prop(Vector2(sx(21.0),88.8),1,"MeadowRestStone",0.52)
+
+func build_creekside_clearing() -> void:
+	# A roomy river landing gives the east edge a clear place to pause and explore.
+	var bridge := object_from("CreekFootbridge",Vector2(sx(116),80),"res://assets/innate/creek_footbridge.png",Rect2(0,0,128,64))
+	bridge.get_node("Artwork").texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	if route_clearance(Vector2i(sx(104.2),77.4)):
+		woodland_prop(Vector2(sx(104.2),77.4),11,"CreeksideLogSeat",0.7,Vector2(18,6))
+	if route_clearance(Vector2i(sx(106.0),78.4)):
+		woodland_prop(Vector2(sx(106.0),78.4),2,"CreeksideBankStone",0.58,Vector2(9,6))
+	if route_clearance(Vector2i(sx(105.6),80.0)):
+		woodland_prop(Vector2(sx(105.6),80.0),0,"CreeksideShoreRock",0.52,Vector2(8,5))
+	if route_clearance(Vector2i(sx(104.0),79.5)):
+		woodland_prop(Vector2(sx(104.0),79.5),3,"CreeksideShoreStone",0.5,Vector2(8,5))
+	woodland_prop(Vector2(sx(101.2),75.4),15,"CreeksideTrailMarker",0.62)
+	# A little creekside bed makes the crossing legible before you step onto it.
+	for entry in [[sx(104.0),73.0,4],[sx(107.0),73.6,7],[sx(109.2),83.5,5],[sx(105.8),84.2,2],[sx(121.0),76.0,1],[sx(121.5),84.0,6]]:
+		var cell := Vector2(entry[0],entry[1])
+		if route.has(Vector2i(cell)) or pond.has(Vector2i(cell)): continue
+		flower_clump(cell,int(entry[2])*3+int(cell.x)%4,"CreekFlower_%02d_%02d"%[int(cell.x),int(cell.y)],0.44)
+
+func build_central_green() -> void:
+	# A shade tree and bench form the garden's quiet side destination.
+	tree(Vector2(sx(61),52),0,"CentralGreenShadeTree")
+	woodland_prop(Vector2(sx(62.0),54.4),12,"CentralGreenBench",0.68)
+	woodland_prop(Vector2(sx(65.0),52.0),1,"CentralGreenStone",0.56)
+	for entry in [[sx(57.0),49.0,3],[sx(66.0),49.0,6],[sx(67.0),54.0,1],[sx(55.0),56.0,5]]:
+		var cell := Vector2(entry[0],entry[1])
+		if not route_clearance(Vector2i(cell)): continue
+		flower_clump(cell,int(entry[2])*3+int(cell.x)%4,"GreenFlower_%02d_%02d"%[int(cell.x),int(cell.y)],0.42)
 
 func build_cottage() -> void:
 	var cottage := Node2D.new()
 	var cottage_cell: Array = layout.cottage
 	cottage.position = Vector2(cottage_cell[0]*16+8,cottage_cell[1]*16+8)
 	own(cottage,nature,"Cottage")
-	var walls := layer("Walls",cottage)
-	for x in range(-2,3):
-		for y in range(-2,1):
-			var atlas_x := 0 if x==-2 else (2 if x==2 else 1)
-			walls.set_cell(Vector2i(x,y),5,Vector2i(atlas_x,y+3))
-	walls.set_cell(Vector2i(0,0),5,Vector2i(3,1))
-	walls.set_cell(Vector2i(-1,-1),5,Vector2i(1,0))
-	walls.set_cell(Vector2i(1,-1),5,Vector2i(1,0))
-	var roof := layer("Roof",cottage)
-	roof.position.y = 10.0
-	for x in range(-2,3):
-		for y in range(-5,-2):
-			roof.set_cell(Vector2i(x,y),5,Vector2i(4 if x==-2 else (6 if x==2 else 5),0 if y==-5 else (1 if y==-4 else 4)))
+	var artwork := Sprite2D.new()
+	artwork.texture = load("res://assets/innate/cottage.png")
+	artwork.scale = Vector2(1.5,1.5)
+	# Lower the sprite so the cottage sits in the central clearing, as in the reference.
+	artwork.position.y = -48.0
+	artwork.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	own(artwork,cottage,"Artwork")
 	rectangle(cottage,Vector2(76,42),Vector2(8,-9))
 	var step := layer("Doorstep")
 	step.set_cell(Vector2i(cottage_cell[0],cottage_cell[1]+1),5,Vector2i(0,4))
 
 func build_fence() -> void:
-	# A three-cell north opening lines up with the cottage garden footpath.
+	# A centered north and south gate align the cottage door with the garden path.
 	var garden: Array = layout.garden
 	var west: int = garden[0]-1
 	var east: int = garden[2]+1
@@ -647,10 +787,39 @@ func build_fence() -> void:
 		if x >= gate_center-1 and x <= gate_center+1: continue
 		fence_piece(Vector2i(x,north),Vector2i(2,0))
 	for x in range(west,east+1):
+		if x >= gate_center-1 and x <= gate_center+1: continue
 		fence_piece(Vector2i(x,garden[3]+1),Vector2i(1 if x==west else (3 if x==east else 2),3))
 	for y in range(garden[1],garden[3]+1):
 		fence_piece(Vector2i(west,y),Vector2i(0,1))
 		fence_piece(Vector2i(east,y),Vector2i(0,1))
+
+func build_cottage_garden() -> void:
+	var garden: Array = layout.garden
+	# Full, tidy flower rows flank the centered doorway walk, like the chosen mockup.
+	var beds := [
+		[float(garden[0])+0.9,float(garden[1])+1.5],
+		[float(garden[0])+3.0,float(garden[1])+1.5],
+		[float(garden[2])-3.0,float(garden[1])+1.5],
+		[float(garden[2])-0.9,float(garden[1])+1.5],
+		[float(garden[0])+0.9,float(garden[1])+3.7],
+		[float(garden[0])+3.0,float(garden[1])+3.7],
+		[float(garden[2])-3.0,float(garden[1])+3.7],
+		[float(garden[2])-0.9,float(garden[1])+3.7],
+	]
+	for i in range(beds.size()):
+		var cell := Vector2(float(beds[i][0]),float(beds[i][1]))
+		flower_clump(cell,i*3+2,"CottageGardenFlower_%02d"%i,0.50 if i%3==0 else 0.46)
+	# The flowering trellis anchors the garden's east bed without narrowing the gate.
+	var trellis := Node2D.new()
+	trellis.position = Vector2((float(garden[2])-0.25)*16.0, (float(garden[1])+3.0)*16.0+8.0)
+	own(trellis,nature,"CottageFlowerTrellis")
+	var trellis_art := Sprite2D.new()
+	trellis_art.texture = load("res://assets/innate/cottage_trellis.png")
+	trellis_art.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	trellis_art.scale = Vector2.ONE*0.72
+	trellis_art.position.y = -72.0*0.72/2.0
+	own(trellis_art,trellis,"Artwork")
+	rectangle(trellis,Vector2(9,5))
 
 func fence_piece(cell: Vector2i, atlas: Vector2i) -> void:
 	var post := Node2D.new()

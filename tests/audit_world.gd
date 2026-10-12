@@ -11,7 +11,7 @@ func audit() -> void:
 	var water: TileMapLayer = world.get_node("Water")
 	var cells := {}
 	for cell in paths.get_used_cells(): cells[cell] = true
-	var queue: Array[Vector2i] = [paths.get_used_cells()[0]]
+	var queue: Array[Vector2i] = [Vector2i(68,55)]
 	var seen := {queue[0]:true}
 	var cursor := 0
 	while cursor < queue.size():
@@ -23,7 +23,14 @@ func audit() -> void:
 				seen[next] = true
 				queue.append(next)
 	var failures: Array[String] = []
-	if seen.size() != cells.size(): failures.append("Disconnected painted paths")
+	var disconnected_cells: Array[Vector2i] = []
+	var disconnected_bridge_cells: Array[Vector2i] = []
+	for cell in cells:
+		if not seen.has(cell):
+			disconnected_cells.append(cell)
+			if cell.x >= 130 and cell.x <= 149 and cell.y >= 73 and cell.y <= 83:
+				disconnected_bridge_cells.append(cell)
+	if not disconnected_cells.is_empty(): failures.append("Disconnected painted paths")
 	for cell in cells:
 		if water.get_cell_source_id(cell) != -1: failures.append("Path crosses water at "+str(cell))
 	var counts := {}
@@ -42,7 +49,7 @@ func audit() -> void:
 		var plants: TileMapLayer = world.get_node(area+"Approach"+suffix)
 		tile_counts[area] = plants.get_used_cells().size()
 		if plants.get_used_cells().is_empty(): failures.append("Empty approach: "+area)
-	var report := {"path_cells":cells.size(),"connected_path_cells":seen.size(),
+	var report := {"path_cells":cells.size(),"connected_path_cells":seen.size(),"disconnected_path_cells":disconnected_cells,"disconnected_bridge_cells":disconnected_bridge_cells,
 		"approach_objects":counts,"approach_plant_tiles":tile_counts,
 		"nature_objects":world.get_node("Nature").get_child_count(),"failures":failures}
 	var file := FileAccess.open("res://tests/evidence/world-audit.json",FileAccess.WRITE)
