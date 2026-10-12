@@ -1,6 +1,6 @@
 {
   "godot": "4.6.3.stable.official.7d41c59c4",
-  "main_pack": "game-5fe8a602bf07a5a3.pck",
+  "main_pack": "game-0d6e6dd943f6b6ff.pck",
   "sources": {
     "assets/innate/README.md": "6e49eea06ad70452aa05c7a2459d21c30b99ce973358880a5b316f5014f23fe8",
     "assets/innate/cottage.png": "b7ee4d95ee3946f68eba180a18e0b200050840a97608ec397b3032dc0845299a",
@@ -88,7 +88,7 @@
     "scenes/main.tscn": "8329114464b83d6fd8b3a9a47b7f5493079af7d52f3200bb71549b347d5042fc",
     "scenes/mobile_controls.tscn": "449b82e95c358bb276dbee9e44a4898622315776a37b4b438c0573bc03fab24f",
     "scenes/player.tscn": "c08f643b66797719c76a539f32ee68ebfabaf747618f6e094c03ab8974088c83",
-    "scenes/world.tscn": "3a980e3a82894a4dc494ae620c9404cb3637da730b28d9729d728734b2da3494",
+    "scenes/world.tscn": "119b1b942640a473db4db6e8153380acab4e3a7b56063786b4b219601f78b449",
     "scripts/atmosphere.gd": "473dc29328973f909dc4972ec8b7084d5c09c3d4602324ee76c146e522c8f90d",
     "scripts/atmosphere.gd.uid": "49d31245a8f2209249fe251e182dd1dc980b319b36e1ff164648d57af25843a3",
     "scripts/countdown.gd": "8f54842e2a2a1a1582d65f1c85d3d9ce9289cbd544f168870304110bd23adbef",
@@ -122,18 +122,18 @@
       "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
       "bytes": 2973
     },
-    "game-5fe8a602bf07a5a3.pck": {
-      "sha256": "5fe8a602bf07a5a3aa6456c11b5e74b806a453237176837e59d9646b958778d8",
-      "bytes": 1037896
+    "game-0d6e6dd943f6b6ff.pck": {
+      "sha256": "0d6e6dd943f6b6ff77703229efd09a78e39ba4c59bd6abc457596d840e92c6d6",
+      "bytes": 1040248
     },
     "loader-character.png": {
       "sha256": "f45a7c06bd6df451832b4ab793c0a204e2832335037636decc6966bbf9b69b76",
       "bytes": 2091
     },
     "index.html": {
-      "sha256": "340888fc4585ecdb52b53624ba2c31945e6f5c26b0523d35dbc7e40149d08703",
+      "sha256": "372274dfd0f79d985e2139d354140e673b6e34a1bed5b321c703b4e4b7344909",
       "bytes": 8011
     }
   },
-  "root_html_sha256": "46d3101b92139235a0cf4400530b1a20c806597f05acaaced99e2d76edfad448"
+  "root_html_sha256": "7e6251f771117754b3290e8a383da84ef5fb4eb2d2dba644a31e4a57a07cb06f"
 }

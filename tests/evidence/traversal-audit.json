@@ -29,9 +29,9 @@
 		"Pond": true
 	},
 	"failures": [],
-	"free_cells": 14493,
+	"free_cells": 14491,
 	"isolated_path_cells": [],
 	"probe_radius": 4.09999990463257,
-	"reachable_cells": 14493,
+	"reachable_cells": 14491,
 	"real_player_swept_steps": 656
 }

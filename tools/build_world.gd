@@ -513,6 +513,39 @@ func build_destination_approaches() -> void:
 		{"name":"Creek", "branch":2, "seed":3104},
 	]:
 		build_destination_approach(design)
+	build_area_thresholds()
+
+func transition_clear(cell: Vector2, spacing := 24.0) -> bool:
+	var map_cell := Vector2i(roundi(cell.x),roundi(cell.y))
+	if pond.has(map_cell) or not route_clearance(map_cell): return false
+	var target := cell * 16.0 + Vector2(8,8)
+	if spacing > 0.0:
+		for existing in nature.get_children():
+			if existing.position.distance_to(target) < spacing: return false
+	return true
+
+func build_area_thresholds() -> void:
+	# Short, palette-matched compositions make the change of biome readable at
+	# each trailhead while leaving the walkable approach and central path open.
+	for entry in [[32.0,20.0,4],[31.0,36.0,9],[46.0,18.0,6],[47.0,37.0,13]]:
+		var cell := Vector2(entry[0],entry[1])
+		if transition_clear(cell,0.0): mushroom_cluster(cell,int(entry[2]),"MushroomThreshold_%02d_%02d"%[int(cell.x),int(cell.y)],0.68)
+	for entry in [[58.0,78.0,0],[59.0,82.0,2],[49.0,83.0,3],[47.0,86.0,1],[56.0,88.0,0]]:
+		var cell := Vector2(entry[0],entry[1])
+		if transition_clear(cell,0.0): flower_clump(cell,int(entry[2])*3+int(cell.x)%4,"MeadowThreshold_%02d_%02d"%[int(cell.x),int(cell.y)],0.48)
+	for entry in [[89.0,22.0,4],[90.0,32.0,5],[95.0,35.0,6]]:
+		var cell := Vector2(entry[0],entry[1])
+		if transition_clear(cell,0.0): woodland_prop(cell,int(entry[2]),"PondThresholdReeds_%02d_%02d"%[int(cell.x),int(cell.y)],0.56)
+	for entry in [[93.0,66.0,4],[105.0,65.0,10],[94.0,77.0,14]]:
+		var cell := Vector2(entry[0],entry[1])
+		if transition_clear(cell,23.0):
+			var tree_object := cluster_from("OrchardThresholdTree_%02d_%02d"%[int(cell.x),int(cell.y)],cell,TREE_ATLAS,int(entry[2]),0.96,Vector2(7,6))
+			tree_object.get_node("Artwork").position.y -= 2.0
+	for entry in [[131.0,66.0,4],[132.0,72.0,6],[131.0,85.0,5],[124.0,70.0,2],[121.0,84.0,3]]:
+		var cell := Vector2(entry[0],entry[1])
+		if not transition_clear(cell,0.0): continue
+		if int(entry[2]) in [4,5,6]: woodland_prop(cell,int(entry[2]),"CreekThresholdReeds_%02d_%02d"%[int(cell.x),int(cell.y)],0.64)
+		else: woodland_prop(cell,int(entry[2]),"CreekThresholdStone_%02d_%02d"%[int(cell.x),int(cell.y)],0.58)
 
 func build_destination_approach(design: Dictionary) -> void:
 	var points: Array[Vector2] = []
