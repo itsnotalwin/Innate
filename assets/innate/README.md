@@ -9,7 +9,9 @@ The current art direction uses a bright, richly layered top-down pixel landscape
 - `meadow_patch_clusters.png`: 16 irregular low flower drifts for building broad, natural meadow patches.
 - `woodland_props.png`: 16 rocks, reeds, lily-pad groups, benches, a log, a stump, and a signpost.
 
-Each 256×256 atlas has sixteen 64×64 cells. These six atlases and the active 64×64 native flower tile sheet share a palette built from the tree, mushroom, flower, and prop families. This ties the larger foliage and props to the small meadow flowers while retaining their separate silhouettes. Original masters are stored in `art/`; `tools/prepare_environment_atlases.py` builds the palette, removes detached generation bleed, and packs the sprite cells. `tools/prepare_meadow.gd` uses that same palette for the native flowers. Their TileSet sources are 19–25. Runtime sprites use nearest-neighbor filtering.
+Each 256×256 atlas has sixteen 64×64 cells. These six atlases and the active 64×64 native flower tile sheet share a palette built from the tree, mushroom, flower, and prop families. This ties the larger foliage and props to the small meadow flowers while retaining their separate silhouettes. The flower-drift master was refreshed with softer, varied blossoms while retaining the existing cell layout and palette. Original masters are stored in `art/`; `tools/prepare_environment_atlases.py` builds the palette, removes detached generation bleed, and packs the sprite cells. `tools/prepare_meadow.gd` uses that same palette for the native flowers. Their TileSet sources are 19–25. Runtime sprites use nearest-neighbor filtering.
+
+The six small sheets are also packed into `environment_atlas.png` by `tools/pack_environment_atlas.py`. Static nature sprites use this shared texture so y-sorted foliage batches with fewer texture changes. Keep the source sheets separate for editing; regenerate the shared atlas after rebuilding them.
 
 The first map routes trees, low shrubs, mushrooms, rocks, reeds, benches, logs, stumps, meadow drifts, garden beds, and roadside details through this custom foliage family. The old small mushroom, shrub, log, stump, and crop sprites remain in the source asset pack, but are no longer mixed into those placements.
 
@@ -17,6 +19,7 @@ Rebuild the coordinated atlas family and Pages output in this order:
 
 ```sh
 python tools/prepare_environment_atlases.py
+python tools/pack_environment_atlas.py
 godot --headless --path . --script tools/prepare_meadow.gd
 python tools/prepare_tiles.py
 python tools/prepare_cottage_trellis.py

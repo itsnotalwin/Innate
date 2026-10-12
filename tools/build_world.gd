@@ -16,6 +16,15 @@ const MUSHROOM_ATLAS := "res://assets/innate/mushroom_clusters.png"
 const FLOWER_ATLAS := "res://assets/innate/meadow_patch_clusters.png"
 const FLOWER_DETAIL_ATLAS := "res://assets/innate/meadow_flowers_detail.png"
 const PROP_ATLAS := "res://assets/innate/woodland_props.png"
+const COMBINED_ATLAS := "res://assets/innate/environment_atlas.png"
+const ATLAS_OFFSETS := {
+	TREE_ATLAS: Vector2(0, 0),
+	MUSHROOM_ATLAS: Vector2(256, 0),
+	"res://assets/innate/flower_clumps.png": Vector2(0, 256),
+	FLOWER_DETAIL_ATLAS: Vector2(256, 256),
+	FLOWER_ATLAS: Vector2(0, 512),
+	PROP_ATLAS: Vector2(256, 512),
+}
 const WORLD_X_SCALE := 1.203125 # 154 tiles wide, matching the reference map's 1.5:1 framing.
 
 func _initialize() -> void:
@@ -97,7 +106,12 @@ func object_from(node_name: String, cell: Vector2, texture_path: String, region:
 	object.position = cell * 16.0 + Vector2(8, 8)
 	own(object, nature, node_name)
 	var sprite := Sprite2D.new()
-	sprite.texture = load(texture_path if texture_path.begins_with("res://") else "res://assets/sprout_lands/" + texture_path)
+	var resolved_path := texture_path if texture_path.begins_with("res://") else "res://assets/sprout_lands/" + texture_path
+	if ATLAS_OFFSETS.has(resolved_path):
+		region.position += ATLAS_OFFSETS[resolved_path]
+		sprite.texture = load(COMBINED_ATLAS)
+	else:
+		sprite.texture = load(resolved_path)
 	sprite.region_enabled = true
 	sprite.region_rect = region
 	sprite.position.y = -region.size.y / 2.0 + 4.0

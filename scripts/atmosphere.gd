@@ -21,11 +21,10 @@ func _draw() -> void:
 			continue
 		if not ("Tree" in object.name or "tree" in object.name):
 			continue
-		# Layered elongated shadows fall southeast, anchored at each trunk.
-		var radius := artwork.region_rect.size.x * artwork.scale.x * 0.23
-		for shell in range(3, 0, -1):
-			var polygon := PackedVector2Array()
-			for i in range(20):
-				var angle := TAU * i / 20.0
-				polygon.append(object.position + Vector2(8, 5) + Vector2(cos(angle) * (radius + shell * 1.5), sin(angle) * (radius * 0.36 + shell)))
-			draw_colored_polygon(polygon, Color(0.12, 0.20, 0.25, 0.038))
+		# A single low-poly ellipse per canopy keeps the static shadows light to render.
+		var radius := artwork.region_rect.size.x * artwork.scale.x * 0.23 + 2.0
+		var polygon := PackedVector2Array()
+		for i in range(12):
+			var angle := TAU * i / 12.0
+			polygon.append(object.position + Vector2(8, 5) + Vector2(cos(angle) * radius, sin(angle) * radius * 0.36))
+		draw_colored_polygon(polygon, Color(0.12, 0.20, 0.25, 0.105))

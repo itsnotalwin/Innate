@@ -16,7 +16,6 @@ SHEETS = {
 }
 ROW_BOUNDS = {
 	"flower_clumps": (0, 415, 700, 986, 1254),
-	"meadow_patch_clusters": (0, 415, 700, 986, 1254),
 	"meadow_flowers_detail": (0, 375, 625, 940, 1254),
 }
 CELL = 64

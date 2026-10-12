@@ -2,7 +2,7 @@
   "method": "Single 4-second moving samples, fresh Chromium processes, local HTTP, software WebGL. Not real-device measurements.",
   "results": [
     {
-      "build": "baseline 674c9cd",
+      "build": "baseline HEAD",
       "viewport": [
         390,
         844
@@ -12,14 +12,14 @@
         333,
         720
       ],
-      "local_ready_ms": 1810,
-      "mean_frame_ms": 71.43,
-      "p95_frame_ms": 83.4,
-      "frames_over_33ms": 56,
-      "samples": 56
+      "local_ready_ms": 2125,
+      "mean_frame_ms": 86.95,
+      "p95_frame_ms": 100.1,
+      "frames_over_33ms": 46,
+      "samples": 46
     },
     {
-      "build": "baseline 674c9cd",
+      "build": "baseline HEAD",
       "viewport": [
         1152,
         648
@@ -29,11 +29,11 @@
         720,
         405
       ],
-      "local_ready_ms": 1890,
-      "mean_frame_ms": 75.15,
-      "p95_frame_ms": 100,
-      "frames_over_33ms": 52,
-      "samples": 53
+      "local_ready_ms": 2203,
+      "mean_frame_ms": 92.63,
+      "p95_frame_ms": 116.7,
+      "frames_over_33ms": 43,
+      "samples": 43
     },
     {
       "build": "portrait update",
@@ -46,28 +46,28 @@
         333,
         720
       ],
-      "local_ready_ms": 1688,
-      "mean_frame_ms": 81.94,
+      "local_ready_ms": 2111,
+      "mean_frame_ms": 71.21,
       "p95_frame_ms": 100,
-      "frames_over_33ms": 48,
-      "samples": 48
-    },
-    {
-      "build": "portrait update",
-      "viewport": [
-        1152,
-        648
-      ],
-      "device_pixel_ratio": 1,
-      "render_buffer": [
-        720,
-        405
-      ],
-      "local_ready_ms": 1636,
-      "mean_frame_ms": 72.12,
-      "p95_frame_ms": 100,
-      "frames_over_33ms": 54,
+      "frames_over_33ms": 51,
       "samples": 55
+    },
+    {
+      "build": "portrait update",
+      "viewport": [
+        1152,
+        648
+      ],
+      "device_pixel_ratio": 1,
+      "render_buffer": [
+        720,
+        405
+      ],
+      "local_ready_ms": 1951,
+      "mean_frame_ms": 75.47,
+      "p95_frame_ms": 100,
+      "frames_over_33ms": 50,
+      "samples": 53
     }
   ]
 }
