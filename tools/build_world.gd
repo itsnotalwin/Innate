@@ -399,6 +399,7 @@ func build() -> void:
 	build_pond_garden_accents()
 	build_orchard_approach()
 	build_central_green()
+	build_starter_courtyard()
 	build_destination_approaches()
 	build_reference_scatter()
 	build_roadside_discoveries()
@@ -846,6 +847,13 @@ func build_central_green() -> void:
 		var cell := Vector2(entry[0],entry[1])
 		if not route_clearance(Vector2i(cell)): continue
 		flower_clump(cell,int(entry[2])*3+int(cell.x)%4,"GreenFlower_%02d_%02d"%[int(cell.x),int(cell.y)],0.42)
+
+func build_starter_courtyard() -> void:
+	# Keep the cottage as the central landmark and place a readable wayfinder on the garden edge.
+	# The marker sits beside the first fork while leaving the arrival lane open.
+	var marker := Vector2(layout.starter_wayfinder[0],layout.starter_wayfinder[1])
+	if route_clearance(map_cell(marker)):
+		woodland_prop(marker,15,"StarterWayfinder",0.72)
 
 func build_cottage() -> void:
 	var cottage := Node2D.new()
