@@ -5,7 +5,6 @@ var tiles: TileSet = load("res://resources/tilesets/sprout_lands.tres")
 var nature: Node2D
 var ground: TileMapLayer
 var paths: TileMapLayer
-var details: TileMapLayer
 var water: TileMapLayer
 var pond := {}
 var route := {}
@@ -223,7 +222,6 @@ func build() -> void:
 	water.material = water_material
 	ground = layer("Ground")
 	paths = layer("Paths")
-	details = layer("GroundDetails")
 	for row in layout.pond_rows:
 		for x in range(row[1], row[2]+1):
 			pond[Vector2i(x,row[0])] = true
@@ -261,6 +259,10 @@ func build() -> void:
 	paint_path(layout.outer_loop)
 	for branch in layout.path_branches:
 		paint_path(branch)
+	# Keep the far glade reachable without making players circle half the map.
+	# These broad, gently curving connectors make the cottage hub a useful starting point.
+	paint_path([[68.0,55.0],[63.0,51.0],[57.0,46.0],[51.0,41.0],[45.0,36.0],[40.0,32.0],[36.09,30.0]],1,true)
+	paint_path([[72.0,60.0],[77.0,62.0],[82.0,65.0],[87.0,68.0],[92.0,71.0],[94.0,71.0]],1,true)
 	# A light footpath circles the flower clearing and rejoins the south trail.
 	paint_path(layout.meadow_trail,1,true)
 	# This quieter inner trail crosses the meadow and ends at its rest stone,
@@ -294,21 +296,11 @@ func build() -> void:
 	for cell in route:
 		if not pond.has(cell): path_cells.append(cell)
 	paths.set_cells_terrain_connect(path_cells, 0, 1)
-	# Ground variation follows fixed meadow patches rather than random objects.
-	for y in range(2,world_height-2):
-		for x in range(2,world_width-2):
-			var cell := Vector2i(x,y)
-			if pond.has(cell) or route.has(cell): continue
-			if meadow_contains(Vector2(cell)) or orchard_contains(Vector2(cell)): continue
-			var hash_value := absi(x*73856093 ^ y*19349663)
-			if hash_value % 17 == 0:
-				details.set_cell(cell,19,Vector2i(hash_value%4,0),1+hash_value%8)
-			elif hash_value % 31 == 0:
-				details.set_cell(cell,19,Vector2i(int(hash_value/7)%4,1),1+hash_value%8)
-	build_pond_water_garden()
+	# Ground stays soft and readable; foliage accents use the refreshed native palette.
 	nature = Node2D.new()
 	nature.y_sort_enabled = true
 	own(nature,world,"Nature")
+	build_pond_water_garden()
 	build_meadow_blooms()
 	# Larger hand-painted lily groups sit above the animated water surface.
 	for i in range(14):
@@ -427,20 +419,23 @@ func build() -> void:
 
 func build_roadside_discoveries() -> void:
 	# Small authored compositions, not uniform scatter. Alternate trail sides.
-	var pockets := layer("RoadsideDiscoveryFlowers")
-	pockets.collision_enabled = false
-	var stops := [Vector2i(roundi(sx(56)),36), Vector2i(roundi(sx(81)),37), Vector2i(roundi(sx(83)),62), Vector2i(roundi(sx(37)),76), Vector2i(roundi(sx(29)),36), Vector2i(roundi(sx(46)),68)]
+	var stops := [
+		Vector2i(roundi(sx(56)),36), Vector2i(roundi(sx(81)),37), Vector2i(roundi(sx(83)),62),
+		Vector2i(roundi(sx(37)),76), Vector2i(roundi(sx(29)),36), Vector2i(roundi(sx(46)),68),
+		Vector2i(63,33), Vector2i(85,36), Vector2i(81,54), Vector2i(77,63),
+		Vector2i(71,68), Vector2i(90,68), Vector2i(117,64), Vector2i(119,86),
+		Vector2i(88,79), Vector2i(57,73), Vector2i(69,35), Vector2i(96,48)
+	]
 	for i in range(stops.size()):
 		var center: Vector2i = stops[i]
-		for offset in [Vector2i(-1,0),Vector2i(0,-1),Vector2i(1,1),Vector2i(-2,1),Vector2i(0,2),Vector2i(2,0)]:
+		var offsets := [Vector2i(-2,0),Vector2i(-1,-1),Vector2i(1,1),Vector2i(-2,2),Vector2i(0,2),Vector2i(2,0)]
+		for j in range(offsets.size()):
+			var offset: Vector2i = offsets[j]
 			var cell: Vector2i = center + offset
-			if not discovery_cell_clear(cell): continue
-			pockets.set_cell(cell,19,Vector2i(i % 4, (i / 2) % 2))
+			if not discovery_cell_clear(cell) or not scenery_spacing_clear(Vector2(cell)*16.0+Vector2(8,8)): continue
+			flower_detail(Vector2(cell),i*3+j,"TrailDiscoveryBloom_%02d_%02d"%[i,j],0.34)
 		if not discovery_cell_clear(center): continue
-		var clear := true
-		for existing in nature.get_children():
-			if existing.position.distance_to(Vector2(center)*16.0+Vector2(8,8)) < 26.0: clear = false
-		if not clear: continue
+		if not scenery_spacing_clear(Vector2(center)*16.0+Vector2(8,8)): continue
 		if i == 4:
 			mushroom_cluster(Vector2(center),8,"TrailDiscoveryMushroom",0.85)
 		elif i % 2 == 0:
@@ -454,10 +449,10 @@ func build_map_wildflower_fill() -> void:
 	# preserving each destination's visual identity and all 1-tile road margins.
 	var seed := 7412027
 	var added := 0
-	for y in range(5, int(layout.size[1]) - 4, 3):
-		for x in range(5, int(layout.size[0]) - 4, 3):
+	for y in range(5, int(layout.size[1]) - 4, 2):
+		for x in range(5, int(layout.size[0]) - 4, 2):
 			var hash_value := absi(x * 73856093 ^ y * 19349663 ^ seed)
-			if hash_value % 100 >= 65: continue
+			if hash_value % 100 >= 68: continue
 			var cell := Vector2i(x + (hash_value % 3) - 1, y + (int(hash_value / 7) % 3) - 1)
 			if pond.has(cell) or not route_clearance(cell): continue
 			var point := Vector2(cell)
@@ -465,21 +460,27 @@ func build_map_wildflower_fill() -> void:
 			# their authored compositions; enrich the spaces between them instead.
 			if (point.x < 51 and point.y < 52) or meadow_contains(point) or orchard_contains(point) or pond_garden_contains(point): continue
 			var pixel_position := point * 16.0 + Vector2(8, 8)
-			var occupied := false
-			for existing in nature.get_children():
-				if existing.position.distance_to(pixel_position) < 28.0:
-					occupied = true
-					break
-			if occupied: continue
+			if not scenery_spacing_clear(pixel_position): continue
 			var name := "LawnDiscovery_%03d" % added
 			if hash_value % 13 == 0:
-				low_tree(point, [0, 1, 2, 4, 6, 8, 10, 12][hash_value % 8], name, 0.40)
+				low_tree(point, [0, 1, 2, 4, 6, 8, 10, 12][hash_value % 8], name, 0.48)
 			elif hash_value % 4 == 0:
-				flower_detail(point, hash_value % 16, name, 0.34)
+				flower_detail(point, hash_value % 16, name, 0.40)
 			else:
-				flower_clump(point, hash_value % 16, name, 0.34)
+				flower_clump(point, hash_value % 16, name, 0.44)
 			added += 1
 	print("Added ", added, " spaced lawn discoveries.")
+
+func scenery_spacing_clear(pixel_position: Vector2) -> bool:
+	for existing in nature.get_children():
+		var gap := 18.0
+		var node_name := String(existing.name)
+		if "Tree" in node_name or node_name == "Cottage" or "Footbridge" in node_name:
+			gap = 48.0
+		elif "Mushroom" in node_name or "Rock" in node_name or "Reed" in node_name:
+			gap = 26.0
+		if existing.position.distance_to(pixel_position) < gap: return false
+	return true
 
 func discovery_cell_clear(cell: Vector2i) -> bool:
 	if pond.has(cell): return false
@@ -511,8 +512,6 @@ func build_orchard_approach() -> void:
 		total_length += points[i].distance_to(points[i+1])
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 20270526
-	var blooms := layer("OrchardApproachBlooms")
-	blooms.collision_enabled = false
 	var placed_trees: Array[Vector2] = []
 	for y in range(62,91):
 		for x in range(roundi(sx(51)+19.0),roundi(sx(82)+19.0)):
@@ -530,38 +529,28 @@ func build_orchard_approach() -> void:
 					distance = separation
 					progress = (walked+segment.length()*t)/total_length
 				walked += segment.length()
-			if distance < 2.5 or distance > 6.0: continue
+			if distance < 2.0 or distance > 5.5: continue
 			# Smoothly blend normal roadside grass into the destination's palette.
 			var richness := smoothstep(0.0,1.0,progress)
 			var pixel_position := Vector2(cell)*16.0+Vector2(8,8)
-			var occupied := false
-			for existing in nature.get_children():
-				if existing.position.distance_to(pixel_position) < 36.0:
-					occupied = true
-					break
-			if occupied: continue
+			if not scenery_spacing_clear(pixel_position): continue
 			if distance > 3.5 and rng.randf() < lerpf(0.025,0.10,richness):
 				var clear := true
 				for other in placed_trees:
 					if other.distance_to(Vector2(cell)) < 4.0: clear = false
 				if clear:
 					var name := "ApproachTree_%d_%d"%[x,y]
-					if rng.randf() < richness*0.85:
-						low_tree(Vector2(cell),[0,1,2,4,6,8,10,12][rng.randi_range(0,7)],name,0.62)
-					else:
-						tree(Vector2(cell),[1,4,6][rng.randi_range(0,2)],name)
+					var variants := [0,1,2,4,6,8,10,12] if rng.randf() < richness*0.85 else [1,4,6]
+					low_tree(Vector2(cell),variants[rng.randi_range(0,variants.size()-1)],name,0.60)
 					placed_trees.append(Vector2(cell))
 					continue
-			if rng.randf() < lerpf(0.05,0.38,richness):
-				if rng.randf() < richness:
-					blooms.set_cell(cell,19,Vector2i(rng.randi_range(0,3),rng.randi_range(0,1)),rng.randi_range(1,8))
-				else:
-					blooms.set_cell(cell,19,Vector2i(rng.randi_range(0,3),0),rng.randi_range(1,8))
+			if rng.randf() < lerpf(0.12,0.48,richness):
+				flower_detail(Vector2(cell),rng.randi_range(0,15),"OrchardApproachBloom_%d_%d"%[x,y],0.34)
 	# A small threshold planting marks the transition into the orchard without
 	# filling the orchard's deliberately open interior.
 	for cell in [Vector2i(82,79),Vector2i(83,78),Vector2i(84,77),Vector2i(84,81),Vector2i(82,82)]:
 		if not route.has(cell) and not pond.has(cell):
-			blooms.set_cell(cell,19,Vector2i(posmod(cell.x+cell.y,4),posmod(cell.x,2)),3+posmod(cell.y,5))
+			flower_clump(Vector2(cell),posmod(cell.x+cell.y,16),"OrchardApproachThreshold_%d_%d"%[cell.x,cell.y],0.36)
 
 func build_destination_approaches() -> void:
 	# Independent seeds keep one destination's edits from reshuffling another.
@@ -603,8 +592,8 @@ func build_area_thresholds() -> void:
 	for entry in [[131.0,66.0,4],[132.0,72.0,6],[131.0,85.0,5],[124.0,70.0,2],[121.0,84.0,3]]:
 		var cell := Vector2(entry[0],entry[1])
 		if not transition_clear(cell,0.0): continue
-		if int(entry[2]) in [4,5,6]: woodland_prop(cell,int(entry[2]),"CreekThresholdReeds_%02d_%02d"%[int(cell.x),int(cell.y)],0.64)
-		else: woodland_prop(cell,int(entry[2]),"CreekThresholdStone_%02d_%02d"%[int(cell.x),int(cell.y)],0.58)
+		if int(entry[2]) in [4,5,6]: woodland_prop(cell,int(entry[2]),"CreekApproachReeds_%02d_%02d"%[int(cell.x),int(cell.y)],0.64)
+		else: woodland_prop(cell,int(entry[2]),"CreekApproachStone_%02d_%02d"%[int(cell.x),int(cell.y)],0.58)
 
 func build_destination_approach(design: Dictionary) -> void:
 	var points: Array[Vector2] = []
@@ -620,8 +609,6 @@ func build_destination_approach(design: Dictionary) -> void:
 	for i in range(points.size()-1): length += points[i].distance_to(points[i+1])
 	var rng := RandomNumberGenerator.new()
 	rng.seed = int(design.seed)
-	var plants := layer(String(design.name)+"ApproachPlants")
-	plants.collision_enabled = false
 	var tree_positions: Array[Vector2] = []
 	var accent_positions: Array[Vector2] = []
 	for y in range(maxi(4,int(minimum.y)-6),mini(int(layout.size[1])-4,int(maximum.y)+7)):
@@ -646,17 +633,12 @@ func build_destination_approach(design: Dictionary) -> void:
 					distance = separation
 					progress = (walked+segment.length()*t)/length
 				walked += segment.length()
-			if distance < 2.5 or distance > 6.0: continue
+			if distance < 2.0 or distance > 5.2: continue
 			var richness := smoothstep(0.0,1.0,progress)
-			var occupied := false
 			var pixel_position := Vector2(cell)*16.0+Vector2(8,8)
-			for existing in nature.get_children():
-				if existing.position.distance_to(pixel_position) < 30.0:
-					occupied = true
-					break
-			if occupied: continue
+			if not scenery_spacing_clear(pixel_position): continue
 			# Space canopies generously, with richer destination trees near arrival.
-			if distance > 4.0 and rng.randf() < lerpf(0.015,0.065,richness):
+			if distance > 3.5 and rng.randf() < lerpf(0.025,0.085,richness):
 				var clear := true
 				for other in tree_positions:
 					if other.distance_to(Vector2(cell)) < 5.0: clear = false
@@ -664,16 +646,16 @@ func build_destination_approach(design: Dictionary) -> void:
 					var kind := 1
 					if rng.randf() < richness:
 						kind = {"Mushroom":3,"Meadow":9,"Pond":6,"Creek":11}[String(design.name)]
-					tree(Vector2(cell),kind,"%sApproachTree_%d_%d"%[design.name,x,y])
+					low_tree(Vector2(cell),kind,"%sApproachTree_%d_%d"%[design.name,x,y],0.60)
 					tree_positions.append(Vector2(cell))
 					continue
-			var destination_density := 0.46 if String(design.name) == "Meadow" else 0.34
+			var destination_density := 0.60 if String(design.name) == "Meadow" else 0.48
 			# Gentle roadside clusters begin early, with quiet gaps between them.
 			var pocket := sin(float(x) * 0.47 + float(y) * 0.31) > -0.15
-			var early_density := 0.22 if pocket else 0.07
+			var early_density := 0.30 if pocket else 0.16
 			if rng.randf() > lerpf(early_density,destination_density,richness): continue
 			if rng.randf() > richness:
-				plants.set_cell(cell,19,Vector2i(rng.randi_range(0,3),0),rng.randi_range(1,8))
+				flower_detail(Vector2(cell),rng.randi_range(0,15),"%sApproachBloom_%d_%d"%[design.name,x,y],0.34)
 			elif String(design.name) == "Mushroom":
 				var clear := true
 				for other in accent_positions:
@@ -689,8 +671,8 @@ func build_destination_approach(design: Dictionary) -> void:
 					woodland_prop(Vector2(cell),4+rng.randi_range(0,2),"%sApproachReeds_%d_%d"%[design.name,x,y],0.56)
 					accent_positions.append(Vector2(cell))
 			else:
-				var color := rng.randi_range(0,3) if String(design.name) == "Meadow" else rng.randi_range(2,3)
-				plants.set_cell(cell,19,Vector2i(color,rng.randi_range(0,1)),rng.randi_range(1,8))
+				var variant := rng.randi_range(0,15) if String(design.name) == "Meadow" else rng.randi_range(4,15)
+				flower_clump(Vector2(cell),variant,"%sApproachBloom_%d_%d"%[design.name,x,y],0.38)
 
 func build_orchard_grove() -> void:
 	for i in range(layout.orchard_trees.size()):
@@ -750,7 +732,7 @@ func build_pond_water_garden() -> void:
 	for entry in layout.pond_garden_flowers:
 		var cell := Vector2i(entry[0],entry[1])
 		if not pond.has(cell) and not route.has(cell):
-			plants.set_cell(cell,19,Vector2i(entry[2],entry[3]),1+(cell.x*7+cell.y*3)%8)
+			flower_detail(Vector2(cell),int(entry[2])*4+int(entry[3]),"PondGardenFlower_%d_%d"%[cell.x,cell.y],0.36)
 
 func pond_dragonfly(cell: Vector2, color_row: int, index: int) -> void:
 	var object := Node2D.new()
@@ -796,15 +778,15 @@ func build_meadow_blooms() -> void:
 	for x in range(first_x,last_x,2):
 		var progress := inverse_lerp(float(first_x),float(last_x),float(x))
 		var spine_y := lerpf(68.0,88.0,progress)+sin(float(x)*0.31)*1.4+sin(float(x)*0.13)*0.9
-		for row in range(-2,3):
+		for row in range(-3,4):
 			var jitter := posmod(x*17 + row*29,3) - 1
-			var cell := Vector2(x + posmod(row + x,2), spine_y + row*2.15 + jitter*0.45)
+			var cell := Vector2(x + posmod(row + x,2), spine_y + row*1.9 + jitter*0.42)
 			var across := absf(cell.y-spine_y)
-			if across > 5.0 or not meadow_contains(cell): continue
+			if across > 6.2 or not meadow_contains(cell): continue
 			var center := Vector2i(roundi(cell.x),roundi(cell.y))
 			if pond.has(center): continue
 			var hash_value := absi(int(cell.x)*73856093 ^ int(cell.y)*19349663 ^ 83492791)
-			var density := lerpf(0.82,0.18,clampf(across/5.0,0.0,1.0))
+			var density := lerpf(0.90,0.28,clampf(across/6.2,0.0,1.0))
 			if float(hash_value%100)/100.0 > density: continue
 			var clear := true
 			for dy in range(-2,3):

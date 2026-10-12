@@ -2,9 +2,10 @@
 	"blocked_path_cells": [
 		"(69, 49)",
 		"(70, 56)",
-		"(69, 56)",
 		"(68, 47)",
 		"(67, 47)",
+		"(61, 52)",
+		"(69, 56)",
 		"(68, 44)",
 		"(69, 45)",
 		"(69, 44)",
@@ -32,9 +33,9 @@
 		"Pond": true
 	},
 	"failures": [],
-	"free_cells": 14494,
+	"free_cells": 14507,
 	"isolated_path_cells": [],
 	"probe_radius": 4.09999990463257,
-	"reachable_cells": 14494,
+	"reachable_cells": 14507,
 	"real_player_swept_steps": 656
 }

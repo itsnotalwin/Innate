@@ -13,6 +13,7 @@ func audit() -> void:
 	for cell in paths.get_used_cells(): cells[cell] = true
 	var queue: Array[Vector2i] = [Vector2i(68,55)]
 	var seen := {queue[0]:true}
+	var path_distance := {queue[0]:0}
 	var cursor := 0
 	while cursor < queue.size():
 		var cell := queue[cursor]
@@ -21,6 +22,7 @@ func audit() -> void:
 			var next: Vector2i = cell+offset
 			if cells.has(next) and not seen.has(next):
 				seen[next] = true
+				path_distance[next] = int(path_distance[cell])+1
 				queue.append(next)
 	var failures: Array[String] = []
 	var disconnected_cells: Array[Vector2i] = []
@@ -43,14 +45,23 @@ func audit() -> void:
 		if node.has_node("Solid") and node_name != "Cottage" and not node_name.begins_with("Fence_"):
 			var cell := Vector2i(floori(node.position.x/16),floori(node.position.y/16))
 			if cells.has(cell): failures.append("Solid prop occupies path: "+node_name)
-	var tile_counts := {}
+	var approach_counts := {}
 	for area in ["Orchard","Mushroom","Meadow","Pond","Creek"]:
-		var suffix := "Blooms" if area == "Orchard" else "Plants"
-		var plants: TileMapLayer = world.get_node(area+"Approach"+suffix)
-		tile_counts[area] = plants.get_used_cells().size()
-		if plants.get_used_cells().is_empty(): failures.append("Empty approach: "+area)
+		approach_counts[area] = int(counts.get(area,0))
+		if approach_counts[area] < 4: failures.append("Sparse roadside approach: "+area)
+	var route_anchors := {"Cottage":Vector2(72,43),"Mushroom":Vector2(36,30),"Pond":Vector2(93,27),"Creek":Vector2(129,75),"Orchard":Vector2(99,70),"Meadow":Vector2(54,78)}
+	var walking_seconds := {}
+	for name in route_anchors:
+		var nearest_steps := 2147483647
+		for cell in path_distance:
+			if Vector2(cell).distance_to(route_anchors[name]) < 1.5:
+				nearest_steps = mini(nearest_steps,int(path_distance[cell]))
+		if nearest_steps < 2147483647:
+			walking_seconds[name] = snappedf(float(nearest_steps)/4.5,0.1)
+		else:
+			failures.append("No connected route to timed destination: "+name)
 	var report := {"path_cells":cells.size(),"connected_path_cells":seen.size(),"disconnected_path_cells":disconnected_cells,"disconnected_bridge_cells":disconnected_bridge_cells,
-		"approach_objects":counts,"approach_plant_tiles":tile_counts,
+		"approach_objects":approach_counts,"route_walk_seconds_from_hub":walking_seconds,
 		"nature_objects":world.get_node("Nature").get_child_count(),"failures":failures}
 	var file := FileAccess.open("res://tests/evidence/world-audit.json",FileAccess.WRITE)
 	file.store_string(JSON.stringify(report,"\t")+"\n")
