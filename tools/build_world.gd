@@ -24,6 +24,14 @@ func _initialize() -> void:
 func sx(x: float) -> float:
 	return x * WORLD_X_SCALE
 
+func map_cell(position: Vector2) -> Vector2i:
+	# Object positions use tile coordinates and sit at cell centers (+0.5 tiles).
+	# Match the occupied cell used by collision and traversal audits.
+	return Vector2i(roundi(position.x), roundi(position.y))
+
+func on_painted_path(cell: Vector2i) -> bool:
+	return paths.get_cell_source_id(cell) != -1
+
 func route_clearance(cell: Vector2i) -> bool:
 	for dy in range(-1,2):
 		for dx in range(-1,2):
@@ -74,12 +82,11 @@ func paint_path(points: Array, radius := 1, bridge_diagonals := true) -> void:
 		for step in range(steps+1):
 			var p := curve_point(previous_control,start,end,next_control,float(step)/steps)
 			var cell := Vector2i(roundi(p.x),roundi(p.y))
-			if bridge_diagonals:
-				# Two cells across give the terrain atlas room for continuous corners.
-				for offset in [Vector2i(1,0),Vector2i(0,1),Vector2i(1,1)]:
-					route[cell+offset] = true
+			# Add a bridge only when successive samples touch diagonally. The old
+			# implementation added a southeast 2x2 block at every sample, which
+			# biased and widened every route even when no diagonal gap existed.
 			if bridge_diagonals and cell.x != previous.x and cell.y != previous.y:
-				route[Vector2i(previous.x,cell.y)] = true
+				route[Vector2i(cell.x,previous.y)] = true
 			for dy in range(-radius,radius+1):
 				for dx in range(-radius,radius+1):
 					route[Vector2i(roundi(p.x)+dx,roundi(p.y)+dy)] = true
@@ -100,7 +107,7 @@ func object_from(node_name: String, cell: Vector2, texture_path: String, region:
 	return object
 
 func tree(cell: Vector2, kind: int, node_name: String) -> void:
-	if not route_clearance(Vector2i(cell)): return
+	if not route_clearance(map_cell(cell)): return
 	var selector := absi(roundi(cell.x) * 37 + roundi(cell.y) * 71 + kind * 13)
 	var variant := posmod(kind, 15)
 	if kind in [3, 8, 9, 12]: variant = [3, 8, 9, 12][selector % 4]
@@ -235,32 +242,35 @@ func build() -> void:
 	paint_path(layout.path)
 	# The cottage yard sits inside a readable walking loop, as in the selected mockup.
 	# A slightly wider, bridged stroke reads as one continuous loop at game scale.
-	paint_path(layout.cottage_loop,0,true)
+	paint_path(layout.cottage_loop,1,true)
 	# A wide outer route links the destination approaches into one continuous loop.
 	paint_path(layout.outer_loop)
 	for branch in layout.path_branches:
 		paint_path(branch)
 	# A light footpath circles the flower clearing and rejoins the south trail.
-	paint_path(layout.meadow_trail,0,true)
+	paint_path(layout.meadow_trail,1,true)
+	# This quieter inner trail crosses the meadow and ends at its rest stone,
+	# giving players a walkable view through the flowers instead of only around them.
+	paint_path(layout.meadow_inner_trail,1,true)
 	# The cottage garden gate opens onto the northern walking route.
-	paint_path(layout.garden_access,0,true)
+	paint_path(layout.garden_access,1,true)
 	var garden: Array = layout.garden
 	var garden_gate_x := roundi((float(garden[0])+float(garden[2]))/2.0)
 	# Keep the garden green, with a single clear path between both gates.
-	paint_path([[garden_gate_x,garden[1]-2],[garden_gate_x,garden[3]+2]],0)
+	paint_path([[garden_gate_x,garden[1]-2],[garden_gate_x,garden[3]+2]],1)
 	# Carry that gate path through the hub to the shared outer loop.
-	paint_path([[68.0,55.0],[69.0,57.0],[70.0,59.0],[72.0,60.0]],0,true)
+	paint_path([[68.0,55.0],[69.0,57.0],[70.0,59.0],[72.0,60.0]],1,true)
 	# A footpath follows the west bank into the creekside rest clearing.
-	paint_path(layout.creek_trail,0)
-	paint_path(layout.creek_rest_trail,0,true)
-	paint_path(layout.creek_bridge_trail,0,true)
+	paint_path(layout.creek_trail,1)
+	paint_path(layout.creek_rest_trail,1,true)
+	paint_path(layout.creek_bridge_trail,1,true)
 	# A slim loop makes the pond garden a destination from the main road.
-	paint_path(layout.pond_garden_trail,0,true)
-	paint_path(layout.pond_bridge_trail,0,true)
+	paint_path(layout.pond_garden_trail,1,true)
+	paint_path(layout.pond_bridge_trail,1,true)
 	# A soft loop turns the northern fruit grove into a walkable destination.
-	paint_path(layout.orchard_trail,0,true)
+	paint_path(layout.orchard_trail,1,true)
 	# A small loop lets the mushroom glade unfold beyond its entrance spur.
-	paint_path(layout.mushroom_trail,0,true)
+	paint_path(layout.mushroom_trail,1,true)
 	# The main loop frames the central green; avoid stacking a second hub ring.
 	# An apron joins the cottage door to the main path.
 	var cottage: Array = layout.cottage
@@ -327,7 +337,7 @@ func build() -> void:
 		low_tree(Vector2(p[0],p[1]),[6,7,0,4][posmod(i*5+p[0]+p[1],4)],"Bush_%02d"%i,0.42 if i%3 else 0.48)
 	for i in range(layout.rocks.size()):
 		var p: Array = layout.rocks[i]
-		if route.has(Vector2i(p[0],p[1])): continue
+		if not route_clearance(Vector2i(p[0],p[1])): continue
 		if pond_garden_contains(Vector2(p[0],p[1])) or orchard_contains(Vector2(p[0],p[1])): continue
 		woodland_prop(Vector2(p[0],p[1]),i%4,"Rock_%02d"%i,0.6,Vector2(9,6))
 	for i in range(layout.flower_patches.size()):
@@ -360,11 +370,11 @@ func build() -> void:
 		if clear: mushroom_cluster(cell,i*5+2,"MushroomCluster_%02d"%i,0.78 if i%3 else 0.88)
 	for i in range(layout.logs.size()):
 		var p: Array = layout.logs[i]
-		if route.has(Vector2i(p[0],p[1])): continue
+		if not route_clearance(Vector2i(p[0],p[1])): continue
 		woodland_prop(Vector2(p[0],p[1]),12,"Log_%02d"%i,0.62,Vector2(22,7))
 	for i in range(layout.stumps.size()):
 		var p: Array = layout.stumps[i]
-		if route.has(Vector2i(p[0],p[1])): continue
+		if not route_clearance(Vector2i(p[0],p[1])): continue
 		woodland_prop(Vector2(p[0],p[1]),14,"Stump_%02d"%i,0.58,Vector2(9,6))
 	for i in range(layout.creek_reeds.size()):
 		var p: Array = layout.creek_reeds[i]
@@ -516,8 +526,8 @@ func build_destination_approaches() -> void:
 	build_area_thresholds()
 
 func transition_clear(cell: Vector2, spacing := 24.0) -> bool:
-	var map_cell := Vector2i(roundi(cell.x),roundi(cell.y))
-	if pond.has(map_cell) or not route_clearance(map_cell): return false
+	var cell_key := map_cell(cell)
+	if pond.has(cell_key) or not route_clearance(cell_key): return false
 	var target := cell * 16.0 + Vector2(8,8)
 	if spacing > 0.0:
 		for existing in nature.get_children():
@@ -636,8 +646,10 @@ func build_destination_approach(design: Dictionary) -> void:
 func build_orchard_grove() -> void:
 	for i in range(layout.orchard_trees.size()):
 		var entry: Array = layout.orchard_trees[i]
-		var orchard_cell := Vector2i(entry[0],entry[1])
-		if not route_clearance(orchard_cell): continue
+		var orchard_cell := map_cell(Vector2(entry[0],entry[1]))
+		# Orchard canopies may shade the trail edge; only keep their trunk collider
+		# off the road itself, since this curated ring is intentionally tight.
+		if on_painted_path(orchard_cell): continue
 		var variety: int = [4,10,14,5][posmod(int(entry[2])+i,4)]
 		var orchard_tree := cluster_from("OrchardTree_%02d"%i,Vector2(entry[0],entry[1]),TREE_ATLAS,variety,1.08,Vector2(7,6))
 		orchard_tree.get_node("Artwork").position.y -= 3.0
@@ -656,12 +668,12 @@ func build_orchard_grove() -> void:
 	# Varied fruit trees surround a clear picnic interior.
 	for entry in [[sx(57.5)+19.0,65.0,4],[sx(66.5)+19.0,62.0,10],[sx(73.9)+19.0,67.0,14],[sx(81.2)+19.0,69.0,4],[sx(65.7)+19.0,80.0,10],[sx(79.6)+19.0,80.0,14]]:
 		var cell := Vector2(entry[0],entry[1])
-		if not route_clearance(Vector2i(cell)): continue
+		if on_painted_path(map_cell(cell)): continue
 		cluster_from("OrchardTreeAccent_%02d_%02d"%[int(cell.x),int(cell.y)],cell,TREE_ATLAS,int(entry[2]),1.08,Vector2(7,6))
 	# Fill the picnic grove interior with a loose ring of fruit trees around open grass.
 	for entry in [[91,67,4],[97,71,10],[102,65,14],[109,67,5],[117,70,4],[123,74,10],[119,80,14],[110,82,5],[100,80,4],[92,77,10],[106,75,14]]:
 		var cell := Vector2(entry[0],entry[1])
-		if not route_clearance(Vector2i(cell)): continue
+		if on_painted_path(map_cell(cell)): continue
 		cluster_from("OrchardInteriorTree_%02d_%02d"%[int(cell.x),int(cell.y)],cell,TREE_ATLAS,int(entry[2]),1.08,Vector2(7,6))
 
 func build_reference_scatter() -> void:
@@ -725,33 +737,56 @@ func build_pond_garden_accents() -> void:
 	bridge.get_node("Artwork").texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 func build_meadow_blooms() -> void:
-	# Larger shaded clusters replace the tiny isolated blooms with a continuous,
-	# layered flower carpet. Their silhouettes and palette now match the trees.
+	# Curved flower drifts create broad color bands, with visible grass between
+	# clusters and a clear opening around both meadow trails.
 	var bounds: Array = layout.meadow_design.bounds
 	var first_x := int(bounds[0]) + 2
 	var last_x := int(bounds[2]) - 2
 	var grid_index := 0
+	var cluster_centers: Array[Vector2] = []
 	for x in range(first_x,last_x,2):
 		var progress := inverse_lerp(float(first_x),float(last_x),float(x))
 		var spine_y := lerpf(68.0,88.0,progress)+sin(float(x)*0.31)*1.4+sin(float(x)*0.13)*0.9
-		for row in range(-4,5):
+		for row in range(-2,3):
 			var jitter := posmod(x*17 + row*29,3) - 1
-			var cell := Vector2(x + posmod(row + x,2), spine_y + row*1.8 + jitter*0.35)
+			var cell := Vector2(x + posmod(row + x,2), spine_y + row*2.15 + jitter*0.45)
 			var across := absf(cell.y-spine_y)
-			if across > 8.0 or not meadow_contains(cell): continue
+			if across > 5.0 or not meadow_contains(cell): continue
 			var center := Vector2i(roundi(cell.x),roundi(cell.y))
 			if pond.has(center): continue
 			var hash_value := absi(int(cell.x)*73856093 ^ int(cell.y)*19349663 ^ 83492791)
-			var density := lerpf(0.96,0.32,clampf(across/8.0,0.0,1.0))
+			var density := lerpf(0.82,0.18,clampf(across/5.0,0.0,1.0))
 			if float(hash_value%100)/100.0 > density: continue
 			var clear := true
 			for dy in range(-2,3):
 				for dx in range(-2,3):
 					if route.has(center+Vector2i(dx,dy)): clear = false
 			if not clear: continue
-			var scale_factor := 0.60 + float(hash_value%13)/100.0
+			var scale_factor := 0.38 + float(hash_value%15)/100.0
 			flower_clump(cell,hash_value%16,"MeadowDrift_%03d"%grid_index,scale_factor)
+			cluster_centers.append(cell)
 			grid_index += 1
+	# Small single blooms fill the gaps between large drifts without turning the
+	# meadow into a solid carpet or covering either trail.
+	var detail_index := 0
+	for x in range(first_x,last_x):
+		var progress := inverse_lerp(float(first_x),float(last_x),float(x))
+		var spine_y := lerpf(68.0,88.0,progress)+sin(float(x)*0.31)*1.4+sin(float(x)*0.13)*0.9
+		for row in range(-2,3):
+			var cell := Vector2(x,spine_y+row*2.8)
+			if not meadow_contains(cell): continue
+			var center := map_cell(cell)
+			if pond.has(center) or not route_clearance(center): continue
+			var hash_value := absi(int(cell.x)*19349663 ^ int(cell.y)*83492791 ^ 4729183)
+			if hash_value%100 > 34: continue
+			var overlaps_cluster := false
+			for cluster in cluster_centers:
+				if cluster.distance_to(cell) < 2.1:
+					overlaps_cluster = true
+					break
+			if overlaps_cluster: continue
+			flower_detail(cell,hash_value%16,"MeadowSingleBloom_%03d"%detail_index,0.36+float(hash_value%13)/100.0)
+			detail_index += 1
 
 func build_meadow_accents() -> void:
 	# A handful of taller flowers act as individual landmarks beside the drifts.
@@ -767,7 +802,7 @@ func build_meadow_accents() -> void:
 		var cell: Vector2 = entry[0]
 		if route.has(Vector2i(cell)) or pond.has(Vector2i(cell)): continue
 		flower_clump(cell,int(entry[1])*4+i,"MeadowAccent_%02d"%i,0.62)
-	woodland_prop(Vector2(sx(21.0),88.8),1,"MeadowRestStone",0.52)
+	woodland_prop(Vector2(24.0,84.0),1,"MeadowRestStone",0.52)
 
 func build_creekside_clearing() -> void:
 	# A roomy river landing gives the east edge a clear place to pause and explore.
