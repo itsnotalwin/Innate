@@ -62,7 +62,7 @@ func curve_point(p0: Vector2, p1: Vector2, p2: Vector2, p3: Vector2, t: float) -
 	var t3 := t2 * t
 	return 0.5 * ((2.0 * p1) + (-p0 + p2) * t + (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * t2 + (-p0 + 3.0 * p1 - 3.0 * p2 + p3) * t3)
 
-func paint_path(points: Array, radius := 1, bridge_diagonals := false) -> void:
+func paint_path(points: Array, radius := 1, bridge_diagonals := true) -> void:
 	var closed: bool = points.size() > 2 and points[0] == points[points.size()-1]
 	for i in range(points.size()-1):
 		var start := Vector2(points[i][0],points[i][1])
@@ -248,6 +248,8 @@ func build() -> void:
 	var garden_gate_x := roundi((float(garden[0])+float(garden[2]))/2.0)
 	# Keep the garden green, with a single clear path between both gates.
 	paint_path([[garden_gate_x,garden[1]-2],[garden_gate_x,garden[3]+2]],0)
+	# Carry that gate path through the hub to the shared outer loop.
+	paint_path([[68.0,55.0],[69.0,57.0],[70.0,59.0],[72.0,60.0]],0,true)
 	# A footpath follows the west bank into the creekside rest clearing.
 	paint_path(layout.creek_trail,0)
 	paint_path(layout.creek_rest_trail,0,true)
@@ -496,11 +498,16 @@ func build_orchard_approach() -> void:
 					blooms.set_cell(cell,19,Vector2i(rng.randi_range(0,3),rng.randi_range(0,1)),rng.randi_range(1,8))
 				else:
 					blooms.set_cell(cell,19,Vector2i(rng.randi_range(0,3),0),rng.randi_range(1,8))
+	# A small threshold planting marks the transition into the orchard without
+	# filling the orchard's deliberately open interior.
+	for cell in [Vector2i(82,79),Vector2i(83,78),Vector2i(84,77),Vector2i(84,81),Vector2i(82,82)]:
+		if not route.has(cell) and not pond.has(cell):
+			blooms.set_cell(cell,19,Vector2i(posmod(cell.x+cell.y,4),posmod(cell.x,2)),3+posmod(cell.y,5))
 
 func build_destination_approaches() -> void:
 	# Independent seeds keep one destination's edits from reshuffling another.
 	for design in [
-		{"name":"Mushroom", "branch":4, "seed":3101},
+		{"name":"Mushroom", "branch":0, "seed":3101},
 		{"name":"Meadow", "branch":3, "seed":3102},
 		{"name":"Pond", "branch":1, "seed":3103},
 		{"name":"Creek", "branch":2, "seed":3104},
