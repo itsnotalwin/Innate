@@ -403,6 +403,7 @@ func build() -> void:
 	build_destination_approaches()
 	build_reference_scatter()
 	build_roadside_discoveries()
+	build_map_wildflower_fill()
 	build_cottage()
 	build_fence()
 	build_cottage_garden()
@@ -446,6 +447,39 @@ func build_roadside_discoveries() -> void:
 			woodland_prop(Vector2(center),i%4,"TrailDiscoveryRock_%d"%i,0.58,Vector2(9,6))
 		else:
 			woodland_prop(Vector2(center),13,"TrailDiscoveryLog_%d"%i,0.6,Vector2(14,5))
+
+func build_map_wildflower_fill() -> void:
+	# The authored destinations already have their own dense layouts. This seeded
+	# pass adds small native-style discoveries to the broad connecting lawns while
+	# preserving each destination's visual identity and all 1-tile road margins.
+	var seed := 7412027
+	var added := 0
+	for y in range(5, int(layout.size[1]) - 4, 3):
+		for x in range(5, int(layout.size[0]) - 4, 3):
+			var hash_value := absi(x * 73856093 ^ y * 19349663 ^ seed)
+			if hash_value % 100 >= 65: continue
+			var cell := Vector2i(x + (hash_value % 3) - 1, y + (int(hash_value / 7) % 3) - 1)
+			if pond.has(cell) or not route_clearance(cell): continue
+			var point := Vector2(cell)
+			# Leave the mushroom glade, flower meadow, pond garden and orchard to
+			# their authored compositions; enrich the spaces between them instead.
+			if (point.x < 51 and point.y < 52) or meadow_contains(point) or orchard_contains(point) or pond_garden_contains(point): continue
+			var pixel_position := point * 16.0 + Vector2(8, 8)
+			var occupied := false
+			for existing in nature.get_children():
+				if existing.position.distance_to(pixel_position) < 28.0:
+					occupied = true
+					break
+			if occupied: continue
+			var name := "LawnDiscovery_%03d" % added
+			if hash_value % 13 == 0:
+				low_tree(point, [0, 1, 2, 4, 6, 8, 10, 12][hash_value % 8], name, 0.40)
+			elif hash_value % 4 == 0:
+				flower_detail(point, hash_value % 16, name, 0.34)
+			else:
+				flower_clump(point, hash_value % 16, name, 0.34)
+			added += 1
+	print("Added ", added, " spaced lawn discoveries.")
 
 func discovery_cell_clear(cell: Vector2i) -> bool:
 	if pond.has(cell): return false
