@@ -274,7 +274,7 @@ func build() -> void:
 	# Keep the garden green, with a single clear path between both gates.
 	paint_path([[garden_gate_x,garden[1]-2],[garden_gate_x,garden[3]+2]],1)
 	# Carry that gate path through the hub to the shared outer loop.
-	paint_path([[68.0,55.0],[69.0,57.0],[70.0,59.0],[72.0,60.0]],1,true)
+	# paint_path([[68.0,55.0],[69.0,57.0],[70.0,59.0],[72.0,60.0]],1,true)
 	# A footpath follows the west bank into the creekside rest clearing.
 	paint_path(layout.creek_trail,1)
 	paint_path(layout.creek_rest_trail,1,true)
