@@ -1,0 +1,80 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - test/consolidated-map
+      - codex/innate-milestone-01
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Godot
+        uses: firebelley/godot-export@v6
+        with:
+          godot_executable_download_url: https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          export_templates_download_url: https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_export_templates.tpz
+          relative_project_path: .
+          archive_output: false
+
+      - name: Export Web
+        run: |
+          godot --headless --export-release "Web" build/web/index.html
+
+      - name: Version game pack
+        run: |
+          cd build/web
+          PACK_HASH=$(sha256sum index.pck | cut -d' ' -f1 | cut -c1-16)
+          cp index.pck "game-${PACK_HASH}.pck"
+          
+          # Update HTML to use versioned pack
+          sed -i "s/\"mainPack\": \"index.pck\"/\"mainPack\": \"game-${PACK_HASH}.pck\"/" index.html
+          sed -i "s/\"fileSizes\": {/\"fileSizes\": {\n    \"game-${PACK_HASH}.pck\": $(stat -c%s \"game-${PACK_HASH}.pck\"),/" index.html
+
+      - name: Copy loader character
+        run: |
+          cp assets/sprout_lands/character.png build/web/loader-character.png
+
+      - name: Sync to docs
+        run: |
+          mkdir -p docs
+          cp -r build/web/* docs/
+          touch docs/.nojekyll
+          touch .nojekyll
+          
+          # Update root index.html with base href
+          sed -i '1s/<head>/<head>\n<base href=".\/docs\/">/' index.html
+          cp index.html docs/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
