@@ -34,9 +34,20 @@ jobs:
           relative_project_path: .
           archive_output: false
 
+      - name: Verify Godot setup
+        run: |
+          godot --version
+          ls -la ~/.local/share/godot/export_templates/4.6.3.stable/
+
       - name: Export Web
         run: |
           godot --headless --export-release "Web" build/web/index.html
+
+      - name: Verify export
+        run: |
+          ls -la build/web/
+          test -f build/web/index.pck
+          test -f build/web/index.html
 
       - name: Version game pack
         run: |
