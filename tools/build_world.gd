@@ -229,6 +229,7 @@ func build() -> void:
 	add_river(layout.river_path, 2)
 	# Open a short walkable channel through the water beneath the authored footbridge.
 	for bridge_key in ["pond_bridge_bounds","creek_bridge_bounds"]:
+		if not layout.has(bridge_key): continue
 		var bridge_bounds: Array = layout[bridge_key]
 		for y in range(bridge_bounds[1],bridge_bounds[3]+1):
 			for x in range(bridge_bounds[0],bridge_bounds[2]+1): pond.erase(Vector2i(x,y))
@@ -256,7 +257,7 @@ func build() -> void:
 	# A slightly wider, bridged stroke reads as one continuous loop at game scale.
 	paint_path(layout.cottage_loop,1,true)
 	# A wide outer route links the destination approaches into one continuous loop.
-	paint_path(layout.outer_loop)
+	if layout.has("outer_loop"): paint_path(layout.outer_loop)
 	for branch in layout.path_branches:
 		paint_path(branch)
 	# Optional shortcuts keep the long walks reasonable while preserving the main loop.

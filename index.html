@@ -4,43 +4,75 @@
 <base href="./docs/">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<meta name="theme-color" content="#f5f2e0">
+<meta name="theme-color" content="#102b2d">
 <link rel="icon" href="data:,">
 <title>INNATE</title>
 <style>
+:root { color-scheme: dark; --night: #0b2424; --forest: #173b35; --cream: #f8efd7; --gold: #d4b875; }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; background: #f5f2e0; }
-body { touch-action: none; font-family: ui-rounded, system-ui, sans-serif; color: #405e46; }
+html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; background: var(--night); }
+body { font-family: ui-rounded, system-ui, sans-serif; color: var(--cream); touch-action: none; }
 #canvas { image-rendering: pixelated; display: block; width: 100%; height: 100%; outline: none; }
-#status { position: fixed; inset: 0; display: grid; place-items: center; background: #f5f2e0; z-index: 2; }
-.loading { width: min(65vw, 240px); text-align: center; }
-.character { width: 48px; height: 48px; margin: 28px auto; background: url('loader-character.png') 0 0 / 192px 192px; image-rendering: pixelated; transform: scale(2); }
-h1 { font-size: 22px; font-weight: 500; letter-spacing: .32em; margin: 24px 0; padding-left: .32em; }
-progress { display: block; width: 100%; height: 4px; border: 0; border-radius: 4px; overflow: hidden; background: #e0e3c9; accent-color: #809965; }
-progress::-webkit-progress-bar { background: #e0e3c9; }
-progress::-webkit-progress-value { background: #809965; }
-progress::-moz-progress-bar { background: #809965; }
-.credit { position: absolute; bottom: max(22px, env(safe-area-inset-bottom)); left: 16px; right: 16px; text-align: center; font-size: 11px; color: #697860; }
-.credit a { color: inherit; text-decoration: none; }
-#notice { font-size: 14px; line-height: 1.5; }
-#retry { margin: 16px auto; padding: 10px 22px; border: 1px solid #809965; border-radius: 20px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
 #safe-area { position: fixed; visibility: hidden; pointer-events: none; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+#status { position: fixed; inset: 0; isolation: isolate; z-index: 10; display: grid; place-items: center; overflow: hidden; background: radial-gradient(ellipse 65% 55% at 50% 35%, #416455 0%, transparent 82%), linear-gradient(165deg, #274740 0%, #102b2d 64%, #0a1e24 100%); transition: opacity .55s ease, visibility .55s ease; }
+#status.is-leaving { opacity: 0; visibility: hidden; pointer-events: none; }
+#status:before { content: ""; position: absolute; z-index: -1; inset: 0; opacity: .12; background-image: repeating-linear-gradient(0deg, transparent 0 2px, #d7d9b2 3px, transparent 4px); mix-blend-mode: soft-light; pointer-events: none; }
+.aura { position: absolute; width: min(85vw, 720px); aspect-ratio: 1; border-radius: 50%; left: 50%; top: 40%; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(224,218,160,.21), rgba(174,202,143,.06) 38%, transparent 69%); filter: blur(9px); pointer-events: none; }
+.moon { position: absolute; width: clamp(108px, 17vw, 215px); aspect-ratio: 1; top: 8%; right: 12%; border-radius: 50%; background: radial-gradient(circle at 37% 33%, #fdf4cc 4%, #decb93 66%, #a89b78 100%); box-shadow: 0 0 60px #e3d1a244, 0 0 170px #d6ca8e25; opacity: .68; pointer-events: none; animation: breathe 8s ease-in-out infinite; }
+.landscape { position: absolute; z-index: -1; left: -12%; bottom: -13%; width: 124%; height: 49%; pointer-events: none; border-radius: 50% 50% 0 0 / 38% 45% 0 0; background: linear-gradient(180deg, #244d45 0%, #102d2c 75%); transform: rotate(-3deg); box-shadow: 0 -1px 0 #a0ba8555; }
+.landscape:after { content: ""; position: absolute; inset: 27% -3% -24%; border-radius: 50% 50% 0 0 / 35% 30% 0 0; transform: rotate(7deg); background: linear-gradient(180deg,#143b36,#071d24); box-shadow: 0 -1px 0 #759e7852; }
+.spark { position: absolute; width: 4px; aspect-ratio: 1; background: #fff0b7; border-radius: 50%; box-shadow: 0 0 14px 3px #e4d79e8a; opacity: .7; animation: drift 6s ease-in-out infinite alternate; pointer-events: none; }
+.spark.one { top: 25%; left: 18%; animation-delay: -1s; } .spark.two { top: 61%; left: 24%; animation-delay: -4s; } .spark.three { top: 42%; right: 21%; animation-delay: -2s; } .spark.four { top: 72%; right: 16%; animation-delay: -5s; } .spark.five { top: 16%; left: 51%; animation-delay: -3s; }
+.title-card { position: relative; z-index: 2; width: min(100%, 920px); padding: max(32px, env(safe-area-inset-top)) 24px max(48px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: center; text-align: center; }
+.emblem { margin-bottom: clamp(18px, 4vh, 45px); width: 34px; height: 34px; border: 1px solid #e3d09a99; transform: rotate(45deg); display: grid; place-items: center; box-shadow: 0 0 28px #edd49a26; }
+.emblem:before { content:""; width: 12px; height: 12px; border: 1px solid #e3d09a; border-radius: 50%; }
+h1 { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; text-transform: uppercase; font-size: clamp(3.5rem, 12vw, 9.6rem); line-height: 1.05; letter-spacing: .19em; padding-left: .19em; color: var(--cream); margin: 0; text-shadow: 0 6px 48px #030e13a8, 0 0 36px #eddfa037; }
+.ornament { width: min(270px, 42vw); height: 1px; margin: clamp(22px, 4.5vh, 45px) 0 clamp(24px, 5vh, 52px); background: linear-gradient(90deg,transparent,#e2ca98 25%,#e2ca98 75%,transparent); opacity: .65; }
+#play { min-width: 198px; min-height: 58px; border: 1px solid #f5e9cc; border-radius: 999px; padding: 14px 35px; background: #f5e9cc; color: #18362f; font: 700 .73rem/1.2 ui-rounded, system-ui, sans-serif; letter-spacing: .28em; cursor: pointer; box-shadow: 0 15px 45px #0004, inset 0 1px #fff; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
+#play:hover { transform: translateY(-3px); box-shadow: 0 19px 50px #0007, 0 0 24px #e5d5a83d; background: #fff6df; }
+#play:active { transform: translateY(0); }
+#play:focus-visible, #retry:focus-visible { outline: 3px solid var(--gold); outline-offset: 6px; }
+#status[data-state="loading"] #play, #status[data-state="error"] #play { display: none; }
+.loading-state { display: none; width: min(240px, 65vw); }
+#status[data-state="loading"] .loading-state { display: block; }
+.loading-state p { font-size: .66rem; letter-spacing: .22em; font-weight: 650; margin: 0 0 17px; color: #efe4c9; }
+progress { width: 100%; height: 3px; appearance: none; border: 0; border-radius: 4px; overflow: hidden; background: #bed0b546; accent-color: var(--gold); }
+progress::-webkit-progress-bar { background: #bed0b546; } progress::-webkit-progress-value { background: var(--gold); } progress::-moz-progress-bar { background: var(--gold); }
+#notice { max-width: 320px; font-size: .9rem; line-height: 1.6; color: var(--cream); }
+#retry { min-height: 48px; margin-top: 14px; padding: 10px 28px; border: 1px solid #e3d09a; border-radius: 30px; background: transparent; color: var(--cream); font: inherit; cursor: pointer; }
+.edge { position: absolute; inset: 21px; border: 1px solid #f0ddab1f; pointer-events: none; }
+.edge:before, .edge:after { content:""; position: absolute; width: 28px; height: 28px; border-color: #d4bc85a0; border-style: solid; }
+.edge:before { left: -1px; top: -1px; border-width: 1px 0 0 1px; } .edge:after { right: -1px; bottom: -1px; border-width: 0 1px 1px 0; }
+@keyframes drift { from { transform: translate(0,0) scale(.85); opacity:.3; } to { transform: translate(12px,-22px) scale(1.2); opacity: .95; } }
+@keyframes breathe { 50% { opacity: .85; transform: scale(1.03); } }
+@media (max-width: 560px) { .moon { right: -18px; top: 10%; opacity: .45; } h1 { font-size: clamp(3rem, 14vw, 5rem); letter-spacing: .14em; padding-left: .14em; } .landscape { bottom: -8%; height: 40%; } .edge { inset: 13px; } #play { min-height: 56px; } }
+@media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation: none !important; transition-duration: .01ms !important; } }
 </style>
 
 </head>
 <body>
 <canvas id="canvas" tabindex="0" aria-label="INNATE exploration game"></canvas>
 <div id="safe-area" aria-hidden="true"></div>
-<div id="status" role="status" aria-label="Loading INNATE">
-  <div class="loading">
-    <div class="character" aria-hidden="true"></div>
-    <h1>INNATE</h1>
-    <progress id="progress" aria-label="Download progress"></progress>
-    <p id="notice" hidden></p>
-    <button id="retry" hidden onclick="location.reload()">Try again</button>
-  </div>
-  <div class="credit"><a href="https://cupnooble.itch.io/sprout-lands-asset-pack" target="_blank" rel="noopener">Sprout Lands — Assets by Cup Nooble</a></div>
+<div id="status" data-state="idle" role="dialog" aria-modal="true" aria-labelledby="game-title">
+  <div class="aura" aria-hidden="true"></div>
+  <div class="moon" aria-hidden="true"></div>
+  <div class="landscape" aria-hidden="true"></div>
+  <span class="spark one" aria-hidden="true"></span><span class="spark two" aria-hidden="true"></span>
+  <span class="spark three" aria-hidden="true"></span><span class="spark four" aria-hidden="true"></span>
+  <span class="spark five" aria-hidden="true"></span><span class="edge" aria-hidden="true"></span>
+  <main class="title-card">
+    <span class="emblem" aria-hidden="true"></span>
+    <h1 id="game-title">INNATE</h1>
+    <div class="ornament" aria-hidden="true"></div>
+    <button id="play" type="button" autofocus>PLAY</button>
+    <div class="loading-state" role="status" aria-live="polite">
+      <p>OPENING THE WORLD</p>
+      <progress id="progress" aria-label="Game download progress"></progress>
+    </div>
+    <p id="notice" role="alert" hidden></p>
+    <button id="retry" type="button" hidden>TRY AGAIN</button>
+  </main>
 </div>
 <noscript>Enable JavaScript to play INNATE.</noscript>
 <script>
@@ -65,9 +97,13 @@ window.innateSafeArea = () => {
     (parseFloat(style.paddingTop) || 0) * renderScale, (parseFloat(style.paddingRight) || 0) * renderScale];
 };
 window.innateReady = () => {
-  document.getElementById('status')?.remove();
   clearTimeout(startupWatchdog);
   performance.mark('innate-ready');
+  const status = document.getElementById('status');
+  if (status) {
+    status.classList.add('is-leaving');
+    setTimeout(() => { if (status.classList.contains('is-leaving')) status.hidden = true; }, 570);
+  }
   canvas.focus({preventScroll: true});
 };
 canvas.addEventListener('keydown', event => {
@@ -77,24 +113,17 @@ canvas.addEventListener('pointerdown', () => canvas.focus({preventScroll: true})
 function showFailure(error, message = 'The world could not load. Check your connection and try again. A browser with WebGL 2 is required.') {
   clearTimeout(startupWatchdog);
   console.error(error);
-  // The loader is removed after launch; recreate a recovery surface if graphics
-  // are lost later (for example under mobile memory pressure).
-  if (!document.getElementById('status')) {
-    const status = document.createElement('div');
-    status.id = 'status'; status.setAttribute('role', 'alert');
-    const content = document.createElement('div'); content.className = 'loading';
-    const notice = document.createElement('p'); notice.id = 'notice';
-    const retry = document.createElement('button'); retry.id = 'retry';
-    retry.textContent = 'Try again'; retry.addEventListener('click', () => location.reload());
-    content.append(notice, retry); status.append(content); document.body.append(status);
-  }
+  const status = document.getElementById('status');
+  if (!status) return;
+  status.hidden = false;
+  status.classList.remove('is-leaving');
+  status.dataset.state = 'error';
+  status.setAttribute('role', 'alertdialog');
   const notice = document.getElementById('notice');
-  if (!notice) return;
-  const progress = document.getElementById('progress');
-  if (progress) progress.hidden = true;
   notice.textContent = message;
   notice.hidden = false;
   document.getElementById('retry').hidden = false;
+  document.getElementById('retry').focus({preventScroll: true});
 }
 let startupWatchdog = 0;
 canvas.addEventListener('webglcontextlost', event => {
@@ -135,22 +164,34 @@ XMLHttpRequest.prototype.send = function(...args) {
 </script>
 <script src="index.js" onerror="showFailure('Game runtime download failed')"></script>
 <script>
-if (typeof Engine !== 'undefined') {
-  const config = {"args":[],"canvasResizePolicy":0,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.wasm":37700666,"game-7eeb1791e6dd2589.pck":1362480},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"mainPack":"game-7eeb1791e6dd2589.pck"};
+const config = {"args":[],"canvasResizePolicy":0,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.wasm":37700666,"game-7eeb1791e6dd2589.pck":1362480},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"mainPack":"game-7eeb1791e6dd2589.pck"};
+document.getElementById('retry').addEventListener('click', () => location.reload());
+document.getElementById('play').addEventListener('click', () => {
+  const status = document.getElementById('status');
+  if (status.dataset.state !== 'idle') return;
+  status.dataset.state = 'loading';
+  if (typeof Engine === 'undefined') {
+    showFailure('Game runtime is unavailable.');
+    return;
+  }
   const missing = Engine.getMissingFeatures({threads: false});
   if (missing.length) {
     showFailure(missing.join(', '));
-  } else {
+    return;
+  }
+  try {
     const engine = new Engine(config);
     startupWatchdog = setTimeout(() => {
-      if (document.getElementById('status')) showFailure('Game startup timed out', 'The world is taking too long to load. Check your connection and try again.');
-    }, 30000);
+      if (status.dataset.state === 'loading' && !status.hidden) showFailure('Game startup timed out', 'The world is taking too long to load. Check your connection and try again.');
+    }, 45000);
     engine.startGame({onProgress(current, total) {
       const progress = document.getElementById('progress');
       if (progress && total > 0) { progress.max = total; progress.value = current; }
     }}).catch(showFailure);
+  } catch (error) {
+    showFailure(error);
   }
-}
+});
 </script>
 </body>
 </html>
