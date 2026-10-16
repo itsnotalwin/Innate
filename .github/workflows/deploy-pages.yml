@@ -42,7 +42,11 @@ jobs:
           set -euo pipefail
           GODOT="$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"
           "$GODOT" --headless --path . --editor --import --quit
-          "$GODOT" --headless --path . --script res://tools/build_world.gd
+          "$GODOT" --headless --path . --script res://tools/build_world.gd 2>&1 | tee "$RUNNER_TEMP/world-build.log"
+          if grep -E 'SCRIPT ERROR:|ERROR:' "$RUNNER_TEMP/world-build.log"; then
+            echo "Map generator logged a Godot error" >&2
+            exit 1
+          fi
           python tools/export_web.py --godot "$GODOT"
 
       - name: Upload browser game

@@ -602,7 +602,17 @@ func build_destination_approach(design: Dictionary) -> void:
 	var points: Array[Vector2] = []
 	var minimum := Vector2(INF,INF)
 	var maximum := Vector2(-INF,-INF)
-	var route_points: Array = design.points if design.has("points") else layout.path_branches[int(design.branch)]
+	var route_points: Array
+	if design.has("points"):
+		route_points = design.points
+	elif int(design.branch) < layout.path_branches.size():
+		route_points = layout.path_branches[int(design.branch)]
+	elif String(design.name) == "Meadow":
+		# The compact map no longer has a fourth main branch; use the authored meadow trail.
+		route_points = layout.meadow_trail
+	else:
+		push_warning("Skipping missing destination approach branch: " + str(design.branch))
+		return
 	for entry in route_points:
 		var point := Vector2(entry[0],entry[1])
 		if not points.is_empty() and point == points.back(): continue
